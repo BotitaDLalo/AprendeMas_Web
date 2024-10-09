@@ -13,6 +13,8 @@ var jwtKey = builder.Configuration["jwt:SecretKey"];
 var jwt = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey ?? throw new ArgumentNullException(jwtKey, "Token no configurado")));
 
 
+
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 

@@ -17,51 +17,51 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = AprendeMasWeb
 build_property.RootNamespace = AprendeMasWeb
-build_property.ProjectDir = C:\Users\epict\OneDrive\Documentos\RES\AppWebRes\AprendeMasWeb\
+build_property.ProjectDir = D:\Escritorio\Sistemas EXA\Repositorio\Master\AprendeMas_Web\AprendeMasWeb\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\epict\OneDrive\Documentos\RES\AppWebRes\AprendeMasWeb
+build_property.MSBuildProjectDirectory = D:\Escritorio\Sistemas EXA\Repositorio\Master\AprendeMas_Web\AprendeMasWeb
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Users/epict/OneDrive/Documentos/RES/AppWebRes/AprendeMasWeb/Views/Confirmacion/Index.cshtml]
+[D:/Escritorio/Sistemas EXA/Repositorio/Master/AprendeMas_Web/AprendeMasWeb/Views/Confirmacion/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29uZmlybWFjaW9uXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/epict/OneDrive/Documentos/RES/AppWebRes/AprendeMasWeb/Views/Home/Index.cshtml]
+[D:/Escritorio/Sistemas EXA/Repositorio/Master/AprendeMas_Web/AprendeMasWeb/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/epict/OneDrive/Documentos/RES/AppWebRes/AprendeMasWeb/Views/Home/Privacy.cshtml]
+[D:/Escritorio/Sistemas EXA/Repositorio/Master/AprendeMas_Web/AprendeMasWeb/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/epict/OneDrive/Documentos/RES/AppWebRes/AprendeMasWeb/Views/LinkInvalido/Index.cshtml]
+[D:/Escritorio/Sistemas EXA/Repositorio/Master/AprendeMas_Web/AprendeMasWeb/Views/LinkInvalido/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlua0ludmFsaWRvXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/epict/OneDrive/Documentos/RES/AppWebRes/AprendeMasWeb/Views/RestablecerPassword/Index.cshtml]
+[D:/Escritorio/Sistemas EXA/Repositorio/Master/AprendeMas_Web/AprendeMasWeb/Views/RestablecerPassword/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVzdGFibGVjZXJQYXNzd29yZFxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/epict/OneDrive/Documentos/RES/AppWebRes/AprendeMasWeb/Views/Shared/Error.cshtml]
+[D:/Escritorio/Sistemas EXA/Repositorio/Master/AprendeMas_Web/AprendeMasWeb/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/epict/OneDrive/Documentos/RES/AppWebRes/AprendeMasWeb/Views/Shared/_ValidationScriptsPartial.cshtml]
+[D:/Escritorio/Sistemas EXA/Repositorio/Master/AprendeMas_Web/AprendeMasWeb/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/epict/OneDrive/Documentos/RES/AppWebRes/AprendeMasWeb/Views/_ViewImports.cshtml]
+[D:/Escritorio/Sistemas EXA/Repositorio/Master/AprendeMas_Web/AprendeMasWeb/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/epict/OneDrive/Documentos/RES/AppWebRes/AprendeMasWeb/Views/_ViewStart.cshtml]
+[D:/Escritorio/Sistemas EXA/Repositorio/Master/AprendeMas_Web/AprendeMasWeb/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/epict/OneDrive/Documentos/RES/AppWebRes/AprendeMasWeb/Views/Shared/_Layout.cshtml]
+[D:/Escritorio/Sistemas EXA/Repositorio/Master/AprendeMas_Web/AprendeMasWeb/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-fub6eybrs9
