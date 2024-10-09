@@ -1,0 +1,346 @@
+[
+  {
+    "ContainingType": "AprendeMasWeb.Controllers.CorreoRestablecerPasswordController",
+    "Method": "EnvioCodigoRestablecer",
+    "RelativePath": "api/CorreoRestablecerPassword/EnvioCodigo",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "envioCodigoRestablecer",
+        "Type": "AprendeMasWeb.Models.RestablecerPassword.EnvioCodigoRestablecer",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AprendeMasWeb.Controllers.GoogleSigninController",
+    "Method": "RegistrarUsuarioGoogle",
+    "RelativePath": "api/GoogleSignin/IniciarSesionGoogle",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "usuario",
+        "Type": "AprendeMasWeb.Models.RegistrarUsuarioGoogle",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AprendeMasWeb.Controllers.GoogleSigninController",
+    "Method": "VerificarGoogleIdToken",
+    "RelativePath": "api/GoogleSignin/VerificarIdToken",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "token",
+        "Type": "AprendeMasWeb.Models.VerificarGoogleIdToken",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AprendeMasWeb.Controllers.GrupoController",
+    "Method": "GetAllGroups",
+    "RelativePath": "api/Grupo",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[AprendeMasWeb.Models.GrupoRegistro, AprendeMasWeb, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "AprendeMasWeb.Controllers.GrupoController",
+    "Method": "AddGroup",
+    "RelativePath": "api/Grupo",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "group",
+        "Type": "AprendeMasWeb.Models.GrupoRegistro",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[AprendeMasWeb.Models.GrupoRegistro, AprendeMasWeb, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "AprendeMasWeb.Controllers.GrupoController",
+    "Method": "UpdateGroup",
+    "RelativePath": "api/Grupo",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "updatedGroup",
+        "Type": "AprendeMasWeb.Models.GrupoRegistro",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[AprendeMasWeb.Models.GrupoRegistro, AprendeMasWeb, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "AprendeMasWeb.Controllers.GrupoController",
+    "Method": "DeleteGroup",
+    "RelativePath": "api/Grupo",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[AprendeMasWeb.Controllers.GrupoController, AprendeMasWeb, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "AprendeMasWeb.Controllers.GrupoController",
+    "Method": "GetGroup",
+    "RelativePath": "api/Grupo/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "AprendeMasWeb.Models.GrupoRegistro",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "AprendeMasWeb.Controllers.LoginController",
+    "Method": "InicioSesionUsuario",
+    "RelativePath": "api/Login/InicioSesionUsuario",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "AprendeMasWeb.Models.UsuarioInicioSesion",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AprendeMasWeb.Controllers.LoginController",
+    "Method": "RegistroUsuario",
+    "RelativePath": "api/Login/RegistroUsuario",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "modelo",
+        "Type": "AprendeMasWeb.Models.UsuarioRegistro",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AprendeMasWeb.Controllers.LoginController",
+    "Method": "VerificarJWT",
+    "RelativePath": "api/Login/VerificarToken",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "token",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AprendeMasWeb.Controllers.MateriaController",
+    "Method": "GetAllSubjects",
+    "RelativePath": "api/Materia",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[AprendeMasWeb.Models.MateriaRegistro, AprendeMasWeb, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "AprendeMasWeb.Controllers.MateriaController",
+    "Method": "AddSubject",
+    "RelativePath": "api/Materia",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "subject",
+        "Type": "AprendeMasWeb.Models.MateriaRegistro",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[AprendeMasWeb.Models.MateriaRegistro, AprendeMasWeb, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "AprendeMasWeb.Controllers.MateriaController",
+    "Method": "UpdateSubject",
+    "RelativePath": "api/Materia",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "updatedSubject",
+        "Type": "AprendeMasWeb.Models.MateriaRegistro",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[AprendeMasWeb.Models.MateriaRegistro, AprendeMasWeb, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "AprendeMasWeb.Controllers.MateriaController",
+    "Method": "DeleteSubject",
+    "RelativePath": "api/Materia",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[AprendeMasWeb.Controllers.MateriaController, AprendeMasWeb, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "AprendeMasWeb.Controllers.MateriaController",
+    "Method": "GetSubjects",
+    "RelativePath": "api/Materia/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "AprendeMasWeb.Models.MateriaRegistro",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  }
+]

@@ -1,0 +1,29 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model AprendeMasWeb.Models.RestablecerPassword.RestablecerPassword
+<h1>RESTABLECER CONTRASEÑA</h1>
+<form asp-action="Index" method="post">
+    <input type="hidden" asp-for="Token" />
+    <input type="hidden" asp-for="Email" />
+    <div class="mb-3">
+        <label asp-for="NuevaPassword" for="exampleInputPassword1" class="form-label">Contraseña</label>
+        <input asp-for="NuevaPassword" type="password" class="form-control" id="exampleInputPassword1">
+        <span asp-validation-for="NuevaPassword" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="ConfirmarPassword" for="exampleInputPassword1" class="form-label">Confirmar contraseña</label>
+        <input asp-for="ConfirmarPassword" type="password" class="form-control" id="exampleInputPassword1">
+        <span asp-validation-for="ConfirmarPassword" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
