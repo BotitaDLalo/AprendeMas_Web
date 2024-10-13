@@ -25,14 +25,21 @@ namespace AprendeMasWeb.Controllers
             var emailEncontrado = await _userManager.FindByEmailAsync(model.Correo);
             if (emailEncontrado == null)
             {
-                return BadRequest(new { mensaje = "El usuario no existe" });
+                return BadRequest(new
+                {
+                    ErrorCode = ErrorCatalogo.ErrorCodigos.UsuarioNoEncontrado,
+                    ErrorMessage = ErrorCatalogo.GetMensajeError(ErrorCatalogo.ErrorCodigos.UsuarioNoEncontrado)
+                });
             }
 
             //Verificar password
             var user = await _signInManager.CheckPasswordSignInAsync(emailEncontrado, model.Clave, lockoutOnFailure: true);
             if (!user.Succeeded)
             {
-                return BadRequest(new { mensaje = "Credenciales incorrectas" });
+                return BadRequest(new {
+                    ErrorCode = ErrorCatalogo.ErrorCodigos.CredencialesInvalidas,
+                    ErrorMessage = ErrorCatalogo.GetMensajeError(ErrorCatalogo.ErrorCodigos.CredencialesInvalidas)
+                });
             }
 
 
