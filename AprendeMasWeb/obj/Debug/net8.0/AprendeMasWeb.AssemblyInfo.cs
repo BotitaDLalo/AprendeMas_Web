@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AprendeMasWeb")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+570c0a6162587bac3ca5d50f38ed6aa10738ad8e")]
 [assembly: System.Reflection.AssemblyProductAttribute("AprendeMasWeb")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AprendeMasWeb")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

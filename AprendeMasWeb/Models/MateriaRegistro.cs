@@ -10,7 +10,7 @@ namespace AprendeMasWeb.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int MateriaId { get; set; }
         public required string NombreMateria { get; set; }
-        public string Descripcion { get; set; }
+        public string? Descripcion { get; set; }
 
         public int GrupoId { get; set; }
 
