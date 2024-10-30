@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Text;
 using AprendeMasWeb.Models;
 
-namespace AprendeMasWeb.Controllers
+namespace AprendeMasWeb.Controllers.Autenticacion
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -36,7 +36,8 @@ namespace AprendeMasWeb.Controllers
             var user = await _signInManager.CheckPasswordSignInAsync(emailEncontrado, model.Clave, lockoutOnFailure: true);
             if (!user.Succeeded)
             {
-                return BadRequest(new {
+                return BadRequest(new
+                {
                     ErrorCode = ErrorCatalogo.ErrorCodigos.CredencialesInvalidas,
                     ErrorMessage = ErrorCatalogo.GetMensajeError(ErrorCatalogo.ErrorCodigos.CredencialesInvalidas)
                 });
@@ -143,7 +144,7 @@ namespace AprendeMasWeb.Controllers
                 }
 
 
-                return Ok(new { nombre=userName, correo=email, rol });
+                return Ok(new { nombre = userName, correo = email, rol });
 
             }
             return BadRequest(new { Mensaje = "Hubo un error en el registro" });

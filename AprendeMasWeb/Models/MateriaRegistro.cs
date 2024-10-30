@@ -11,12 +11,7 @@ namespace AprendeMasWeb.Models
         public int MateriaId { get; set; }
         public required string NombreMateria { get; set; }
         public string? Descripcion { get; set; }
+        public required string CodigoColor { get; set; }
 
-        public int GrupoId { get; set; }
-
-
-        [ForeignKey("GrupoId")]
-        [JsonIgnore]
-        public virtual GrupoRegistro Grupo { get; set; }
     }
 }

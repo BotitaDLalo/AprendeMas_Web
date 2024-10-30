@@ -14,5 +14,7 @@ namespace AprendeMasWeb.Data
         // DbSets para las entidades
         public DbSet<GrupoRegistro> Grupos { get; set; }
         public DbSet<MateriaRegistro> Materias { get; set; }
+        public DbSet<GruposMaterias> GruposMaterias { get; set; }
+        public DbSet<Actividades> Actividades { get; set; }
     }
 }

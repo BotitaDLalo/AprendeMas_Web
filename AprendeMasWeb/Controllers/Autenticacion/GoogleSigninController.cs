@@ -4,7 +4,7 @@ using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AprendeMasWeb.Controllers
+namespace AprendeMasWeb.Controllers.Autenticacion
 {
     [Route("api/[controller]")]
     [ApiController]
