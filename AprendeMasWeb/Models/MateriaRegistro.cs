@@ -11,7 +11,7 @@ namespace AprendeMasWeb.Models
         public int MateriaId { get; set; }
         public required string NombreMateria { get; set; }
         public string? Descripcion { get; set; }
-        public required string CodigoColor { get; set; }
+        //public required string CodigoColor { get; set; }
 
     }
 }

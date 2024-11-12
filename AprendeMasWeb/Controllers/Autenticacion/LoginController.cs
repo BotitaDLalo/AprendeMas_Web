@@ -21,60 +21,67 @@ namespace AprendeMasWeb.Controllers.Autenticacion
         [HttpPost("InicioSesionUsuario")]
         public async Task<IActionResult> InicioSesionUsuario([FromBody] UsuarioInicioSesion model)
         {
-            //Verificar si existe el usuario
-            var emailEncontrado = await _userManager.FindByEmailAsync(model.Correo);
-            if (emailEncontrado == null)
+            try
             {
-                return BadRequest(new
+                //Verificar si existe el usuario
+                var emailEncontrado = await _userManager.FindByEmailAsync(model.Correo);
+                if (emailEncontrado == null)
                 {
-                    ErrorCode = ErrorCatalogo.ErrorCodigos.UsuarioNoEncontrado,
-                    ErrorMessage = ErrorCatalogo.GetMensajeError(ErrorCatalogo.ErrorCodigos.UsuarioNoEncontrado)
+                    return BadRequest(new
+                    {
+                        ErrorCode = ErrorCatalogo.ErrorCodigos.UsuarioNoEncontrado,
+                        ErrorMessage = ErrorCatalogo.GetMensajeError(ErrorCatalogo.ErrorCodigos.UsuarioNoEncontrado)
+                    });
+                }
+
+                //Verificar password
+                var user = await _signInManager.CheckPasswordSignInAsync(emailEncontrado, model.Clave, lockoutOnFailure: true);
+                if (!user.Succeeded)
+                {
+                    return BadRequest(new
+                    {
+                        ErrorCode = ErrorCatalogo.ErrorCodigos.CredencialesInvalidas,
+                        ErrorMessage = ErrorCatalogo.GetMensajeError(ErrorCatalogo.ErrorCodigos.CredencialesInvalidas)
+                    });
+                }
+
+
+                //Obteniendo rol del usuario
+                var rol = await _userManager.GetRolesAsync(emailEncontrado);
+                var rolUsuario = rol.FirstOrDefault() ?? throw new Exception("El usuario no posee un rol asignado");
+
+
+                //Generando jwt
+                var handler = new JwtSecurityTokenHandler();
+                var confSecretKey = _configuration["jwt:SecretKey"];
+                var jwt = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(confSecretKey ?? throw new ArgumentNullException(confSecretKey, "Token no configurado")));
+                var credentials = new SigningCredentials(jwt, SecurityAlgorithms.HmacSha256);
+
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Issuer = "Aprende_Mas",
+                    Audience = "Aprende_Mas",
+                    SigningCredentials = credentials,
+                    Expires = DateTime.UtcNow.AddDays(7),
+                    Subject = GenerarClaims(emailEncontrado, rolUsuario),
+                };
+
+                var token = handler.CreateToken(tokenDescriptor);
+
+                var tokenString = handler.WriteToken(token);
+
+                return Ok(new
+                {
+                    nombre = emailEncontrado.UserName,
+                    correo = emailEncontrado.Email,
+                    rol = rolUsuario,
+                    token = tokenString
                 });
             }
-
-            //Verificar password
-            var user = await _signInManager.CheckPasswordSignInAsync(emailEncontrado, model.Clave, lockoutOnFailure: true);
-            if (!user.Succeeded)
+            catch (Exception e)
             {
-                return BadRequest(new
-                {
-                    ErrorCode = ErrorCatalogo.ErrorCodigos.CredencialesInvalidas,
-                    ErrorMessage = ErrorCatalogo.GetMensajeError(ErrorCatalogo.ErrorCodigos.CredencialesInvalidas)
-                });
+                return BadRequest(new {e.Message});
             }
-
-
-            //Obteniendo rol del usuario
-            var rol = await _userManager.GetRolesAsync(emailEncontrado);
-            var rolUsuario = rol.FirstOrDefault() ?? throw new Exception("El usuario no posee un rol asignado");
-
-
-            //Generando jwt
-            var handler = new JwtSecurityTokenHandler();
-            var confSecretKey = _configuration["jwt:SecretKey"];
-            var jwt = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(confSecretKey ?? throw new ArgumentNullException(confSecretKey, "Token no configurado")));
-            var credentials = new SigningCredentials(jwt, SecurityAlgorithms.HmacSha256);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Issuer = "Aprende_Mas",
-                Audience = "Aprende_Mas",
-                SigningCredentials = credentials,
-                Expires = DateTime.UtcNow.AddDays(7),
-                Subject = GenerarClaims(emailEncontrado, rolUsuario),
-            };
-
-            var token = handler.CreateToken(tokenDescriptor);
-
-            var tokenString = handler.WriteToken(token);
-
-            return Ok(new
-            {
-                nombre = emailEncontrado.UserName,
-                correo = emailEncontrado.Email,
-                rol = rolUsuario,
-                token = tokenString
-            });
 
         }
 

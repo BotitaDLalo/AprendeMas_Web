@@ -3,11 +3,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AprendeMasWeb.Models
 {
-    public class MateriaConGrupo
+    public class Materias
     {
         public required string NombreMateria { get; set; }
         public string? Descripcion { get; set; }
-        //public string? CodigoColor { get; set; }
-        public required List<int> Grupos { get; set; }
+        //public required string CodigoColor { get; set; }
     }
 }

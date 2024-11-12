@@ -8,11 +8,9 @@ namespace AprendeMasWeb.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int GrupoId { get; set; }
-        public string? NombreGrupo { get; set; }
-        public string? Descripcion { get; set; }
-        public  string? CodigoColor { get; set; }
-        public string? CodigoAcceso { get; set; }
-        //public string? TipoUsuario { get; set; }
-
+        public String? NombreGrupo { get; set; }
+        public String? Descripcion { get; set; }
+        public String?  CodigoColor { get; set; }
+        public String? CodigoAcceso { get; set; }
     }
 }
