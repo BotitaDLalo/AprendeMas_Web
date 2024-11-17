@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\epict\\OneDrive\\Documentos\\RES\\AppWebRes\\AprendeMasWeb\\AprendeMasWeb.csproj": {}
+    "D:\\Escritorio\\Residencias\\Sistemas EXA\\Repositorio\\Master\\AprendeMas_Web\\AprendeMasWeb\\AprendeMasWeb.csproj": {}
   },
   "projects": {
-    "C:\\Users\\epict\\OneDrive\\Documentos\\RES\\AppWebRes\\AprendeMasWeb\\AprendeMasWeb.csproj": {
+    "D:\\Escritorio\\Residencias\\Sistemas EXA\\Repositorio\\Master\\AprendeMas_Web\\AprendeMasWeb\\AprendeMasWeb.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\epict\\OneDrive\\Documentos\\RES\\AppWebRes\\AprendeMasWeb\\AprendeMasWeb.csproj",
+        "projectUniqueName": "D:\\Escritorio\\Residencias\\Sistemas EXA\\Repositorio\\Master\\AprendeMas_Web\\AprendeMasWeb\\AprendeMasWeb.csproj",
         "projectName": "AprendeMasWeb",
-        "projectPath": "C:\\Users\\epict\\OneDrive\\Documentos\\RES\\AppWebRes\\AprendeMasWeb\\AprendeMasWeb.csproj",
-        "packagesPath": "C:\\Users\\epict\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\epict\\OneDrive\\Documentos\\RES\\AppWebRes\\AprendeMasWeb\\obj\\",
+        "projectPath": "D:\\Escritorio\\Residencias\\Sistemas EXA\\Repositorio\\Master\\AprendeMas_Web\\AprendeMasWeb\\AprendeMasWeb.csproj",
+        "packagesPath": "C:\\Users\\abrah\\.nuget\\packages\\",
+        "outputPath": "D:\\Escritorio\\Residencias\\Sistemas EXA\\Repositorio\\Master\\AprendeMas_Web\\AprendeMasWeb\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\epict\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\abrah\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -110,7 +110,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
