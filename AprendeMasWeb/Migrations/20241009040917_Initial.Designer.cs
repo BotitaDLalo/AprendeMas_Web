@@ -4,6 +4,7 @@ using AprendeMasWeb.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AprendeMasWeb.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241009040917_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,34 +24,6 @@ namespace AprendeMasWeb.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("AprendeMasWeb.Models.Actividades", b =>
-                {
-                    b.Property<int>("ActividadId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ActividadId"));
-
-                    b.Property<string>("Descripcion")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("MateriaId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("NombreActividad")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ActividadId");
-
-                    b.HasIndex("MateriaId");
-
-                    b.ToTable("tbActividades");
-                });
 
             modelBuilder.Entity("AprendeMasWeb.Models.GrupoRegistro", b =>
                 {
@@ -59,43 +34,23 @@ namespace AprendeMasWeb.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GrupoId"));
 
                     b.Property<string>("CodigoAcceso")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CodigoColor")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Descripcion")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NombreGrupo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TipoUsuario")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("GrupoId");
 
-                    b.ToTable("tbGrupos");
-                });
-
-            modelBuilder.Entity("AprendeMasWeb.Models.GruposMaterias", b =>
-                {
-                    b.Property<int>("GrupoMateriasId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GrupoMateriasId"));
-
-                    b.Property<int>("GrupoId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MateriaId")
-                        .HasColumnType("int");
-
-                    b.HasKey("GrupoMateriasId");
-
-                    b.HasIndex("GrupoId");
-
-                    b.HasIndex("MateriaId");
-
-                    b.ToTable("tbGruposMaterias");
+                    b.ToTable("Grupos");
                 });
 
             modelBuilder.Entity("AprendeMasWeb.Models.MateriaRegistro", b =>
@@ -107,7 +62,11 @@ namespace AprendeMasWeb.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MateriaId"));
 
                     b.Property<string>("Descripcion")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("GrupoId")
+                        .HasColumnType("int");
 
                     b.Property<string>("NombreMateria")
                         .IsRequired()
@@ -115,7 +74,9 @@ namespace AprendeMasWeb.Migrations
 
                     b.HasKey("MateriaId");
 
-                    b.ToTable("tbMaterias");
+                    b.HasIndex("GrupoId");
+
+                    b.ToTable("Materias");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -316,34 +277,15 @@ namespace AprendeMasWeb.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("AprendeMasWeb.Models.Actividades", b =>
-                {
-                    b.HasOne("AprendeMasWeb.Models.MateriaRegistro", "Materia")
-                        .WithMany()
-                        .HasForeignKey("MateriaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Materia");
-                });
-
-            modelBuilder.Entity("AprendeMasWeb.Models.GruposMaterias", b =>
+            modelBuilder.Entity("AprendeMasWeb.Models.MateriaRegistro", b =>
                 {
                     b.HasOne("AprendeMasWeb.Models.GrupoRegistro", "Grupo")
-                        .WithMany()
+                        .WithMany("Materias")
                         .HasForeignKey("GrupoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AprendeMasWeb.Models.MateriaRegistro", "Materia")
-                        .WithMany()
-                        .HasForeignKey("MateriaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Grupo");
-
-                    b.Navigation("Materia");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -395,6 +337,11 @@ namespace AprendeMasWeb.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("AprendeMasWeb.Models.GrupoRegistro", b =>
+                {
+                    b.Navigation("Materias");
                 });
 #pragma warning restore 612, 618
         }

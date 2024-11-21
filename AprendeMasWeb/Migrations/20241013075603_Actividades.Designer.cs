@@ -4,6 +4,7 @@ using AprendeMasWeb.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AprendeMasWeb.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241013075603_Actividades")]
+    partial class Actividades
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,7 +50,7 @@ namespace AprendeMasWeb.Migrations
 
                     b.HasIndex("MateriaId");
 
-                    b.ToTable("tbActividades");
+                    b.ToTable("Actividades");
                 });
 
             modelBuilder.Entity("AprendeMasWeb.Models.GrupoRegistro", b =>
@@ -62,17 +65,23 @@ namespace AprendeMasWeb.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CodigoColor")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Descripcion")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NombreGrupo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TipoUsuario")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("GrupoId");
 
-                    b.ToTable("tbGrupos");
+                    b.ToTable("Grupos");
                 });
 
             modelBuilder.Entity("AprendeMasWeb.Models.GruposMaterias", b =>
@@ -95,7 +104,7 @@ namespace AprendeMasWeb.Migrations
 
                     b.HasIndex("MateriaId");
 
-                    b.ToTable("tbGruposMaterias");
+                    b.ToTable("GruposMaterias");
                 });
 
             modelBuilder.Entity("AprendeMasWeb.Models.MateriaRegistro", b =>
@@ -106,6 +115,10 @@ namespace AprendeMasWeb.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MateriaId"));
 
+                    b.Property<string>("CodigoColor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Descripcion")
                         .HasColumnType("nvarchar(max)");
 
@@ -115,7 +128,7 @@ namespace AprendeMasWeb.Migrations
 
                     b.HasKey("MateriaId");
 
-                    b.ToTable("tbMaterias");
+                    b.ToTable("Materias");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
