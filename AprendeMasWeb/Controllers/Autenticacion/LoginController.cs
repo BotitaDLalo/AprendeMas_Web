@@ -6,17 +6,120 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using System.Text;
 using AprendeMasWeb.Models;
+using AprendeMasWeb.Data;
+using AprendeMasWeb.Models.DBModels;
 
 namespace AprendeMasWeb.Controllers.Autenticacion
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LoginController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IConfiguration configuration, RoleManager<IdentityRole> roleManager) : ControllerBase
+    public class LoginController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IConfiguration configuration, RoleManager<IdentityRole> roleManager, DataContext context) : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager = userManager;
         private readonly SignInManager<IdentityUser> _signInManager = signInManager;
         private readonly IConfiguration _configuration = configuration;
         private readonly RoleManager<IdentityRole> _roleManager = roleManager;
+        private readonly DataContext _context = context;
+
+
+        [HttpPost("RegistroUsuario")]
+        public async Task<IActionResult> RegistroUsuario([FromBody] UsuarioRegistro modelo)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var emailEncontrado = await _userManager.FindByEmailAsync(modelo.Correo);
+
+                    if (emailEncontrado != null)
+                    {
+                        return BadRequest(new
+                        {
+                            mensaje = "El correo ya esta en uso"
+                        });
+                    }
+
+                    var nombreUsuarioEncontrado = await _userManager.FindByNameAsync(modelo.NombreUsuario);
+
+                    if (nombreUsuarioEncontrado != null)
+                    {
+                        return BadRequest(new
+                        {
+                            mensaje = "El nombre de usuario ya esta en uso"
+                        });
+                    }
+
+
+                    var userName = modelo.NombreUsuario;
+                    var email = modelo.Correo;
+                    var rol = modelo.TipoUsuario;
+
+                    var usuario = new IdentityUser()
+                    {
+                        UserName = userName,
+                        Email = email,
+                    };
+
+                    var usuarioRegistro = await _userManager.CreateAsync(usuario, modelo.Clave);
+                    if (!usuarioRegistro.Succeeded)
+                    {
+                        return BadRequest(usuarioRegistro.Errors);
+                    }
+
+                    if (!await _roleManager.RoleExistsAsync(modelo.TipoUsuario))
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole(modelo.TipoUsuario));
+                    }
+
+                    var asignarRol = await _userManager.AddToRoleAsync(usuario, rol);
+                    if (!asignarRol.Succeeded)
+                    {
+                        return BadRequest(asignarRol.Errors);
+                    }
+
+                    if (modelo.TipoUsuario == "Docente")
+                    {
+                        var userIdentityId = await _userManager.GetUserIdAsync(usuario);
+                        
+                        Docentes docentes = new()
+                        {
+                            ApellidoPaterno = modelo.ApellidoPaterno,
+                            ApellidoMaterno = modelo.ApellidoMaterno,
+                            Nombre = modelo.Nombre,
+                            UserId = userIdentityId.ToString(),
+                        };
+                        _context.tbDocentes.Add(docentes);
+                        _context.SaveChanges();
+                    }
+                    else if (modelo.TipoUsuario == "Alumno")
+                    {
+                        var userIdentityId = await _userManager.GetUserIdAsync(usuario);
+                        Alumnos alumnos = new()
+                        {
+                            ApellidoPaterno = modelo.ApellidoPaterno,
+                            ApellidoMaterno = modelo.ApellidoMaterno,
+                            Nombre = modelo.Nombre,
+                            UserId = userIdentityId,
+                        };
+                        _context.tbAlumnos.Add(alumnos);
+                        _context.SaveChanges();
+                    }
+
+
+                    return Ok(new { nombre = userName, correo = email, rol });
+
+                }
+                return BadRequest(new { Mensaje = "Hubo un error en el registro" });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { e.Message });
+
+            }
+
+        }
+
+
 
         [HttpPost("InicioSesionUsuario")]
         public async Task<IActionResult> InicioSesionUsuario([FromBody] UsuarioInicioSesion model)
@@ -85,79 +188,6 @@ namespace AprendeMasWeb.Controllers.Autenticacion
 
         }
 
-        private static ClaimsIdentity GenerarClaims(IdentityUser usuario, string rol)
-        {
-            var claims = new ClaimsIdentity();
-
-            claims.AddClaim(new Claim(ClaimTypes.Name, usuario.UserName ?? ""));
-            claims.AddClaim(new Claim(ClaimTypes.Email, usuario.Email ?? ""));
-            claims.AddClaim(new Claim(ClaimTypes.Role, rol ?? ""));
-
-            return claims;
-        }
-
-        [HttpPost("RegistroUsuario")]
-        public async Task<IActionResult> RegistroUsuario([FromBody] UsuarioRegistro modelo)
-        {
-
-            if (ModelState.IsValid)
-            {
-                var emailEncontrado = await _userManager.FindByEmailAsync(modelo.Correo);
-
-                if (emailEncontrado != null)
-                {
-                    return BadRequest(new
-                    {
-                        mensaje = "El correo ya esta en uso"
-                    });
-                }
-
-                var nombreUsuarioEncontrado = await _userManager.FindByNameAsync(modelo.NombreUsuario);
-
-                if (nombreUsuarioEncontrado != null)
-                {
-                    return BadRequest(new
-                    {
-                        mensaje = "El nombre de usuario ya esta en uso"
-                    });
-                }
-
-
-                var userName = modelo.NombreUsuario;
-                var email = modelo.Correo;
-                var rol = modelo.TipoUsuario;
-
-                var usuario = new IdentityUser()
-                {
-                    UserName = userName,
-                    Email = email,
-                };
-
-                var usuarioRegistro = await _userManager.CreateAsync(usuario, modelo.Clave);
-                if (!usuarioRegistro.Succeeded)
-                {
-                    return BadRequest(usuarioRegistro.Errors);
-                }
-
-                if (!await _roleManager.RoleExistsAsync(modelo.TipoUsuario))
-                {
-                    await _roleManager.CreateAsync(new IdentityRole(modelo.TipoUsuario));
-                }
-
-                var asignarRol = await _userManager.AddToRoleAsync(usuario, rol);
-                if (!asignarRol.Succeeded)
-                {
-                    return BadRequest(asignarRol.Errors);
-                }
-
-
-                return Ok(new { nombre = userName, correo = email, rol });
-
-            }
-            return BadRequest(new { Mensaje = "Hubo un error en el registro" });
-
-        }
-
 
         [HttpGet("VerificarToken")]
         public IActionResult VerificarJWT(string token)
@@ -204,5 +234,18 @@ namespace AprendeMasWeb.Controllers.Autenticacion
             }
 
         }
+
+        private static ClaimsIdentity GenerarClaims(IdentityUser usuario, string rol)
+        {
+            var claims = new ClaimsIdentity();
+
+            claims.AddClaim(new Claim(ClaimTypes.Name, usuario.UserName ?? ""));
+            claims.AddClaim(new Claim(ClaimTypes.Email, usuario.Email ?? ""));
+            claims.AddClaim(new Claim(ClaimTypes.Role, rol ?? ""));
+
+            return claims;
+        }
+
+
     }
 }

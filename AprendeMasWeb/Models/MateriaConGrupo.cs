@@ -7,6 +7,8 @@ namespace AprendeMasWeb.Models
     {
         public required string NombreMateria { get; set; }
         public string? Descripcion { get; set; }
+
+        public required int DocenteId { get; set; }
         //public string? CodigoColor { get; set; }
         public required List<int> Grupos { get; set; }
     }

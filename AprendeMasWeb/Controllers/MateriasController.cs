@@ -1,5 +1,6 @@
 ﻿using AprendeMasWeb.Data;
 using AprendeMasWeb.Models;
+using AprendeMasWeb.Models.DBModels;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -60,7 +61,7 @@ namespace AprendeMasWeb.Controllers
         }
 
 
-        public async Task<List<MateriaRegistro>> ConsultaMaterias()
+        public async Task<List<Materias>> ConsultaMaterias()
         {
             try
             {
@@ -77,7 +78,7 @@ namespace AprendeMasWeb.Controllers
         }
 
         [HttpGet("ObtenerMaterias")]
-        public async Task<ActionResult<List<MateriaRegistro>>> ObtenerMaterias()
+        public async Task<ActionResult<List<Materias>>> ObtenerMaterias()
         {
             try
             {
@@ -93,7 +94,7 @@ namespace AprendeMasWeb.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<MateriaRegistro>> ObtenerMateriaUnica(int id)
+        public async Task<ActionResult<Materias>> ObtenerMateriaUnica(int id)
         {
             var subject = await _context.tbMaterias.FindAsync(id);
             if (subject is null) return NotFound("Materia no encontrado");
@@ -102,7 +103,7 @@ namespace AprendeMasWeb.Controllers
         }
 
         [HttpPost("MateriaSinGrupo")]
-        public async Task<ActionResult> CrearMateriaSinGrupo([FromBody] MateriaRegistro materia)
+        public async Task<ActionResult> CrearMateriaSinGrupo([FromBody] Materias materia)
         {
             try
             {
@@ -116,40 +117,56 @@ namespace AprendeMasWeb.Controllers
             }
         }
 
-        [HttpPost("MateriaGrupos")]
+        [HttpPost("CrearMateriaGrupos")]
         public async Task<ActionResult<List<MateriaConGrupo>>> CrearMateriaGrupos([FromBody] MateriaConGrupo materiaConGrupo)
         {
             try
             {
-                MateriaRegistro materia = new()
-                {
-                    NombreMateria = materiaConGrupo.NombreMateria,
-                    Descripcion = materiaConGrupo.Descripcion,
-                    //CodigoColor = materiaG.CodigoColor,
-                };
-
-
-                _context.tbMaterias.Add(materia);
-                await _context.SaveChangesAsync();
-
-                var idMateria = materia.MateriaId;
+                int docenteId = materiaConGrupo.DocenteId;
+                var lsGruposId = _context.tbGrupos.Where(a => a.DocenteId == docenteId).Select(a => a.GrupoId).ToList();
                 List<int> gruposVinculados = materiaConGrupo.Grupos;
-
-                foreach (var grupo in gruposVinculados)
+                if (gruposVinculados.All(a => lsGruposId.Contains(a)))
                 {
-                    GruposMaterias gruposMaterias = new()
+
+                    Materias materia = new()
                     {
-                        GrupoId = grupo,
-                        MateriaId = idMateria
+                        DocenteId = docenteId,
+                        NombreMateria = materiaConGrupo.NombreMateria,
+                        Descripcion = materiaConGrupo.Descripcion,
+                        //CodigoColor = materiaG.CodigoColor,
                     };
 
-                    _context.tbGruposMaterias.Add(gruposMaterias);
+
+                    _context.tbMaterias.Add(materia);
+                    await _context.SaveChangesAsync();
+
+
+
+                    var idMateria = materia.MateriaId;
+
+
+                    foreach (var grupo in gruposVinculados)
+                    {
+
+                        GruposMaterias gruposMaterias = new()
+                        {
+                            GrupoId = grupo,
+                            MateriaId = idMateria
+                        };
+
+                        _context.tbGruposMaterias.Add(gruposMaterias);
+
+                    }
+                    await _context.SaveChangesAsync();
+
+                    var lsGruposMaterias = await ConsultaGrupos();
+
+                    return Ok(lsGruposMaterias);
                 }
-                await _context.SaveChangesAsync();
-
-                var lsGruposMaterias = await ConsultaGrupos();
-
-                return Ok(lsGruposMaterias);
+                else
+                {
+                    return BadRequest(new { mensaje = "Un grupo no pertenece al docente" });
+                }
             }
             catch (DbUpdateException ex)
             {
@@ -160,36 +177,8 @@ namespace AprendeMasWeb.Controllers
         }
 
 
-
-
-
-        //[HttpPost]
-        //public async Task<ActionResult<List<MateriaRegistro>>> AddSubject([FromBody] MateriaRegistro subject)
-        //{
-        //    try
-        //    {
-        //        _context.Materias.Add(subject);
-        //        await _context.SaveChangesAsync();
-
-        //        GruposMaterias gruposMaterias = new GruposMaterias();
-
-        //        gruposMaterias.GrupoId = 1;
-        //        gruposMaterias.MateriaId = materiaId;
-
-        //        _context.GruposMaterias.Add(gruposMaterias);
-        //        await _context.SaveChangesAsync();
-        //        return Ok(await _context.Materias.ToListAsync());
-        //    }
-        //    catch (DbUpdateException ex)
-        //    {
-        //        // Captura la excepción interna para más detalles
-        //        var innerException = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-        //        return StatusCode(500, $"Internal server error: {innerException}");
-        //    }
-        //}
-
         [HttpPut]
-        public async Task<ActionResult<List<MateriaRegistro>>> UpdateSubject(MateriaRegistro updatedSubject)
+        public async Task<ActionResult<List<Models.DBModels.Materias>>> UpdateSubject(Models.DBModels.Materias updatedSubject)
         {
             var dbSubject = await _context.tbMaterias.FindAsync(updatedSubject.MateriaId);
             if (dbSubject is null) return NotFound("Materia no encontrado");

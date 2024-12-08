@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using AprendeMasWeb.Models.DBModels;
 
 namespace AprendeMasWeb.Models
 {
@@ -11,13 +12,11 @@ namespace AprendeMasWeb.Models
         public int GrupoMateriasId { get; set; }
 
         public int GrupoId { get; set; }
-        [ForeignKey("GrupoId")]
-        [JsonIgnore]
-        public virtual GrupoRegistro? Grupo { get; set; }
+
+        public virtual Grupos? Grupos { get; set; }
 
         public int MateriaId { get; set; }
-        [ForeignKey("MateriaId")]
-        [JsonIgnore]
-        public virtual MateriaRegistro? Materia { get; set; }
+
+        public virtual Materias? Materias { get; set; }
     }
 }

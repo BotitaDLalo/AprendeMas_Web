@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AprendeMasWeb.Models
 {
-    public class Materias
+    public class MateriasP
     {
         public required string NombreMateria { get; set; }
         public string? Descripcion { get; set; }
