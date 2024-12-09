@@ -1,6 +1,6 @@
 ﻿namespace AprendeMasWeb.Models
 {
-    public class AlumnoGrupoRegistro
+    public class AlumnoGMRegistroCodigo
     {
         public required int AlumnoId { get; set; }
 

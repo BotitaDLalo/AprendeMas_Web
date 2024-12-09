@@ -24,7 +24,7 @@ namespace AprendeMasWeb.Controllers
             _context = context;
         }
 
-        private string ObtenerClave()
+        private static string ObtenerClave()
         {
             int length = 8;
 

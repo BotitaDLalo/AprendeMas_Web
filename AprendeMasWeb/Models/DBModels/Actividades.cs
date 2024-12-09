@@ -17,7 +17,7 @@ namespace AprendeMasWeb.Models
 
         public DateTime FechaCreacion { get; set; }
 
-        public TimeSpan FechaLimite { get; set; }
+        public DateTime FechaLimite { get; set; }
 
         public int TipoActividadId { get; set; }
 

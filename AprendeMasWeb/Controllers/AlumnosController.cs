@@ -18,7 +18,8 @@ namespace AprendeMasWeb.Controllers
             _context = context;
         }
 
-        public ActionResult RegistrarAlumnoGrupoCodigo([FromBody] AlumnoGrupoRegistro alumnoGrupoRegistro)
+        [HttpPost("AlumnoGrupoCodigo")]
+        public async Task<ActionResult> RegistrarAlumnoGrupoCodigo([FromBody] AlumnoGMRegistroCodigo alumnoGrupoRegistro)
         {
             try
             {
@@ -26,7 +27,7 @@ namespace AprendeMasWeb.Controllers
                 string codigoAcceso = alumnoGrupoRegistro.CodigoAcceso;
 
 
-                var grupoId = _context.tbGrupos.Where(a => a.CodigoAcceso == codigoAcceso).Select(a=>a.GrupoId).FirstOrDefault();
+                var grupoId = _context.tbGrupos.Where(a => a.CodigoAcceso == codigoAcceso).Select(a => a.GrupoId).FirstOrDefault();
 
                 AlumnosGrupos alumnoGrupo = new()
                 {
@@ -34,36 +35,8 @@ namespace AprendeMasWeb.Controllers
                     GrupoId = grupoId,
                 };
 
-                _context.tbAlumnosGrupos.Add(alumnoGrupo);
-                _context.SaveChanges();
-
-                return Ok();
-            }catch (Exception e)
-            {
-                return BadRequest(new {mensaje = e.Message});
-            }
-        }
-
-
-
-        public async Task<ActionResult> RegistrarAlumnoMateriaCodigo([FromBody] AlumnoGrupoRegistro alumnoGrupoRegistro)
-        {
-            try
-            {
-                int alumnoId = alumnoGrupoRegistro.AlumnoId;
-                string codigoAcceso = alumnoGrupoRegistro.CodigoAcceso;
-
-
-                var materiaId = _context.tbMaterias.Where(a => a.CodigoAcceso == codigoAcceso).Select(a => a.GrupoId).FirstOrDefault();
-
-                AlumnosMaterias alumnoGrupo = new()
-                {
-                    AlumnoId = alumnoId,
-                    MateriaId = materiaId
-                };
-
-                _context.tbAlumnosMaterias.Add(alumnoGrupo);
-                _context.SaveChanges();
+                await _context.tbAlumnosGrupos.AddAsync(alumnoGrupo);
+                await _context.SaveChangesAsync();
 
                 return Ok();
             }
@@ -72,5 +45,79 @@ namespace AprendeMasWeb.Controllers
                 return BadRequest(new { mensaje = e.Message });
             }
         }
+
+
+        [HttpPost("AlumnoMateriaCodigo")]
+        public async Task<ActionResult> RegistrarAlumnoMateriaCodigo([FromBody] AlumnoGMRegistroCodigo alumnoMateriaRegistro)
+        {
+            try
+            {
+                int alumnoId = alumnoMateriaRegistro.AlumnoId;
+                string codigoAcceso = alumnoMateriaRegistro.CodigoAcceso;
+
+
+                var materiaId = _context.tbMaterias.Where(a => a.CodigoAcceso == codigoAcceso).Select(a => a.MateriaId).FirstOrDefault();
+
+                AlumnosMaterias alumnoMateria = new()
+                {
+                    AlumnoId = alumnoId,
+                    MateriaId = materiaId
+                };
+
+                await _context.tbAlumnosMaterias.AddAsync(alumnoMateria);
+                await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { mensaje = e.Message });
+            }
+        }
+
+        [HttpPost("RegistrarAlumnoGMDocente")]
+        public async Task<ActionResult> RegistrarAlumnoMateriasDocente([FromBody] AlumnoGMRegistroDocente alumnoGMRegistro)
+        {
+            try
+            {
+                List<int> lsAlumnosId = alumnoGMRegistro.AlumnosId;
+                int grupoId = alumnoGMRegistro.GrupoId;
+                int materiaId = alumnoGMRegistro.MateriaId;
+
+                if (grupoId != 0)
+                {
+                    foreach (var id in lsAlumnosId)
+                    {
+                        AlumnosGrupos alumnosGrupos = new()
+                        {
+                            AlumnoId = id,
+                            GrupoId = grupoId
+                        };
+
+                        await _context.tbAlumnosGrupos.AddAsync(alumnosGrupos);
+                    }
+                }
+                else if (materiaId != 0)
+                {
+                    foreach (var id in lsAlumnosId)
+                    {
+                        AlumnosMaterias alumnosMaterias = new()
+                        {
+                            AlumnoId = id,
+                            MateriaId = materiaId
+                        };
+                        await _context.tbAlumnosMaterias.AddAsync(alumnosMaterias);
+                    }
+                }
+                _context.SaveChanges();
+
+                return Ok(new {mensaje = "El alumno fue agregado correctamente"});
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { mensaje = e.Message });
+            }
+        }
+
     }
 }

@@ -102,6 +102,7 @@ namespace AprendeMasWeb.Controllers
             return Ok(subject);
         }
 
+       
         [HttpPost("MateriaSinGrupo")]
         public async Task<ActionResult> CrearMateriaSinGrupo([FromBody] Materias materia)
         {
@@ -178,7 +179,7 @@ namespace AprendeMasWeb.Controllers
 
 
         [HttpPut]
-        public async Task<ActionResult<List<Models.DBModels.Materias>>> UpdateSubject(Models.DBModels.Materias updatedSubject)
+        public async Task<ActionResult<List<Materias>>> UpdateSubject(Materias updatedSubject)
         {
             var dbSubject = await _context.tbMaterias.FindAsync(updatedSubject.MateriaId);
             if (dbSubject is null) return NotFound("Materia no encontrado");
