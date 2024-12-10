@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using AprendeMasWeb.Models;
 using Microsoft.EntityFrameworkCore;
+using AprendeMasWeb.Models.DBModels;
 
 namespace AprendeMasWeb.Controllers
 {
@@ -23,7 +24,7 @@ namespace AprendeMasWeb.Controllers
             {
                 // Obtenemos todas las actividades con su MateriaId
                 var lsActividades = await _context.tbActividades
-                    .Include(a => a.Materia)  // Esto incluye la materia relacionada por MateriaId
+                    .Include(a => a.MateriaId)  // Esto incluye la materia relacionada por MateriaId
                     .ToListAsync();
 
                 var listaActividades = new List<object>();
@@ -36,8 +37,8 @@ namespace AprendeMasWeb.Controllers
                         nombreActividad = actividad.NombreActividad,
                         descripcionActividad = actividad.Descripcion,
                         fechaCreacionActividad = actividad.FechaCreacion,
-                        fechaEntregaActividad = actividad.FechaEntrega,
-                        materia = actividad.Materia.MateriaId,
+                        fechaLimiteActividad = actividad.FechaLimite,
+                        tipoActividad = actividad.TipoActividadId
                     });
                 }
 
@@ -125,7 +126,7 @@ namespace AprendeMasWeb.Controllers
 
             dbActivity.NombreActividad = updatedActivity.NombreActividad;
             dbActivity.Descripcion = updatedActivity.Descripcion;
-            dbActivity.FechaEntrega = updatedActivity.FechaEntrega;
+            dbActivity.FechaLimite = updatedActivity.FechaLimite;
 
             await _context.SaveChangesAsync();
             return Ok(dbActivity); // Retorna solo la actividad actualizada

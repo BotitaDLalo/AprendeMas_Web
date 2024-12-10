@@ -27,6 +27,6 @@ namespace AprendeMasWeb.Models
         public virtual ICollection<AlumnosActividades>? AlumnosActividades { get; set; }    
         public virtual ICollection<MateriasActividades>? MateriasActividades { get; set; }
         public virtual TiposActividades? TiposActividades { get; set; }
-        public virtual Calificaciones? Calificaciones { get; set; } 
+        public virtual ICollection<Calificaciones>? Calificaciones { get; set; } 
     }
 }

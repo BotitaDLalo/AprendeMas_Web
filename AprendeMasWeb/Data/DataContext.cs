@@ -147,8 +147,8 @@ namespace AprendeMasWeb.Data
             //Calificaciones
             modelBuilder.Entity<Calificaciones>()
                 .HasOne(a => a.Actividades)
-                .WithOne(a => a.Calificaciones)
-                .HasForeignKey<Actividades>(a => a.ActividadId)
+                .WithMany(a => a.Calificaciones)
+                .HasForeignKey(a => a.ActividadId)
                 .OnDelete(DeleteBehavior.NoAction);
 
 
