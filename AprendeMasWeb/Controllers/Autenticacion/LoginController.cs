@@ -8,6 +8,7 @@ using System.Text;
 using AprendeMasWeb.Models;
 using AprendeMasWeb.Data;
 using AprendeMasWeb.Models.DBModels;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace AprendeMasWeb.Controllers.Autenticacion
 {
@@ -79,27 +80,27 @@ namespace AprendeMasWeb.Controllers.Autenticacion
 
                     if (modelo.TipoUsuario == "Docente")
                     {
-                        var userIdentityId = await _userManager.GetUserIdAsync(usuario);
-                        
+                        var identityUserId = await _userManager.GetUserIdAsync(usuario);
+
                         Docentes docentes = new()
                         {
                             ApellidoPaterno = modelo.ApellidoPaterno,
                             ApellidoMaterno = modelo.ApellidoMaterno,
                             Nombre = modelo.Nombre,
-                            UserId = userIdentityId.ToString(),
+                            UserId = identityUserId.ToString(),
                         };
                         _context.tbDocentes.Add(docentes);
                         _context.SaveChanges();
                     }
                     else if (modelo.TipoUsuario == "Alumno")
                     {
-                        var userIdentityId = await _userManager.GetUserIdAsync(usuario);
+                        var identityUserId = await _userManager.GetUserIdAsync(usuario);
                         Alumnos alumnos = new()
                         {
                             ApellidoPaterno = modelo.ApellidoPaterno,
                             ApellidoMaterno = modelo.ApellidoMaterno,
                             Nombre = modelo.Nombre,
-                            UserId = userIdentityId,
+                            UserId = identityUserId,
                         };
                         _context.tbAlumnos.Add(alumnos);
                         _context.SaveChanges();
@@ -160,21 +161,39 @@ namespace AprendeMasWeb.Controllers.Autenticacion
                 var jwt = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(confSecretKey ?? throw new ArgumentNullException(confSecretKey, "Token no configurado")));
                 var credentials = new SigningCredentials(jwt, SecurityAlgorithms.HmacSha256);
 
+
+                int idUsuario = 0;
+                var identityUserId = await _userManager.GetUserIdAsync(emailEncontrado);
+
+                if (rolUsuario == "Docente")
+                {
+
+                    idUsuario = _context.tbDocentes.Where(a => a.UserId == identityUserId).Select(a => a.DocenteId).FirstOrDefault();
+
+                }
+                else if (rolUsuario == "Alumno")
+                {
+                    idUsuario = _context.tbAlumnos.Where(a => a.UserId == identityUserId).Select(a => a.AlumnoId).FirstOrDefault();
+                }
+
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Issuer = "Aprende_Mas",
                     Audience = "Aprende_Mas",
                     SigningCredentials = credentials,
                     Expires = DateTime.UtcNow.AddDays(7),
-                    Subject = GenerarClaims(emailEncontrado, rolUsuario),
+                    Subject = GenerarClaims(idUsuario, emailEncontrado, rolUsuario),
                 };
 
                 var token = handler.CreateToken(tokenDescriptor);
 
                 var tokenString = handler.WriteToken(token);
 
+
+
                 return Ok(new
                 {
+                    Id = idUsuario,
                     nombre = emailEncontrado.UserName,
                     correo = emailEncontrado.Email,
                     rol = rolUsuario,
@@ -183,7 +202,7 @@ namespace AprendeMasWeb.Controllers.Autenticacion
             }
             catch (Exception e)
             {
-                return BadRequest(new {e.Message});
+                return BadRequest(new { e.Message });
             }
 
         }
@@ -218,11 +237,12 @@ namespace AprendeMasWeb.Controllers.Autenticacion
 
                 var claimsPrincipal = handler.ValidateToken(token, tokenValidationParameters, out SecurityToken validatedToken);
 
+                var idUsuario = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0";
                 var nombre = claimsPrincipal.FindFirst(ClaimTypes.Name)?.Value ?? "No existe nombre";
                 var correo = claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value ?? "No existe correo";
                 var rol = claimsPrincipal.FindFirst(ClaimTypes.Role)?.Value ?? "No existe rol";
 
-                return Ok(new { nombre, correo, rol, token });
+                return Ok(new { id = int.Parse(idUsuario), nombre, correo, rol, token });
             }
             catch (SecurityTokenExpiredException)
             {
@@ -235,10 +255,11 @@ namespace AprendeMasWeb.Controllers.Autenticacion
 
         }
 
-        private static ClaimsIdentity GenerarClaims(IdentityUser usuario, string rol)
+        private static ClaimsIdentity GenerarClaims(int idUsuario,IdentityUser usuario, string rol)
         {
             var claims = new ClaimsIdentity();
 
+            claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, idUsuario.ToString() ?? ""));
             claims.AddClaim(new Claim(ClaimTypes.Name, usuario.UserName ?? ""));
             claims.AddClaim(new Claim(ClaimTypes.Email, usuario.Email ?? ""));
             claims.AddClaim(new Claim(ClaimTypes.Role, rol ?? ""));

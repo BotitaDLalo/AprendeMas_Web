@@ -4,6 +4,7 @@ using AprendeMasWeb.Models.DBModels;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace AprendeMasWeb.Controllers
 {
@@ -16,6 +17,27 @@ namespace AprendeMasWeb.Controllers
         public MateriasController(DataContext context)
         {
             _context = context;
+        }
+
+
+        private static string ObtenerClave()
+        {
+            int length = 8;
+
+            StringBuilder str_build = new();
+            Random random = new();
+
+            char letter;
+
+            for (int i = 0; i < length; i++)
+            {
+                double flt = random.NextDouble();
+                int shift = Convert.ToInt32(Math.Floor(25 * flt));
+                letter = Convert.ToChar(shift + 65);
+                str_build.Append(letter);
+            }
+
+            return str_build.ToString();
         }
 
 
@@ -103,11 +125,12 @@ namespace AprendeMasWeb.Controllers
         }
 
        
-        [HttpPost("MateriaSinGrupo")]
+        [HttpPost("CrearMateriaSinGrupo")]
         public async Task<ActionResult> CrearMateriaSinGrupo([FromBody] Materias materia)
         {
             try
             {
+                materia.CodigoAcceso = ObtenerClave();
                 _context.tbMaterias.Add(materia);
                 await _context.SaveChangesAsync();
                 return Ok(await ConsultaMaterias());
@@ -134,6 +157,7 @@ namespace AprendeMasWeb.Controllers
                         DocenteId = docenteId,
                         NombreMateria = materiaConGrupo.NombreMateria,
                         Descripcion = materiaConGrupo.Descripcion,
+                        CodigoAcceso = ObtenerClave()
                         //CodigoColor = materiaG.CodigoColor,
                     };
 
