@@ -13,7 +13,7 @@ namespace AprendeMasWeb.Models
 
         public required string NombreActividad { get; set; }
 
-        public string? Descripcion { get; set; }
+        public required string Descripcion { get; set; }
 
         public DateTime FechaCreacion { get; set; }
 

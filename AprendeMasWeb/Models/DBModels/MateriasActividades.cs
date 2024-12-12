@@ -8,7 +8,7 @@ namespace AprendeMasWeb.Models.DBModels
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public required int MateriaActividad { get; set; }
+        public int MateriaActividad { get; set; }
 
         public required int MateriaId { get; set; }
         

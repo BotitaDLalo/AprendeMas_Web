@@ -5,18 +5,14 @@
 namespace AprendeMasWeb.Migrations
 {
     /// <inheritdoc />
-    public partial class GruposMaterias : Migration
+    public partial class description : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "CodigoColor",
-                table: "Materias");
-
             migrationBuilder.AlterColumn<string>(
-                name: "CodigoColor",
-                table: "Grupos",
+                name: "Descripcion",
+                table: "tbActividades",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",
@@ -28,16 +24,9 @@ namespace AprendeMasWeb.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "CodigoColor",
-                table: "Materias",
-                type: "nvarchar(max)",
-                nullable: false,
-                defaultValue: "");
-
             migrationBuilder.AlterColumn<string>(
-                name: "CodigoColor",
-                table: "Grupos",
+                name: "Descripcion",
+                table: "tbActividades",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),

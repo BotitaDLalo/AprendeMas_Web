@@ -22,33 +22,33 @@ namespace AprendeMasWeb.Controllers
         {
             try
             {
-                // Obtenemos todas las actividades con su MateriaId
-                var lsActividades = await _context.tbActividades
-                    .Include(a => a.MateriaId)  // Esto incluye la materia relacionada por MateriaId
+                var materiasActividades = await _context.tbMateriasActividades
+                    .Include(ma => ma.Actividades)
+                    .Include(ma => ma.Materias)
                     .ToListAsync();
 
-                var listaActividades = new List<object>();
-
-                foreach (var actividad in lsActividades)
-                {
-                    listaActividades.Add(new
+                var listaActividades = materiasActividades
+                    .Where(ma => ma.Actividades != null && ma.Materias != null)
+                    .Select(ma => new
                     {
-                        actividadId = actividad.ActividadId,
-                        nombreActividad = actividad.NombreActividad,
-                        descripcionActividad = actividad.Descripcion,
-                        fechaCreacionActividad = actividad.FechaCreacion,
-                        fechaLimiteActividad = actividad.FechaLimite,
-                        tipoActividad = actividad.TipoActividadId
-                    });
-                }
+                        actividadId = ma.Actividades!.ActividadId,
+                        nombreActividad = ma.Actividades!.NombreActividad,
+                        descripcionActividad = ma.Actividades!.Descripcion,
+                        fechaCreacionActividad = ma.Actividades!.FechaCreacion.ToString("yyyy-MM-ddTHH:mm:ss"),
+                        fechaLimiteActividad = ma.Actividades!.FechaLimite.ToString("yyyy-MM-ddTHH:mm:ss"),
+                        tipoActividadId = ma.Actividades!.TipoActividadId,
+                        materiaId = ma.MateriaId
+                    })
+                    .ToList();
 
-                return listaActividades; // Retornamos la lista de actividades procesadas
+                return listaActividades.Cast<object>().ToList();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return BadRequest("Ocurrió un error al obtener las actividades."); // En lugar de retornar [], retornamos un BadRequest
+                return BadRequest($"Ocurrió un error al obtener las actividades: {ex.Message}");
             }
         }
+
 
         // Cambiar el tipo de retorno a ActionResult<List<object>> para ser consistente
         public async Task<ActionResult<List<object>>> ConsultarActividadesCreadas()
@@ -96,24 +96,55 @@ namespace AprendeMasWeb.Controllers
         }
 
         [HttpPost("CrearActividad")]
-        public async Task<ActionResult<Actividades>> CrearActividad([FromBody] Actividades nuevaActividad)
+        public async Task<ActionResult<List<Actividades>>> CrearActividad([FromBody] Actividades nuevaActividad)
         {
-            // Verificar si la materia existe
-            var materia = await _context.tbMaterias.FindAsync(nuevaActividad.MateriaId);
-
-            if (materia == null)
+            try
             {
-                return BadRequest("La materia asociada no existe.");
+                // Verificar si la materia existe
+                var materia = await _context.tbMaterias.FindAsync(nuevaActividad.MateriaId);
+                if (materia == null)
+                {
+                    return BadRequest("La materia asociada no existe.");
+                }
+
+                // Validar campos no nulos o con valores incorrectos
+                if (string.IsNullOrWhiteSpace(nuevaActividad.NombreActividad))
+                {
+                    return BadRequest("El nombre de la actividad es obligatorio.");
+                }
+
+                if (nuevaActividad.FechaLimite == null || nuevaActividad.FechaLimite == default(DateTime))
+                {
+                    return BadRequest("La fecha límite de la actividad es inválida.");
+                }
+
+                // Generar automáticamente la fecha de creación
+                nuevaActividad.FechaCreacion = DateTime.UtcNow;
+
+                // Guardar la actividad en la base de datos
+                _context.tbActividades.Add(nuevaActividad);
+                await _context.SaveChangesAsync();
+
+                // Crear relación con la materia en la tabla intermedia
+                var relacionMateriaActividad = new MateriasActividades
+                {
+                    MateriaId = nuevaActividad.MateriaId,
+                    ActividadId = nuevaActividad.ActividadId
+                };
+
+                _context.tbMateriasActividades.Add(relacionMateriaActividad);
+                await _context.SaveChangesAsync();
+
+                return Ok(await ConsultaActividades());
             }
-
-            // Generar automáticamente la fecha de creación
-            nuevaActividad.FechaCreacion = DateTime.UtcNow;
-
-            // Proceder con la creación de la actividad
-            _context.tbActividades.Add(nuevaActividad);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(ObtenerActividad), new { id = nuevaActividad.ActividadId }, nuevaActividad);
+            catch (DbUpdateException dbEx)
+            {
+                return StatusCode(500, $"Error al actualizar la base de datos: {dbEx.InnerException?.Message ?? dbEx.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error inesperado: {ex.Message}");
+            }
         }
 
 
@@ -134,15 +165,36 @@ namespace AprendeMasWeb.Controllers
 
 
         [HttpDelete("EliminarActividad/{id}")]
-        public async Task<ActionResult<List<Actividades>>> DeleteActivity(int id)
+        public async Task<ActionResult<Actividades>> DeleteActivity(int id)
         {
-            var dbActivity = await _context.tbActividades.FindAsync(id);
-            if (dbActivity is null) return NotFound("Actividad no encontrada");
+            try
+            {
+                // Verificar si la actividad existe
+                var dbActivity = await _context.tbActividades
+                    .Include(a => a.MateriasActividades) // Incluye las relaciones
+                    .FirstOrDefaultAsync(a => a.ActividadId == id);
 
-            _context.tbActividades.Remove(dbActivity);
-            await _context.SaveChangesAsync();
-            return Ok(await _context.tbActividades.ToListAsync());
+                if (dbActivity is null) return NotFound("Actividad no encontrada");
+
+                // Eliminar las relaciones dependientes
+                _context.tbMateriasActividades.RemoveRange(dbActivity.MateriasActividades);
+
+                // Eliminar la actividad
+                _context.tbActividades.Remove(dbActivity);
+                await _context.SaveChangesAsync();
+
+                return Ok(await _context.tbActividades.ToListAsync());
+            }
+            catch (DbUpdateException dbEx)
+            {
+                return StatusCode(500, $"Error al actualizar la base de datos: {dbEx.InnerException?.Message ?? dbEx.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error inesperado: {ex.Message}");
+            }
         }
+
 
 
     }
