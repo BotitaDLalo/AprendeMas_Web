@@ -16,6 +16,8 @@ var jwt = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey ?? throw new Ar
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<ITiposActividadesService, TiposActividadesService>();
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddScoped<IEmailSender, EmailSender>();

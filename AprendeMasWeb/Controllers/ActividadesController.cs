@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using AprendeMasWeb.Models;
 using Microsoft.EntityFrameworkCore;
 using AprendeMasWeb.Models.DBModels;
+using AprendeMasWeb.Services;
 
 namespace AprendeMasWeb.Controllers
 {
@@ -11,10 +12,12 @@ namespace AprendeMasWeb.Controllers
     public class ActividadesController : ControllerBase
     {
         private readonly DataContext _context;
+        private readonly ITiposActividadesService _tiposActividadesService;
 
-        public ActividadesController(DataContext context)
+        public ActividadesController(DataContext context, ITiposActividadesService tiposActividadesService)
         {
             _context = context;
+            _tiposActividadesService = tiposActividadesService;
         }
 
         // Cambiar el tipo de retorno a ActionResult<List<object>> para que pueda ser usado en respuestas HTTP
@@ -37,7 +40,7 @@ namespace AprendeMasWeb.Controllers
                         fechaCreacionActividad = ma.Actividades!.FechaCreacion.ToString("yyyy-MM-ddTHH:mm:ss"),
                         fechaLimiteActividad = ma.Actividades!.FechaLimite.ToString("yyyy-MM-ddTHH:mm:ss"),
                         tipoActividadId = ma.Actividades!.TipoActividadId,
-                        materiaId = ma.MateriaId
+                        //materiaId = ma.MateriaId
                     })
                     .ToList();
 
@@ -69,6 +72,55 @@ namespace AprendeMasWeb.Controllers
             }
         }
 
+        public async Task<ActionResult<List<object>>> ConsultaActividadesPorMateria(int materiaId)
+        {
+            try
+            {
+                var materiasActividades = await _context.tbMateriasActividades
+                    .Include(ma => ma.Actividades)
+                    .Include(ma => ma.Materias)
+                    .Where(ma => ma.MateriaId == materiaId && ma.Actividades != null && ma.Materias != null)
+                    .ToListAsync();
+
+                var listaActividades = materiasActividades
+                    .Select(ma => new
+                    {
+                        actividadId = ma.Actividades!.ActividadId,
+                        nombreActividad = ma.Actividades!.NombreActividad,
+                        descripcionActividad = ma.Actividades!.Descripcion,
+                        fechaCreacionActividad = ma.Actividades!.FechaCreacion.ToString("yyyy-MM-ddTHH:mm:ss"),
+                        fechaLimiteActividad = ma.Actividades!.FechaLimite.ToString("yyyy-MM-ddTHH:mm:ss"),
+                        tipoActividadId = ma.Actividades!.TipoActividadId,
+                        materiaId = ma.MateriaId
+                    })
+                    .ToList();
+
+                return listaActividades.Cast<object>().ToList();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Ocurrió un error al obtener las actividades para la materia {materiaId}: {ex.Message}");
+            }
+        }
+
+        [HttpGet("ObtenerActividadesPorMateria/{materiaId}")]
+        public async Task<ActionResult<List<object>>> ObtenerActividadesPorMateria(int materiaId)
+        {
+
+            try
+            {
+                var lsActividades = await ConsultaActividadesPorMateria(materiaId);
+                return lsActividades;
+            }
+            catch (Exception e) 
+            {
+                return BadRequest(new { e.Message });
+            }
+
+        }
+
+
+
         // El tipo de retorno debe ser ActionResult<List<object>> porque estamos devolviendo una lista de objetos
         [HttpGet("ObtenerActividades")]
         public async Task<ActionResult<List<object>>> ObtenerActividades()
@@ -84,6 +136,8 @@ namespace AprendeMasWeb.Controllers
                 return BadRequest(new { e.Message }); // En caso de error, retornamos el mensaje de la excepción
             }
         }
+    
+
 
         // Obtener una actividad específica
         [HttpGet("{id}")]
@@ -95,17 +149,20 @@ namespace AprendeMasWeb.Controllers
             return Ok(activity); // Si la actividad se encuentra, la retornamos
         }
 
-        [HttpPost("CrearActividad")]
-        public async Task<ActionResult<List<Actividades>>> CrearActividad([FromBody] Actividades nuevaActividad)
+        [HttpPost("CrearActividad/{materiaId}")]
+        public async Task<ActionResult<List<Actividades>>> CrearActividad(int materiaId, [FromBody] Actividades nuevaActividad)
         {
             try
             {
                 // Verificar si la materia existe
-                var materia = await _context.tbMaterias.FindAsync(nuevaActividad.MateriaId);
+                var materia = await _context.tbMaterias.FindAsync(materiaId);
                 if (materia == null)
                 {
                     return BadRequest("La materia asociada no existe.");
                 }
+
+                // Asignar el ID de la materia desde la ruta
+                nuevaActividad.MateriaId = materiaId;
 
                 // Validar campos no nulos o con valores incorrectos
                 if (string.IsNullOrWhiteSpace(nuevaActividad.NombreActividad))
@@ -121,6 +178,13 @@ namespace AprendeMasWeb.Controllers
                 // Generar automáticamente la fecha de creación
                 nuevaActividad.FechaCreacion = DateTime.UtcNow;
 
+                // Obtener o crear el tipo de actividad si no se especifica
+                if (nuevaActividad.TipoActividadId == 0)
+                {
+                    var tipoActividad = await _tiposActividadesService.GetOrCreateTipoActividad(1); // Por defecto, 1 es "Actividad"
+                    nuevaActividad.TipoActividadId = tipoActividad.TipoActividadId;
+                }
+
                 // Guardar la actividad en la base de datos
                 _context.tbActividades.Add(nuevaActividad);
                 await _context.SaveChangesAsync();
@@ -128,7 +192,7 @@ namespace AprendeMasWeb.Controllers
                 // Crear relación con la materia en la tabla intermedia
                 var relacionMateriaActividad = new MateriasActividades
                 {
-                    MateriaId = nuevaActividad.MateriaId,
+                    MateriaId = materiaId,
                     ActividadId = nuevaActividad.ActividadId
                 };
 
@@ -146,6 +210,9 @@ namespace AprendeMasWeb.Controllers
                 return StatusCode(500, $"Error inesperado: {ex.Message}");
             }
         }
+
+
+
 
 
 
