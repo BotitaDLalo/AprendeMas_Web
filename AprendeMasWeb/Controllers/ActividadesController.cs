@@ -21,7 +21,7 @@ namespace AprendeMasWeb.Controllers
         }
 
         // Cambiar el tipo de retorno a ActionResult<List<object>> para que pueda ser usado en respuestas HTTP
-        public async Task<ActionResult<List<object>>> ConsultaActividades()
+        public async Task<List<object>> ConsultaActividades()
         {
             try
             {
@@ -40,7 +40,7 @@ namespace AprendeMasWeb.Controllers
                         fechaCreacionActividad = ma.Actividades!.FechaCreacion.ToString("yyyy-MM-ddTHH:mm:ss"),
                         fechaLimiteActividad = ma.Actividades!.FechaLimite.ToString("yyyy-MM-ddTHH:mm:ss"),
                         tipoActividadId = ma.Actividades!.TipoActividadId,
-                        //materiaId = ma.MateriaId
+                        materiaId = ma.MateriaId
                     })
                     .ToList();
 
@@ -48,7 +48,8 @@ namespace AprendeMasWeb.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"Ocurrió un error al obtener las actividades: {ex.Message}");
+                //return BadRequest($"Ocurrió un error al obtener las actividades: {ex.Message}");
+                return [];
             }
         }
 
@@ -149,11 +150,12 @@ namespace AprendeMasWeb.Controllers
             return Ok(activity); // Si la actividad se encuentra, la retornamos
         }
 
-        [HttpPost("CrearActividad/{materiaId}")]
-        public async Task<ActionResult<List<Actividades>>> CrearActividad(int materiaId, [FromBody] Actividades nuevaActividad)
+        [HttpPost("CrearActividad")]
+        public async Task<ActionResult<List<Actividades>>> CrearActividad([FromBody] Actividades nuevaActividad)
         {
             try
             {
+                int materiaId = nuevaActividad.MateriaId;
                 // Verificar si la materia existe
                 var materia = await _context.tbMaterias.FindAsync(materiaId);
                 if (materia == null)
@@ -211,42 +213,42 @@ namespace AprendeMasWeb.Controllers
             }
         }
 
-        public async Task<ActionResult<List<object>>> ConsultaActividadesPorMateria(int materiaId)
-        {
-            try
-            {
-                var materiasActividades = await _context.tbMateriasActividades
-                    .Include(ma => ma.Actividades)
-                    .Include(ma => ma.Materias)
-                    .Where(ma => ma.MateriaId == materiaId && ma.Actividades != null && ma.Materias != null)
-                    .ToListAsync();
+        //public async Task<ActionResult<List<object>>> ConsultaActividadesPorMateria(int materiaId)
+        //{
+        //    try
+        //    {
+        //        var materiasActividades = await _context.tbMateriasActividades
+        //            .Include(ma => ma.Actividades)
+        //            .Include(ma => ma.Materias)
+        //            .Where(ma => ma.MateriaId == materiaId && ma.Actividades != null && ma.Materias != null)
+        //            .ToListAsync();
 
-                var listaActividades = materiasActividades
-                    .Select(ma => new
-                    {
-                        actividadId = ma.Actividades!.ActividadId,
-                        nombreActividad = ma.Actividades!.NombreActividad,
-                        descripcionActividad = ma.Actividades!.Descripcion,
-                        fechaCreacionActividad = ma.Actividades!.FechaCreacion.ToString("yyyy-MM-ddTHH:mm:ss"),
-                        fechaLimiteActividad = ma.Actividades!.FechaLimite.ToString("yyyy-MM-ddTHH:mm:ss"),
-                        tipoActividadId = ma.Actividades!.TipoActividadId,
-                        materiaId = ma.MateriaId
-                    })
-                    .ToList();
+        //        var listaActividades = materiasActividades
+        //            .Select(ma => new
+        //            {
+        //                actividadId = ma.Actividades!.ActividadId,
+        //                nombreActividad = ma.Actividades!.NombreActividad,
+        //                descripcionActividad = ma.Actividades!.Descripcion,
+        //                fechaCreacionActividad = ma.Actividades!.FechaCreacion.ToString("yyyy-MM-ddTHH:mm:ss"),
+        //                fechaLimiteActividad = ma.Actividades!.FechaLimite.ToString("yyyy-MM-ddTHH:mm:ss"),
+        //                tipoActividadId = ma.Actividades!.TipoActividadId,
+        //                materiaId = ma.MateriaId
+        //            })
+        //            .ToList();
 
-                return listaActividades.Cast<object>().ToList();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"Ocurrió un error al obtener las actividades para la materia {materiaId}: {ex.Message}");
-            }
-        }
+        //        return listaActividades.Cast<object>().ToList();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest($"Ocurrió un error al obtener las actividades para la materia {materiaId}: {ex.Message}");
+        //    }
+        //}
 
-        [HttpGet("ObtenerActividadesPorMateria/{materiaId}")]
-        public async Task<ActionResult<List<object>>> ObtenerActividadesPorMateria(int materiaId)
-        {
-            return await ConsultaActividadesPorMateria(materiaId);
-        }
+        //[HttpGet("ObtenerActividadesPorMateria/{materiaId}")]
+        //public async Task<ActionResult<List<object>>> ObtenerActividadesPorMateria(int materiaId)
+        //{
+        //    return await ConsultaActividadesPorMateria(materiaId);
+        //}
 
 
 
