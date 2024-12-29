@@ -23,7 +23,7 @@ namespace AprendeMasWeb.Controllers
         {
             _context = context;
         }
-
+        #region Profesor
         private static string ObtenerClave()
         {
             int length = 8;
@@ -53,8 +53,6 @@ namespace AprendeMasWeb.Controllers
                 //var lsGruposMaterias = _context.tbGruposMaterias.Where(a=> lsGrupos.Contains(a.GrupoId)).ToList();
 
                 var listaGruposMaterias = new List<object>();
-
-
                 foreach (var grupo in lsGrupos)
                 {
                     var lsMateriasId = await _context.tbGruposMaterias.Where(a => a.GrupoId == grupo.GrupoId).Select(a => a.MateriaId).ToListAsync();
@@ -105,7 +103,7 @@ namespace AprendeMasWeb.Controllers
                 return [];
             }
         }
-
+       
         [HttpGet("ObtenerGruposCreados")]
         public async Task<ActionResult<List<Grupos>>> ObtenerGruposCreados(int docenteId)
         {
@@ -199,7 +197,6 @@ namespace AprendeMasWeb.Controllers
         {
             try
             {
-
                 int docenteId = group.DocenteId;
 
                 List<Materias> lsMaterias = [];
@@ -258,32 +255,111 @@ namespace AprendeMasWeb.Controllers
         }
 
 
-
-        [HttpPut]
-        public async Task<ActionResult<List<Grupos>>> UpdateGroup(Grupos updatedGroup)
+        [HttpPut("ActualizarGrupo")]
+        public async Task<ActionResult<List<Grupos>>> ActualizarGrupo([FromBody]Grupos updatedGroup)
         {
-            var dbGroup = await _context.tbGrupos.FindAsync(updatedGroup.GrupoId);
-            if (dbGroup is null) return NotFound("Grupo no encontrado");
+            try
+            {
+                int grupoId = updatedGroup.GrupoId;
+                var dbGroup = await _context.tbGrupos.FindAsync(grupoId);
+                if (dbGroup is null) return NotFound("Grupo no encontrado");
 
 
-            dbGroup.NombreGrupo = updatedGroup.NombreGrupo;
-            dbGroup.Descripcion = updatedGroup.Descripcion;
-            dbGroup.CodigoAcceso = updatedGroup.CodigoAcceso;
-            //dbGroup.TipoUsuario = updatedGroup.TipoUsuario;
+                dbGroup.NombreGrupo = updatedGroup.NombreGrupo;
+                dbGroup.Descripcion = updatedGroup.Descripcion;
+                dbGroup.CodigoColor = updatedGroup.CodigoColor;
+                //dbGroup.TipoUsuario = updatedGroup.TipoUsuario;
 
-            await _context.SaveChangesAsync();
-            return Ok(await _context.tbGrupos.ToListAsync());
+                await _context.SaveChangesAsync();
+
+                var grupoActualizado = _context.tbGrupos.Where(a=>a.GrupoId==grupoId).FirstOrDefault();
+                return Ok(grupoActualizado);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpDelete]
         public async Task<ActionResult<List<GruposController>>> DeleteGroup(int id)
         {
             var dbGroup = await _context.tbGrupos.FindAsync(id);
-            if (dbGroup is null) return NotFound("Grupo no encontrada");
+            if (dbGroup is null) return NotFound("Grupo no encontrado");
 
             _context.tbGrupos.Remove(dbGroup);
             await _context.SaveChangesAsync();
             return Ok(await _context.tbGrupos.ToListAsync());
         }
+        #endregion
+
+
+        #region Alumno
+        [HttpGet("ObtenerGruposAsignados")]
+        public async Task<ActionResult<List<Grupos>>> ObtenerGruposAsignados(int alumnoId)
+        {
+            try
+            {
+                var lsAlumnoGrupos = await _context.tbAlumnosGrupos.Where(a => a.AlumnoId == alumnoId).ToListAsync();
+
+                var listaGruposMaterias = new List<object>();
+                foreach (var grupo in lsAlumnoGrupos)
+                {
+
+                    var datosGrupo = await _context.tbGrupos.Where(a=>a.GrupoId == grupo.GrupoId).FirstOrDefaultAsync();
+
+                    if (datosGrupo!=null)
+                    {
+
+                        var lsMateriasId = await _context.tbGruposMaterias.Where(a => a.GrupoId == grupo.GrupoId).Select(a => a.MateriaId).ToListAsync();
+
+                        var lsMaterias = await _context.tbMaterias.Where(a => lsMateriasId.Contains(a.MateriaId)).Select(m => new
+                        {
+                            m.MateriaId,
+                            m.NombreMateria,
+                            m.Descripcion,
+                            actividades = _context.tbActividades.Where(a => a.MateriaId == m.MateriaId).ToList()
+                        }).ToListAsync();
+
+
+                        listaGruposMaterias.Add(new
+                        {
+                            grupoId = grupo.GrupoId,
+                            nombreGrupo = datosGrupo.NombreGrupo,
+                            descripcion = datosGrupo.Descripcion,
+                            codigoAcceso = datosGrupo.CodigoAcceso,
+                            codigoColor = datosGrupo.CodigoColor,
+                            materias = lsMaterias
+                        });
+                    }
+                }
+
+
+                return Ok(listaGruposMaterias);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new
+                {
+                    e.Message
+                });
+            }
+        }
+
+
+        #endregion
+
+        //[HttpPost]
+        //public async Task<IActionResult> EliminarGrupo([FromBody] )
+        //{
+        //    try
+        //    {
+
+        //    }
+        //    catch (Exception e)
+        //    {
+
+        //    }
+        //}
     }
 }

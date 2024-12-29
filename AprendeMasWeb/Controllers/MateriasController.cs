@@ -19,7 +19,7 @@ namespace AprendeMasWeb.Controllers
             _context = context;
         }
 
-
+        #region Profesor
         private static string ObtenerClave()
         {
             int length = 8;
@@ -226,6 +226,30 @@ namespace AprendeMasWeb.Controllers
             await _context.SaveChangesAsync();
             return Ok(await _context.tbMaterias.ToListAsync());
         }
+        #endregion
 
+        #region Alumno
+
+        [HttpGet("ObtenerMateriasAsignadas")]
+        public async Task<ActionResult<List<Materias>>> ObtenerMateriasAsignadas(int alumnoId)
+        {
+            try
+            {
+                var lsMateriasAlumno = _context.tbAlumnosMaterias.Where(a => a.AlumnoId == alumnoId).Select(a=>a.MateriaId);
+
+                var lsMateriasSinGrupo = await _context.tbMaterias.Where(a => lsMateriasAlumno.Contains(a.MateriaId)).ToListAsync();
+
+                return lsMateriasSinGrupo;
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new
+                {
+                    e.Message
+                });
+            }
+        }
+
+        #endregion
     }
 }

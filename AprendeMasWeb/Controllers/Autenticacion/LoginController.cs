@@ -194,7 +194,7 @@ namespace AprendeMasWeb.Controllers.Autenticacion
                 return Ok(new
                 {
                     Id = idUsuario,
-                    nombre = emailEncontrado.UserName,
+                    userName = emailEncontrado.UserName,
                     correo = emailEncontrado.Email,
                     rol = rolUsuario,
                     token = tokenString
@@ -238,11 +238,11 @@ namespace AprendeMasWeb.Controllers.Autenticacion
                 var claimsPrincipal = handler.ValidateToken(token, tokenValidationParameters, out SecurityToken validatedToken);
 
                 var idUsuario = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0";
-                var nombre = claimsPrincipal.FindFirst(ClaimTypes.Name)?.Value ?? "No existe nombre";
+                var userName = claimsPrincipal.FindFirst(ClaimTypes.Name)?.Value ?? "No existe nombre";
                 var correo = claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value ?? "No existe correo";
                 var rol = claimsPrincipal.FindFirst(ClaimTypes.Role)?.Value ?? "No existe rol";
 
-                return Ok(new { id = int.Parse(idUsuario), nombre, correo, rol, token });
+                return Ok(new { id = int.Parse(idUsuario), userName, correo, rol, token });
             }
             catch (SecurityTokenExpiredException)
             {

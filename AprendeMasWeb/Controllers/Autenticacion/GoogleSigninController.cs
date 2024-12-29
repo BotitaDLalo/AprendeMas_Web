@@ -26,7 +26,7 @@ namespace AprendeMasWeb.Controllers.Autenticacion
                     return BadRequest("idToken invalido");
                 }
 
-                var userName = payload.GivenName + payload.GivenName;
+                var userName = payload.GivenName;
                 var Email = payload.Email;
                 var Token = usuario.IdToken;
 

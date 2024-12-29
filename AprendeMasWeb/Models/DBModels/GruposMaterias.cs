@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using AprendeMasWeb.Models.DBModels;
 
-namespace AprendeMasWeb.Models
+namespace AprendeMasWeb.Models.DBModels
 {
     public class GruposMaterias
     {
