@@ -127,8 +127,8 @@ namespace AprendeMasWeb.Controllers
             }
         }
 
-        [HttpGet("ObtenerGruposMaterias")]
-        public async Task<ActionResult<List<Grupos>>> ObtenerGruposMaterias(int docenteId)
+        [HttpGet("ObtenerGruposMateriasDocente")]
+        public async Task<ActionResult<List<Grupos>>> ObtenerGruposMateriasDocente(int docenteId)
         {
             try
             {
@@ -171,6 +171,8 @@ namespace AprendeMasWeb.Controllers
                 });
             }
         }
+
+
 
 
         [HttpPost("CrearGrupo")]
@@ -336,6 +338,56 @@ namespace AprendeMasWeb.Controllers
 
 
                 return Ok(listaGruposMaterias);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new
+                {
+                    e.Message
+                });
+            }
+        }
+
+
+
+        [HttpGet("ObtenerGruposMateriasAlumno")]
+        public async Task<ActionResult<List<Grupos>>> ObtenerGruposMateriasAlumno(int alumnoId)
+        {
+            try
+            {
+                var lsGruposAlumnosId = await _context.tbAlumnosGrupos.Where(a => a.AlumnoId == alumnoId).Select(a => a.GrupoId).ToListAsync();
+
+                var lsGrupos = await _context.tbGrupos.Where(a => lsGruposAlumnosId.Contains(a.GrupoId)).ToListAsync();
+
+                var listaGruposMaterias = new List<object>();
+                foreach (var grupo in lsGrupos)
+                {
+                    var lsMateriasGrupoId = await _context.tbGruposMaterias.Where(a => a.GrupoId == grupo.GrupoId).Select(a => a.MateriaId).ToListAsync();
+
+
+                    var lsMaterias = await _context.tbMaterias.Where(a => lsMateriasGrupoId.Contains(a.MateriaId)).Select(m => new
+                    {
+                        m.MateriaId,
+                        m.NombreMateria,
+                        m.Descripcion,
+                        actividades = _context.tbActividades.Where(a => a.MateriaId == m.MateriaId).ToList()
+                    }).ToListAsync();
+
+
+                    listaGruposMaterias.Add(new
+                    {
+                        grupoId = grupo.GrupoId,
+                        nombreGrupo = grupo.NombreGrupo,
+                        descripcion = grupo.Descripcion,
+                        //codigoAcceso = grupo.CodigoAcceso,
+                        codigoColor = grupo.CodigoColor,
+                        materias = lsMaterias
+                    });
+                }
+
+
+                return Ok(listaGruposMaterias);
+
             }
             catch (Exception e)
             {

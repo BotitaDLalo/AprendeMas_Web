@@ -87,7 +87,15 @@ namespace AprendeMasWeb.Controllers
                     var user = await _userManager.FindByEmailAsync(email);
                     if (user != null)
                     {
-                        return Ok(new { Email = email });
+                        var identityId = await _userManager.GetUserIdAsync(user);
+
+                        var alumnoExiste = _context.tbAlumnos.Any(a => a.UserId == identityId);
+
+                        if (alumnoExiste)
+                        {
+                            return Ok(new { Email = email });
+                        }
+                        return BadRequest();
                     }
                 }
                 return BadRequest(new { Email = email });
@@ -114,7 +122,7 @@ namespace AprendeMasWeb.Controllers
                     if (user != null)
                     {
                         var identityId = await _userManager.GetUserIdAsync(user);
-                        var alumnoId = await _context.tbAlumnos.Where(a=>a.UserId == identityId).Select(a=>a.AlumnoId).FirstOrDefaultAsync();
+                        var alumnoId = await _context.tbAlumnos.Where(a => a.UserId == identityId).Select(a => a.AlumnoId).FirstOrDefaultAsync();
 
                         lsAlumnosId.Add(alumnoId);
                     }
@@ -226,7 +234,7 @@ namespace AprendeMasWeb.Controllers
             {
                 int grupoId = indice.GrupoId;
 
-                List<int> lsAlumnosId = await _context.tbAlumnosGrupos.Where(a=>a.GrupoId == grupoId).Select(a=>a.AlumnoId).ToListAsync();
+                List<int> lsAlumnosId = await _context.tbAlumnosGrupos.Where(a => a.GrupoId == grupoId).Select(a => a.AlumnoId).ToListAsync();
 
                 List<EmailVerificadoAlumno> lsAlumnos = await ObtenerListaAlumnos(lsAlumnosId);
 
