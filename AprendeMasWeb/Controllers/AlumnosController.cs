@@ -18,6 +18,163 @@ namespace AprendeMasWeb.Controllers
         private readonly UserManager<IdentityUser> _userManager = userManager;
 
 
+        //public async Task<ActionResult> EntregarTarea(string par)
+        //{
+        //    try
+        //    {
+
+        //    }
+        //    catch (Exception)
+        //    {
+
+        //    }
+        //}
+
+
+        //public async Task<ActionResult> CancelarTarea(string par)
+        //{
+        //    try
+        //    {
+
+        //    }
+        //    catch (Exception)
+        //    {
+
+        //    }
+        //}
+
+        [HttpPost("RegistrarEnvioActividadAlumno")]
+        public async Task<ActionResult> RegistrarEnvioActividadAlumno([FromBody] EntregableAlumno entregable)
+        {
+            try
+            {
+                var actividadId = entregable.ActividadId;
+                var alumnoId = entregable.AlumnoId;
+                var respuesta = entregable.Respuesta;
+                var fechaEntrega = entregable.FechaEntrega;
+
+                AlumnosActividades actividad = new AlumnosActividades()
+                {
+                    ActividadId = actividadId,
+                    AlumnoId = alumnoId,
+                    FechaEntrega = DateTime.Parse(fechaEntrega),
+                    EstatusEntrega = true,
+                    EntregablesAlumno = new EntregablesAlumno()
+                    {
+                        Respuesta = respuesta
+                    }
+                };
+
+                _context.tbAlumnosActividades.Add(actividad);
+
+                await _context.SaveChangesAsync();
+
+
+                var datosAlumnoActividad = await _context.tbAlumnosActividades.Where(a => a.ActividadId == actividadId && a.AlumnoId == alumnoId).FirstOrDefaultAsync();
+
+
+                var alumnoActividadId = datosAlumnoActividad?.AlumnoActividadId ?? 0;
+
+                var datosEntregable = await _context.tbEntregablesAlumno.Where(a => a.AlumnoActividadId == alumnoActividadId).FirstOrDefaultAsync();
+
+                if (datosAlumnoActividad != null && datosEntregable != null)
+                {
+                   return Ok(new
+                    {
+                        AlumnoActividadId = alumnoActividadId,
+                        Respuesta = datosEntregable?.Respuesta ?? "",
+                        Status = datosAlumnoActividad.EstatusEntrega
+                    });
+                }
+
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("ObtenerEnviosActividadesAlumno")]
+        public async Task<ActionResult> ObtenerEnviosActividadesAlumno(int ActividadId, int AlumnoId)
+        {
+            try
+            {
+
+                var datosAlumnoActividad = await _context.tbAlumnosActividades.Where(a => a.ActividadId == ActividadId && a.AlumnoId == AlumnoId).FirstOrDefaultAsync();
+
+
+                var alumnoActividadId = datosAlumnoActividad?.AlumnoActividadId ?? 0;
+
+                var datosEntregable = await _context.tbEntregablesAlumno.Where(a => a.AlumnoActividadId == alumnoActividadId).FirstOrDefaultAsync();
+
+                if (datosAlumnoActividad != null && datosEntregable != null)
+                {
+                    return Ok(new
+                    {
+                        AlumnoActividadId = alumnoActividadId,
+                        Respuesta = datosEntregable?.Respuesta ?? "",
+                        Status = datosAlumnoActividad.EstatusEntrega
+                    });
+                }
+
+                return BadRequest();
+
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("CancelarEnvioActividadAlumno")]
+        public async Task<ActionResult> CancelarEnvioActividadAlumno([FromBody] CancelarEnvioActividadAlumno datosCancelacion)
+        {
+            try
+            {
+                var alumnoActividadId = datosCancelacion.AlumnoActividadId;
+                var alumnoId = datosCancelacion.AlumnoId;
+                var actividadId = datosCancelacion.ActividadId;
+
+                var alumnoActividadEliminar = _context.tbAlumnosActividades.Include(a => a.EntregablesAlumno)
+                    .FirstOrDefault(a=>a.AlumnoActividadId == alumnoActividadId && a.AlumnoId == alumnoId);
+
+                if (alumnoActividadEliminar != null)
+                {
+                    if (alumnoActividadEliminar.EntregablesAlumno!=null)
+                    {
+                        _context.tbEntregablesAlumno.Remove(alumnoActividadEliminar.EntregablesAlumno);
+                    }
+
+                    _context.tbAlumnosActividades.Remove(alumnoActividadEliminar);
+                    await _context.SaveChangesAsync();
+
+                    var datosAlumnoActividad = await _context.tbAlumnosActividades.Where(a => a.ActividadId == actividadId && a.AlumnoId == alumnoId).FirstOrDefaultAsync();
+
+
+                    //var alumnoActividadId = datosAlumnoActividad?.AlumnoActividadId ?? 0;
+
+                    var datosEntregable = await _context.tbEntregablesAlumno.Where(a => a.AlumnoActividadId == alumnoActividadId).FirstOrDefaultAsync();
+
+                    if (datosAlumnoActividad != null && datosEntregable != null)
+                    {
+                        return Ok(new
+                        {
+                            AlumnoActividadId = alumnoActividadId,
+                            Respuesta = datosEntregable?.Respuesta ?? "",
+                            Status = datosAlumnoActividad.EstatusEntrega
+                        });
+                    }
+                }
+
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
         [HttpPost("AlumnoGrupoCodigo")]
         public async Task<ActionResult> RegistrarAlumnoGrupoCodigo([FromBody] AlumnoGMRegistroCodigo alumnoGrupoRegistro)
         {
@@ -246,6 +403,24 @@ namespace AprendeMasWeb.Controllers
             }
         }
 
+        [HttpPost("ObtenerListaAlumnosMateria")]
+        public async Task<ActionResult> ObtenerListaAlumnosMateria([FromBody] Indices indice)
+        {
+            try
+            {
+                int materiaId = indice.MateriaId;
+
+                List<int> lsAlumnosId = await _context.tbAlumnosMaterias.Where(a => a.MateriaId == materiaId).Select(a => a.AlumnoId).ToListAsync();
+
+                List<EmailVerificadoAlumno> lsAlumnos = await ObtenerListaAlumnos(lsAlumnosId);
+
+                return Ok(lsAlumnos);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { mensaje = e.Message });
+            }
+        }
 
         private async Task<List<EmailVerificadoAlumno>> ObtenerListaAlumnos(List<int> lsAlumnosId)
         {

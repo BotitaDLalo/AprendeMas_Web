@@ -7,13 +7,15 @@ namespace AprendeMasWeb.Models.DBModels
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public required int EntregaId {  get; set; }
+        public int EntregaId {  get; set; }
 
-        public required int AlumnoActividadId { get; set; }
+        public int AlumnoActividadId { get; set; }
 
         public string? Enlace {  get; set; }
 
         public string? Archivo {  get; set; }
+
+        public string? Respuesta {  get; set; }
 
         public AlumnosActividades? AlumnosActividades { get; set; }
     }

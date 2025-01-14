@@ -84,13 +84,17 @@ namespace AprendeMasWeb.Data
 
 
             //Entregables Alumno
-            modelBuilder.Entity<EntregablesAlumno>()
-                .HasOne(a => a.AlumnosActividades)
-                .WithOne(a => a.EntregablesAlumno)
-                .HasForeignKey<AlumnosActividades>(a => a.AlumnoActividadId)
+            //modelBuilder.Entity<EntregablesAlumno>()
+            //    .HasOne(a => a.AlumnosActividades)
+            //    .WithOne(a => a.EntregablesAlumno)
+            //    .HasForeignKey<AlumnosActividades>(a => a.AlumnoActividadId)
+            //    .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<AlumnosActividades>()
+                .HasOne(a=>a.EntregablesAlumno)
+                .WithOne(a=>a.AlumnosActividades)
+                .HasForeignKey<EntregablesAlumno>(a=>a.AlumnoActividadId)
                 .OnDelete(DeleteBehavior.NoAction);
-
-
 
             //Grupos
             modelBuilder.Entity<Grupos>()
