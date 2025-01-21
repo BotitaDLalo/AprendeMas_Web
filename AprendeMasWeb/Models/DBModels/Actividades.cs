@@ -21,6 +21,8 @@ namespace AprendeMasWeb.Models
 
         public int TipoActividadId { get; set; }
 
+        public int Puntaje {  get; set; }
+
         public int MateriaId { get; set; }
 
 
