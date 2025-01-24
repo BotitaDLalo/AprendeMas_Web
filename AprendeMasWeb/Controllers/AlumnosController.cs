@@ -79,7 +79,7 @@ namespace AprendeMasWeb.Controllers
 
                 if (datosAlumnoActividad != null && datosEntregable != null)
                 {
-                   return Ok(new
+                    return Ok(new
                     {
                         AlumnoActividadId = alumnoActividadId,
                         Respuesta = datosEntregable?.Respuesta ?? "",
@@ -137,11 +137,11 @@ namespace AprendeMasWeb.Controllers
                 var actividadId = datosCancelacion.ActividadId;
 
                 var alumnoActividadEliminar = _context.tbAlumnosActividades.Include(a => a.EntregablesAlumno)
-                    .FirstOrDefault(a=>a.AlumnoActividadId == alumnoActividadId && a.AlumnoId == alumnoId);
+                    .FirstOrDefault(a => a.AlumnoActividadId == alumnoActividadId && a.AlumnoId == alumnoId);
 
                 if (alumnoActividadEliminar != null)
                 {
-                    if (alumnoActividadEliminar.EntregablesAlumno!=null)
+                    if (alumnoActividadEliminar.EntregablesAlumno != null)
                     {
                         _context.tbEntregablesAlumno.Remove(alumnoActividadEliminar.EntregablesAlumno);
                     }
@@ -288,86 +288,109 @@ namespace AprendeMasWeb.Controllers
                 int grupoId = alumnoGMRegistro.GrupoId;
                 int materiaId = alumnoGMRegistro.MateriaId;
 
-                if (grupoId != 0)
+
+
+                if (grupoId != 0 && materiaId != 0)
                 {
-                    foreach (var id in lsAlumnosId)
+                    foreach (var aluId in lsAlumnosId)
                     {
-                        if (id != 0)
+                        bool alumnoRegistradoGrupo = _context.tbAlumnosGrupos.Any(a => a.GrupoId == grupoId && a.AlumnoId == aluId);
+                        bool alumnoRegistradoMateria = _context.tbAlumnosMaterias.Any(a => a.MateriaId == materiaId && a.AlumnoId == aluId);
+                        if (!alumnoRegistradoGrupo)
                         {
                             AlumnosGrupos alumnosGrupos = new()
                             {
-                                AlumnoId = id,
+                                AlumnoId = aluId,
                                 GrupoId = grupoId
                             };
-
                             await _context.tbAlumnosGrupos.AddAsync(alumnosGrupos);
+                        }
+                        else
+                        {
+                            BadRequest(new { mensaje = "El alumno ya esta registrado" });
+                        }
+
+                        if (!alumnoRegistradoMateria)
+                        {
+                            AlumnosMaterias alumnosMaterias = new()
+                            {
+                                AlumnoId = aluId,
+                                MateriaId = materiaId
+                            };
+                            await _context.tbAlumnosMaterias.AddAsync(alumnosMaterias);
+                        }
+                        else
+                        {
+                            BadRequest(new { mensaje = "El alumno ya esta registrado" });
                         }
                     }
                     _context.SaveChanges();
 
-                    //List<EmailVerificadoAlumno> lsAlumnos = [];
-                    //foreach (var id in lsAlumnosId)
-                    //{
-                    //    var alumnoDatos = _context.tbAlumnos.Where(a => a.AlumnoId == id).FirstOrDefault();
-                    //    if (alumnoDatos != null)
-                    //    {
-                    //        var userName = await _userManager.FindByIdAsync(alumnoDatos.UserId);
+                    var lsAlumnos = await ObtenerListaAlumnos(lsAlumnosId);
 
-                    //        EmailVerificadoAlumno alumno = new()
-                    //        {
-                    //            Email = userName?.Email ?? "",
-                    //            UserName = userName?.UserName ?? "",
-                    //            Nombre = alumnoDatos.Nombre,
-                    //            ApellidoPaterno = alumnoDatos.ApellidoPaterno,
-                    //            ApellidoMaterno = alumnoDatos.ApellidoMaterno,
-                    //        };
+                    return Ok(lsAlumnos);
+                }
+                else if (grupoId != 0)
+                {
+                    foreach (var aluId in lsAlumnosId)
+                    {
 
-                    //        lsAlumnos.Add(alumno);
-                    //    }
+                        bool alumnoYaRegistrado = _context.tbAlumnosGrupos.Any(a => a.GrupoId == grupoId && a.AlumnoId == aluId);
+                        if (!alumnoYaRegistrado)
+                        {
+                            AlumnosGrupos alumnosGrupos = new()
+                            {
+                                AlumnoId = aluId,
+                                GrupoId = grupoId
+                            };
 
-                    //}
+                            List<int> lsMateriasId = await _context.tbGruposMaterias.Where(a => a.GrupoId == grupoId).Select(a => a.MateriaId).ToListAsync();
+
+                            foreach (var matId in lsMateriasId)
+                            {
+                                AlumnosMaterias alumnosMaterias = new()
+                                {
+                                    AlumnoId = aluId,
+                                    MateriaId = matId
+                                };
+
+                                await _context.tbAlumnosMaterias.AddAsync(alumnosMaterias);
+                            }
+
+                            await _context.tbAlumnosGrupos.AddAsync(alumnosGrupos);
+                        }
+                        else
+                        {
+                            BadRequest(new { mensaje = "El alumno ya esta registrado" });
+                        }
+                    }
+                    _context.SaveChanges();
 
                     var lsAlumnos = await ObtenerListaAlumnos(lsAlumnosId);
                     return Ok(lsAlumnos);
                 }
                 else if (materiaId != 0)
                 {
-                    foreach (var id in lsAlumnosId)
+                    foreach (var aluId in lsAlumnosId)
                     {
-                        if (id != 0)
+                        bool alumnoYaRegistrado = _context.tbAlumnosMaterias.Any(a => a.MateriaId == materiaId && a.AlumnoId == aluId);
+                        if (!alumnoYaRegistrado)
                         {
                             AlumnosMaterias alumnosMaterias = new()
                             {
-                                AlumnoId = id,
+                                AlumnoId = aluId,
                                 MateriaId = materiaId
                             };
                             await _context.tbAlumnosMaterias.AddAsync(alumnosMaterias);
+                        }
+                        else
+                        {
+                            BadRequest(new { mensaje = "El alumno ya esta registrado" });
                         }
                     }
                     _context.SaveChanges();
 
                     var lsAlumnos = await ObtenerListaAlumnos(lsAlumnosId);
-                    //List<EmailVerificadoAlumno> lsAlumnos = [];
-                    //foreach (var id in lsAlumnosId)
-                    //{
-                    //    var alumnoDatos = _context.tbAlumnos.Where(a => a.AlumnoId == id).FirstOrDefault();
-                    //    if (alumnoDatos != null)
-                    //    {
-                    //        var userName = await _userManager.FindByIdAsync(alumnoDatos.UserId);
-
-                    //        EmailVerificadoAlumno alumno = new()
-                    //        {
-                    //            Email = userName?.Email ?? "",
-                    //            UserName = userName?.UserName ?? "",
-                    //            Nombre = alumnoDatos.Nombre,
-                    //            ApellidoPaterno = alumnoDatos.ApellidoPaterno,
-                    //            ApellidoMaterno = alumnoDatos.ApellidoMaterno,
-                    //        };
-
-                    //        lsAlumnos.Add(alumno);
-                    //    }
-
-                    //}
 
                     return Ok(lsAlumnos);
                 }
