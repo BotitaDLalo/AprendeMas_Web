@@ -1,11 +1,55 @@
+
+
+
+////MOBIL
+//{
+//  "$schema": "http://json.schemastore.org/launchsettings.json",
+//  "iisSettings": {
+//    "windowsAuthentication": false,
+//    "anonymousAuthentication": true,
+//    "iisExpress": {
+//      "applicationUrl": "http://192.168.0.26:39557",
+//      "sslPort": 44325
+//    }
+//  },
+//  "profiles": {
+//    "http": {
+//      "commandName": "Project",
+//      "dotnetRunMessages": true,
+//      "launchBrowser": true,
+//      "applicationUrl": "http://192.168.0.26:5150",
+//      "environmentVariables": {
+//        "ASPNETCORE_ENVIRONMENT": "Development"
+//      }
+//    },
+//    "https": {
+//      "commandName": "Project",
+//      "dotnetRunMessages": true,
+//      "launchBrowser": true,
+//      "applicationUrl": "https://192.168.0.26:7113;http://192.168.0.26:5150",
+//      "environmentVariables": {
+//        "ASPNETCORE_ENVIRONMENT": "Development"
+//      }
+//    },
+//    "IIS Express": {
+//      "commandName": "IISExpress",
+//      "launchBrowser": true,
+//      "environmentVariables": {
+//        "ASPNETCORE_ENVIRONMENT": "Development"
+//      }
+//    }
+//  }
+//}
+
+////WEB
 {
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://192.168.0.26:39557",
-      "sslPort": 44325
+      "applicationUrl": "http://localhost:44313",
+      "sslPort": 44364
     }
   },
   "profiles": {
@@ -13,7 +57,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "http://192.168.0.26:5150",
+      "applicationUrl": "http://localhost:5126",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -22,7 +66,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "https://192.168.0.26:7113;http://192.168.0.26:5150",
+      "applicationUrl": "https://localhost:7113;http://localhost:5126",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

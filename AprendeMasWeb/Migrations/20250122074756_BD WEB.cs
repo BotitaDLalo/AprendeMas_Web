@@ -5,7 +5,7 @@
 namespace AprendeMasWeb.Migrations
 {
     /// <inheritdoc />
-    public partial class MateriaActividad : Migration
+    public partial class BDWEB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

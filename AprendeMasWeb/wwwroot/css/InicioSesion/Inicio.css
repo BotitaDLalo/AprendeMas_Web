@@ -1,0 +1,272 @@
+﻿
+body {
+    background-color: #f1f2f4;
+    /*background: #36D1DC;*/ /* fallback for old browsers */
+    /*background: -webkit-linear-gradient(to right,#2196f3, #3a7bd5);*/ /* Chrome 10-25, Safari 5.1-6 */
+    /*background: linear-gradient(to right,#2196f3, #3a7bd5);*/ /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+h1, h2, h3 {
+    font-family: 'Poppins', sans-serif; /* Para títulos */
+}
+
+p, body {
+    font-family: 'Roboto', sans-serif; /* Para texto */
+}
+
+
+#showPassword {
+    color: #888; /* Color del ícono */
+    font-size: 18px; /* Tamaño del ícono */
+    margin-left: 5px; /* Separación del input */
+}
+
+    #showPassword:hover {
+        color: #000; /* Cambia el color al pasar el mouse */
+    }
+/* Mantén el contenedor centralizado */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    width: 100%;
+    max-width: 600px; /* Ajusta el ancho máximo */
+}
+
+/* Fija el logo y coloca el contenedor debajo */
+.logo {
+    position: fixed; /* Evita que el logo se mueva al redimensionar */
+    top: -3vh; /* Controla la distancia desde el borde superior */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.logo-image {
+    width: 300px; /* Tamaño del logo */
+    height: auto;
+}
+
+/* Contenedor de login centrado */
+.login-box {
+    background-color: white;
+    border-radius: 31px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 17px;
+    width: 100%;
+    max-width: 511px; /* Ajusta el ancho máximo */
+    min-height: 300px;
+    margin-top: 18vh; /* Controla el espacio entre el logo y el contenedor */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+h2 {
+    color: black; /* Color gris */
+    text-align: left; /* Alineación a la izquierda */
+    font-size: 24px; /* Ajusta el tamaño de la fuente si es necesario */
+    margin-bottom: 20px; /* Espaciado inferior */
+    font-weight: normal; /* Ajusta el grosor de la fuente */
+}
+
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-groups {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+
+.btn-primary {
+    width: 80%;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #3a7bd5;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    display: block; /* Asegura que el botón se comporte como un bloque */
+    margin: 0 auto; /* Centra horizontalmente el botón */
+}
+
+    .btn-primary:hover {
+        background-color: #0958e599;
+    }
+
+
+
+a {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #0958e5;
+    text-decoration: none;
+}
+
+.text-danger {
+    color: red;
+}
+
+.form-group a {
+    color: #003366;
+    text-decoration: none;
+}
+
+    .form-group a:hover {
+        text-decoration: underline;
+    }
+
+/* Estilo para los campos con label flotante */
+.floating-label {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+    .floating-label input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 18px;
+        border: 2px solid #cccccc;
+        font-size: 19px;
+        box-sizing: border-box;
+        outline: none;
+        transition: all 0.3s ease;
+    }
+
+        .floating-label input:focus {
+            border-color: #1c2d46;
+        }
+
+
+    .floating-label label {
+        position: absolute;
+        top: 45%;
+        left: 10px;
+        transform: translateY(-50%);
+        font-size: 16px;
+        color: #454545;
+        pointer-events: none;
+        transition: all 0.3s ease;
+    }
+
+    /* Efecto de desplazamiento cuando el input está enfocado o tiene contenido */
+    .floating-label input:focus + label,
+    .floating-label input:not(:placeholder-shown) + label {
+        top: 0;
+        left: 10px;
+        font-size: 12px;
+        color: black;
+        background: white;
+        padding: 0 5px;
+    }
+
+
+
+
+
+#btna {
+    font-size: 14px;
+    color: #ccc;
+}
+
+
+
+
+
+.center {
+    text-align: center;
+}
+
+
+.btn-google {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #cdb8e97f;
+    color: white;
+    font-size: 15px;
+    padding: 11px 115px;
+    border: 2px solid #888;
+    border-radius: 115px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+    .btn-google:hover {
+        background-color: #cdb8e9cc;
+    }
+
+.google-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+hr {
+    margin: 20px 0;
+    border: none;
+    border-top: 1px solid #cccccc;
+}
+
+.form-groups a {
+    color: #5115a9;
+    text-decoration: none;
+}
+
+.login-box p {
+    font-size: 12px;
+    color: #666666;
+    margin-top: 10px;
+    text-align: center;
+}
+
+
+.alert-danger {
+    background-color: #f8d7da; /* Fondo rojo claro */
+    color: #721c24; /* Texto rojo oscuro */
+    border: 1px solid #f5c6cb; /* Borde rojo */
+    padding: 3px; /* Espaciado interno */
+    border-radius: 17px; /* Bordes redondeados */
+    font-size: 16px; /* Tamaño de fuente */
+    font-weight: bold; /* Texto en negrita */
+    margin-bottom: 20px; /* Margen inferior */
+}
+
+
+
+/* Estilos para los campos válidos e inválidos */
+.is-valid {
+    border-color: green;
+    box-shadow: 0 0 5px green;
+}
+
+.is-invalid {
+    border-color: red;
+    box-shadow: 0 0 5px red;
+}
+
+.text-danger {
+    font-size: 12px;
+    color: red;
+}

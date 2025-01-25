@@ -1,0 +1,67 @@
+﻿.layout {
+    background: #36D1DC; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #16BFFD, #457fca); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #16BFFD, #457fca); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+    font-size: 16px;
+}
+
+body {
+    background-color: #f1f2f4;
+    /*background: #36D1DC;*/ /* fallback for old browsers */
+    /*background: -webkit-linear-gradient(to right,#2196f3, #3a7bd5);*/ /* Chrome 10-25, Safari 5.1-6 */
+    /*background: linear-gradient(to right,#2196f3, #3a7bd5);*/ /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    
+    justify-content: center;
+    align-items: center;
+}
+
+h1, h2, h3 {
+    font-family: 'Poppins', sans-serif; /* Para títulos */
+}
+
+p, body {
+    font-family: 'Roboto', sans-serif; /* Para texto */
+}
+
+.navbar-light .navbar-brand {
+    color: rgb(255 255 255);
+}
+
+
+.navbar-brand {
+    width: 100px; /* Fija el ancho del contenedor */
+    height: 50px; /* Fija el alto del contenedor */
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centra el ícono */
+    overflow: hidden; /* Oculta cualquier desbordamiento */
+}
+
+.navbar-icon {
+    width: 112%; /* Se ajusta al 100% del contenedor */
+    height: 195%; /* Se ajusta al 100% del contenedor */
+    object-fit: contain; /* Escala internamente sin distorsionar */
+}
+
+.icon-nav {
+    width: 64px; /* Ajusta el tamaño según tus necesidades */
+    height: auto; /* Mantiene la proporción de aspecto */
+    margin-right: -9px; /* Espaciado a la derecha del ícono */
+    vertical-align: middle; /* Alineación vertical con el texto */
+}
+
+
+
+.navbar-nav {
+    display: flex;
+    flex-direction: column;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+    justify-content: flex-end;
+}

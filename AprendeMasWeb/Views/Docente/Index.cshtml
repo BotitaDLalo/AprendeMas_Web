@@ -1,0 +1,22 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutDocente.cshtml";
+    ViewData["Title"] = "Inicio - Docente";
+}
+
+
+
+
+<h2>Gestión de Materias y Grupos</h2>
+
+<!-- Botones para abrir los modales -->
+<div class="d-flex gap-3">
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#materiasModal">Gestionar Materias</button>
+    <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#gruposModal">Gestionar Grupos</button>
+</div>
+
+<br /><br />
+
+<!-- Modales -->
+@Html.Partial("~/Views/Docente/MateriasModal.cshtml")
+<br />
+@Html.Partial("~/Views/Docente/GruposModal.cshtml")

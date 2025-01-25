@@ -1,0 +1,47 @@
+﻿
+@{
+    ViewData["Title"] = "MateriasModal";
+}
+
+<h1>MateriasModal</h1>
+
+<!-- Modal para Materias -->
+<div class="modal fade" id="materiasModal" tabindex="-1" aria-labelledby="materiasModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="materiasModalLabel">Gestión de Materias</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario para crear o editar materias -->
+                <form id="materiasForm">
+                    <div class="mb-3">
+                        <label for="nombreMateria" class="form-label">Nombre de la Materia</label>
+                        <input type="text" class="form-control" id="nombreMateria" placeholder="Ingrese el nombre de la materia" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descripcionMateria" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcionMateria" rows="3" placeholder="Ingrese una descripción"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="codigoColorMateria" class="form-label">Color</label>
+                        <select class="form-select" id="codigoColorMateria">
+                            <option value="#ff0000">Rojo</option>
+                            <option value="#00ff00">Verde</option>
+                            <option value="#0000ff">Azul</option>
+                            <!-- Agregar más colores según necesidad -->
+                        </select>
+                    </div>
+                </form>
+                <div id="listaMaterias">
+                    <!-- Aquí se renderiza la lista de materias -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="guardarMateria()">Guardar Materia</button>
+            </div>
+        </div>
+    </div>
+</div>
