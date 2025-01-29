@@ -72,7 +72,7 @@ namespace AprendeMasWeb.Data
             modelBuilder.Entity<AlumnosActividades>()
                 .HasOne(a => a.Alumnos)
                 .WithMany(a => a.AlumnosActividades)
-                .HasForeignKey(a => a.ActividadId)
+                .HasForeignKey(a => a.AlumnoId)
                 .OnDelete(DeleteBehavior.NoAction);
 
 
