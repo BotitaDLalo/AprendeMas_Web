@@ -1,0 +1,402 @@
+﻿/* General body styling */
+body {
+    background-color: #f1f2f4;
+    /*background: #36D1DC;*/ /* fallback for old browsers */
+    /*background: -webkit-linear-gradient(to right,#2196f3, #3a7bd5);*/ /* Chrome 10-25, Safari 5.1-6 */
+    /*background: linear-gradient(to right,#2196f3, #3a7bd5);*/ /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+h1, h2, h3 {
+    font-family: 'Poppins', sans-serif; /* Para títulos */
+}
+
+p, body {
+    font-family: 'Roboto', sans-serif; /* Para texto */
+}
+
+#showPassword {
+    color: #888; /* Color del ícono */
+    font-size: 18px; /* Tamaño del ícono */
+    margin-left: 5px; /* Separación del input */
+}
+
+    #showPassword:hover {
+        color: #000; /* Cambia el color al pasar el mouse */
+    }
+
+/* Mantén el contenedor centralizado */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    width: 100%;
+    max-width: 600px; /* Ajusta el ancho máximo */
+}
+
+/* Fija el logo y coloca el contenedor debajo */
+.logo {
+    position: absolute; /* Posición relativa al contenedor principal */
+    top: -4vh; /* Ajusta según el diseño */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+
+
+.logo-image {
+    width: 300px; /* Tamaño del logo */
+    height: auto;
+}
+
+
+/* Contenedor de login centrado */
+.login-box {
+    background-color: white;
+    border-radius: 31px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 17px;
+    width: 100%;
+    max-width: 511px; /* Ajusta el ancho máximo */
+    min-height: 300px;
+    margin-top: 18vh; /* Controla el espacio entre el logo y el contenedor */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+h2 {
+    color: black; /* Color gris */
+    text-align: left; /* Alineación a la izquierda */
+    font-size: 24px; /* Ajusta el tamaño de la fuente si es necesario */
+    margin-bottom: 20px; /* Espaciado inferior */
+    font-weight: normal; /* Ajusta el grosor de la fuente */
+}
+
+
+
+
+.login-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+
+
+
+
+
+.login-box h3 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+/* Estilo para los campos con label flotante */
+.floating-label {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+    .floating-label input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 18px;
+        border: 2px solid #cccccc;
+        font-size: 19px;
+        box-sizing: border-box;
+        outline: none;
+        transition: all 0.3s ease;
+    }
+
+        .floating-label input:focus {
+            border-color: #1c2d46;
+        }
+
+    .floating-label label {
+        position: absolute;
+        top: 45%;
+        left: 10px;
+        transform: translateY(-50%);
+        font-size: 16px;
+        color: #454545;
+        pointer-events: none;
+        transition: all 0.3s ease;
+    }
+
+
+    /* Efecto de desplazamiento cuando el input está enfocado o tiene contenido */
+    .floating-label input:focus + label,
+    .floating-label input:not(:placeholder-shown) + label {
+        top: 0;
+        left: 10px;
+        font-size: 12px;
+        color: black;
+        background: white;
+        padding: 0 5px;
+    }
+
+/* Estilo para el botón */
+.btn {
+    width: 80%;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #3a7bd5;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    display: block; /* Asegura que el botón se comporte como un bloque */
+    margin: 0 auto; /* Centra horizontalmente el botón */
+}
+
+    .btn:hover {
+        background-color: #0958e599;
+    }
+
+a {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #0958e5;
+    text-decoration: none;
+}
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+.login-box p {
+    font-size: 12px;
+    color: #666666;
+    margin-top: 10px;
+}
+
+hr {
+    margin: 20px 0;
+    border: none;
+    border-top: 1px solid #cccccc;
+}
+
+/* Estilo general para el form-group */
+.form-group {
+    color: aqua;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 20px;
+    justify-content: center;
+    position: relative;
+    text-align: center;
+}
+
+.form-groups {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+/* Estilo para el select */
+.custom-select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    appearance: none; /* Elimina el estilo por defecto del navegador */
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23333" d="M2 0L0 2h4z"/></svg>'); /* Flecha personalizada */
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 10px;
+    transition: border-color 0.3s ease;
+}
+
+    /* Estilo cuando se selecciona o enfoca el select */
+    .custom-select:focus {
+        border-color: #001a33;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 26, 51, 0.3);
+    }
+
+    /* Ajuste para el fondo en dispositivos móviles (iOS y Android) */
+    .custom-select::-ms-expand {
+        display: none;
+    }
+
+    .custom-select:focus::-ms-expand {
+        display: block;
+    }
+
+/* Ajuste para que el select sea más amigable con navegadores que no soportan appearance */
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+
+
+.btn-google {
+    justify-content: center;
+    text-align: center;
+    justify-content: center;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #cdb8e97f;
+    color: #5115a9;
+    font-size: 15px;
+    padding: 11px 1px;
+    border: 2px solid #888;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+    .btn-google:hover {
+        background-color: #cdb8e9cc;
+    }
+
+.google-icon {
+    justify-content: center;
+    text-align: center;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+hr {
+    margin: 20px 0;
+    border: none;
+    border-top: 1px solid #cccccc;
+}
+
+.form-groups a {
+    justify-content: center;
+    text-align: center;
+    color: #5115a9;
+    text-decoration: none;
+}
+
+.login-box p {
+    font-size: 12px;
+    color: #666666;
+    margin-top: 10px;
+    text-align: center;
+}
+
+
+/* Contenedor del form-group */
+.form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+/* Label flotante */
+.floating-label2 label {
+    display: block; /* Hace que el label ocupe toda la línea */
+    margin-bottom: 8px; /* Ajusta el espacio entre el label y el select */
+    font-size: 14px; /* Ajusta el tamaño de la fuente si es necesario */
+    color: #000000; /* Color del label */
+    top: 49%;
+}
+/* Estilo del select */
+.floating-label select {
+    display: block;
+    width: 48%;
+    padding: 12px 15px;
+    font-size: 16px;
+    color: #585a5c;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #e3d6d6;
+    border-radius: 15px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    appearance: none;
+}
+
+    /* Cambios de estilo al hacer focus en el select */
+    .floating-label select:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+        outline: none;
+    }
+
+/* Flecha personalizada */
+.floating-label select {
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"%3E%3Cpath fill="%23495057" d="M2 0L0 2h4z"/%3E%3C/svg%3E');
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 10px 10px;
+}
+
+    /* Subir el label al hacer focus o cuando hay un valor seleccionado */
+    .floating-label select:focus ~ label,
+    .floating-label select:not([value=""]):valid ~ label {
+        top: -10px;
+        left: 10px;
+        font-size: 12px;
+        color: #007bff;
+    }
+
+    /* Placeholder y validación del select */
+    .floating-label select:invalid {
+        color: #6c757d;
+    }
+
+/* Estilo para los textos y etiquetas */
+.form-group label {
+    font-weight: 500;
+    color: #6c757d;
+}
+
+/* Estilos para los campos válidos e inválidos */
+.is-valid {
+    border-color: green;
+    box-shadow: 0 0 5px green;
+}
+
+.is-invalid {
+    border-color: red;
+    box-shadow: 0 0 5px red;
+}
+
+.text-danger {
+    font-size: 12px;
+    color: red;
+}
+
+
+/* Reglas en una sola línea */
+.password-rules {
+    font-size: 14px;
+    margin-top: 10px;
+    color: red; /* Por defecto, en rojo */
+}
+
+.rule {
+    margin-right: 5px; /* Espacio entre reglas */
+    color: inherit;
+}
+
+    .rule.valid {
+        display: none; /* Ocultar reglas cumplidas */
+    }
+
+/* Cambiar borde del input según validez */
+input.valid {
+    border: 2px solid green;
+}
+
+input.invalid {
+    border: 2px solid red;
+}
