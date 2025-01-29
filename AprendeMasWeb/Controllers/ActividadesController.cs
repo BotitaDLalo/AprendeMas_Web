@@ -40,7 +40,8 @@ namespace AprendeMasWeb.Controllers
                         fechaCreacionActividad = ma.Actividades!.FechaCreacion.ToString("yyyy-MM-ddTHH:mm:ss"),
                         fechaLimiteActividad = ma.Actividades!.FechaLimite.ToString("yyyy-MM-ddTHH:mm:ss"),
                         tipoActividadId = ma.Actividades!.TipoActividadId,
-                        materiaId = ma.MateriaId
+                        puntaje = ma.Actividades!.Puntaje,
+                        materiaId = ma.MateriaId,
                     })
                     .ToList();
 
@@ -92,6 +93,7 @@ namespace AprendeMasWeb.Controllers
                         fechaCreacionActividad = ma.Actividades!.FechaCreacion.ToString("yyyy-MM-ddTHH:mm:ss"),
                         fechaLimiteActividad = ma.Actividades!.FechaLimite.ToString("yyyy-MM-ddTHH:mm:ss"),
                         tipoActividadId = ma.Actividades!.TipoActividadId,
+                        puntaje = ma.Actividades!.Puntaje,
                         materiaId = ma.MateriaId
                     })
                     .ToList();
@@ -178,7 +180,7 @@ namespace AprendeMasWeb.Controllers
                 }
 
                 // Generar automáticamente la fecha de creación
-                nuevaActividad.FechaCreacion = DateTime.UtcNow;
+                nuevaActividad.FechaCreacion = DateTime.Now;
 
                 // Obtener o crear el tipo de actividad si no se especifica
                 if (nuevaActividad.TipoActividadId == 0)

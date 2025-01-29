@@ -127,15 +127,16 @@ namespace AprendeMasWeb.Controllers
             }
         }
 
-        [HttpPost("CancelarEnvioActividadAlumno")]
-        public async Task<ActionResult> CancelarEnvioActividadAlumno([FromBody] CancelarEnvioActividadAlumno datosCancelacion)
-        {
-            try
-            {
-                var alumnoActividadId = datosCancelacion.AlumnoActividadId;
-                var alumnoId = datosCancelacion.AlumnoId;
-                var actividadId = datosCancelacion.ActividadId;
+        //[HttpPost("CancelarEnvioActividadAlumno")]
+        //public async Task<ActionResult> CancelarEnvioActividadAlumno([FromBody] CancelarEnvioActividadAlumno datosCancelacion)
+        //{
+        //    try
+        //    {
+        //        var alumnoActividadId = datosCancelacion.AlumnoActividadId;
+        //        var alumnoId = datosCancelacion.AlumnoId;
+        //        var actividadId = datosCancelacion.ActividadId;
 
+<<<<<<< Updated upstream
                 var alumnoActividadEliminar = _context.tbAlumnosActividades.Include(a => a.EntregablesAlumno)
                     .FirstOrDefault(a => a.AlumnoActividadId == alumnoActividadId && a.AlumnoId == alumnoId);
 
@@ -145,35 +146,46 @@ namespace AprendeMasWeb.Controllers
                     {
                         _context.tbEntregablesAlumno.Remove(alumnoActividadEliminar.EntregablesAlumno);
                     }
+=======
+        //        var alumnoActividadEliminar = _context.tbAlumnosActividades.Include(a => a.EntregablesAlumno)
+        //            .FirstOrDefault(a => a.AlumnoActividadId == alumnoActividadId && a.AlumnoId == alumnoId);
 
-                    _context.tbAlumnosActividades.Remove(alumnoActividadEliminar);
-                    await _context.SaveChangesAsync();
+        //        if (alumnoActividadEliminar != null)
+        //        {
+        //            if (alumnoActividadEliminar.EntregablesAlumno != null)
+        //            {
+        //                _context.tbEntregablesAlumno.Remove(alumnoActividadEliminar.EntregablesAlumno);
+        //            }
+>>>>>>> Stashed changes
 
-                    var datosAlumnoActividad = await _context.tbAlumnosActividades.Where(a => a.ActividadId == actividadId && a.AlumnoId == alumnoId).FirstOrDefaultAsync();
+        //            _context.tbAlumnosActividades.Remove(alumnoActividadEliminar);
+        //            await _context.SaveChangesAsync();
+
+        //            var datosAlumnoActividad = await _context.tbAlumnosActividades.Where(a => a.ActividadId == actividadId && a.AlumnoId == alumnoId).FirstOrDefaultAsync();
 
 
-                    //var alumnoActividadId = datosAlumnoActividad?.AlumnoActividadId ?? 0;
+        //            //var alumnoActividadId = datosAlumnoActividad?.AlumnoActividadId ?? 0;
 
-                    var datosEntregable = await _context.tbEntregablesAlumno.Where(a => a.AlumnoActividadId == alumnoActividadId).FirstOrDefaultAsync();
+        //            var datosEntregable = await _context.tbEntregablesAlumno.Where(a => a.AlumnoActividadId == alumnoActividadId).FirstOrDefaultAsync();
 
-                    if (datosAlumnoActividad != null && datosEntregable != null)
-                    {
-                        return Ok(new
-                        {
-                            AlumnoActividadId = alumnoActividadId,
-                            Respuesta = datosEntregable?.Respuesta ?? "",
-                            Status = datosAlumnoActividad.EstatusEntrega
-                        });
-                    }
-                }
+        //            if (datosAlumnoActividad != null && datosEntregable != null)
+        //            {
+        //                return Ok(new
+        //                {
+        //                    AlumnoActividadId = alumnoActividadId,
+        //                    Respuesta = datosEntregable?.Respuesta ?? "",
+        //                    Status = datosAlumnoActividad.EstatusEntrega
+        //                });
+        //            }
+        //        }
 
-                return BadRequest();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-        }
+        //        return BadRequest();
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return BadRequest();
+        //    }
+        //}
 
         [HttpPost("AlumnoGrupoCodigo")]
         public async Task<ActionResult> RegistrarAlumnoGrupoCodigo([FromBody] AlumnoGMRegistroCodigo alumnoGrupoRegistro)

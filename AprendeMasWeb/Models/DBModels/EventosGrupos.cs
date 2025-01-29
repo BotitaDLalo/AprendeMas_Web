@@ -9,9 +9,9 @@ namespace AprendeMasWeb.Models.DBModels
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public required int EventoGrupoId { get; set; }
+        public int EventoGrupoId { get; set; }
 
-        public required int FechaId { get; set; }
+        public int? FechaId { get; set; }
 
         public required int GrupoId { get; set; }
 

@@ -106,14 +106,19 @@ namespace AprendeMasWeb.Controllers
             {
                 return await ConsultaMaterias();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return BadRequest(new
-                {
-                    mensaje = "Hubo un error en ObtenerMaterias"
-                });
+                Console.WriteLine($"Error en ObtenerMaterias: {e.Message}"); // Log de la excepción
+                throw; // Relanza la excepción original sin modificarla
             }
         }
+
+
+
+        //return BadRequest(new
+        //{
+        //    mensaje = "Hubo un error en ObtenerMaterias"
+        //});
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Materias>> ObtenerMateriaUnica(int id)

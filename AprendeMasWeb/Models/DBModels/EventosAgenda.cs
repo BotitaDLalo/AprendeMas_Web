@@ -8,15 +8,21 @@ namespace AprendeMasWeb.Models.DBModels
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public required int EventoId { get; set; }
+        public int EventoId { get; set; }
 
         public required int DocenteId { get; set; }
 
         public virtual Docentes? Docentes { get; set; }
 
-        public required DateTime FechaMarcada {  get; set; }
+        public required DateTime FechaInicio { get; set; }
+
+        public required DateTime FechaFinal { get; set; }
+        
+        public required string Titulo { get; set; }
 
         public required string Descripcion { get; set; }
+
+        public required string Color { get; set; }
 
         public virtual ICollection<EventosGrupos>? EventosGrupos { get; set; }
 
