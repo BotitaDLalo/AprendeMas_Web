@@ -99,6 +99,48 @@ namespace AprendeMasWeb.Controllers
             }
         }
 
+        public async Task<List<Materias>> ConsultaMateriasPorDocente(int docenteId)
+        {
+            try
+            {
+                var lsGruposMaterias = await _context.tbGruposMaterias.Select(a => a.MateriaId).ToListAsync();
+
+                var lsMateriasSinGrupo = await _context.tbMaterias
+                    .Where(a => a.DocenteId == docenteId && !lsGruposMaterias.Contains(a.MateriaId))
+                    .ToListAsync();
+
+                return lsMateriasSinGrupo;
+            }
+            catch (Exception)
+            {
+                return [];
+            }
+        }
+
+        [HttpGet("ObtenerMateriasPorDocente")]
+        public async Task<ActionResult<List<Materias>>> ObtenerMateriasPorDocente(int docenteId)
+        {
+            try
+            {
+                var lsMaterias = await _context.tbMaterias.Where(a => a.DocenteId == docenteId)
+                    .Select(a => new
+                    {
+                        a.MateriaId,
+                        a.NombreMateria
+                    }).ToListAsync();
+
+                return Ok(lsMaterias);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new
+                {
+                    e.Message
+                });
+            }
+        }
+
+
         [HttpGet("ObtenerMaterias")]
         public async Task<ActionResult<List<Materias>>> ObtenerMaterias()
         {
@@ -106,19 +148,14 @@ namespace AprendeMasWeb.Controllers
             {
                 return await ConsultaMaterias();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Console.WriteLine($"Error en ObtenerMaterias: {e.Message}"); // Log de la excepción
-                throw; // Relanza la excepción original sin modificarla
+                return BadRequest(new
+                {
+                    mensaje = "Hubo un error en ObtenerMaterias"
+                });
             }
         }
-
-
-
-        //return BadRequest(new
-        //{
-        //    mensaje = "Hubo un error en ObtenerMaterias"
-        //});
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Materias>> ObtenerMateriaUnica(int id)
@@ -129,7 +166,7 @@ namespace AprendeMasWeb.Controllers
             return Ok(subject);
         }
 
-       
+
         [HttpPost("CrearMateriaSinGrupo")]
         public async Task<ActionResult> CrearMateriaSinGrupo([FromBody] Materias materia)
         {
@@ -240,7 +277,7 @@ namespace AprendeMasWeb.Controllers
         {
             try
             {
-                var lsMateriasAlumno = _context.tbAlumnosMaterias.Where(a => a.AlumnoId == alumnoId).Select(a=>a.MateriaId);
+                var lsMateriasAlumno = _context.tbAlumnosMaterias.Where(a => a.AlumnoId == alumnoId).Select(a => a.MateriaId);
 
                 var lsMateriasSinGrupo = await _context.tbMaterias.Where(a => lsMateriasAlumno.Contains(a.MateriaId)).ToListAsync();
 
