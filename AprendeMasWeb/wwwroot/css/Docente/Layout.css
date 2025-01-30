@@ -130,3 +130,29 @@ Estilos del submenu usuario*/
         transform: translateY(0);
     }
 }
+
+/* Contenedor del ícono y el nombre */
+.user-info {
+    display: flex;
+    align-items: center;
+    padding: 5px 0;
+}
+
+    /* Tamaño del ícono */
+    .user-info img.iconos1-nav {
+        width: 74px; /* Ajusta el tamaño según tus necesidades */
+        height: 34px; /* Asegura que el ícono sea cuadrado */
+    }
+
+    /* Nombre del usuario */
+    .user-info .dropdown-item {
+        margin: 0; /* Elimina márgenes del texto */
+        font-size: 13px; /* Ajusta el tamaño del texto */
+        color: #333; /* Color del texto */
+        font-weight: bold; /* Resalta el nombre */
+    }
+
+/* Botón de cerrar sesión */
+.dropdown-item button {
+    margin-top: 10px;
+}

@@ -16,6 +16,22 @@
 	@* Estilos de Fuentes *@
 	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
+	@* Estilos creacion de clases *@
+	<link rel="stylesheet" href="~/css/Alumno/Clases.css" asp-append-version="true" />
+
+	@* Estilos card materias *@
+	<link rel="stylesheet" href="~/css/Alumno/materias.css" asp-append-version="true" />
+
+
+	@* Estilos de materias(avisos,act, etc.) *@
+	<link rel="stylesheet" href="~/css/Alumno/Vistamaterias.css" asp-append-version="true" />
+
+	@* Estilos de notifiaciones *@
+	<link rel="stylesheet" href="~/css/Alumno/Notificaciones.css" asp-append-version="true" />
+
+	@* 	Estilos del calendario *@
+	<link rel="stylesheet" href="~/css/Alumno/Calendario.css" asp-append-version="true" />
+
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/AprendeMasWeb.styles.css" asp-append-version="true" />
@@ -43,27 +59,39 @@
 						</li>
 
 						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="Alumno" asp-action="Index">
+							<a id="calendario-icono" class="nav-link text-dark" href="#">
 								<img class="iconos-nav" src="@Url.Content("~/Iconos/AGENDA-26.svg")" alt="Icono de Calendario" />
 							</a>
+							<div id="calendario-panel" class="calendario-container">
+								<input type="text" id="calendario-input">
+							</div>
 						</li>
 
+
 						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="Alumno" asp-action="Index">
+							<a id="notificaciones-icono" class="nav-link text-dark" href="#">
 								<img class="iconos-nav" src="@Url.Content("~/Iconos/NOTIFICACIONES-26.svg")" alt="Icono de Notificaciones" />
 							</a>
+							<div id="notificaciones-panel" class="notificaciones-container">
+								<p>🔔 No tienes nuevas notificaciones</p>
+							</div>
 						</li>
+
 						<li class="nav-item dropdown">
 							<a href="#" class="nav-link text-dark " id="user-icon" onclick="toggleMenu(event)">
 								<img class="iconos-nav dropdown-toggle" src="@Url.Content("~/Iconos/PERFIL-26.svg")" alt="Icono de Usuario" />
 								
 							</a>
 							<div class="dropdown-menu" id="user-menu">
-								<p class="dropdown-item">@User.Identity.Name</p>
+								<div class="user-info">
+									<img class="iconos1-nav" src="@Url.Content("~/Iconos/PERFIL-26.svg")" alt="Icono de Usuario" />
+									<p class="dropdown-item">@User.Identity.Name</p>
+								</div>
 								<form asp-action="CerrarSesion" asp-controller="Cuenta" method="post" class="dropdown-item">
 									<button type="submit" class="btn btn-danger btn-sm w-100">Cerrar Sesión</button>
 								</form>
 							</div>
+
 						</li>
 
 
@@ -100,8 +128,17 @@
 	<div class="container">
 		<main role="main" class="pb-3">
 			@RenderBody()
+
+			<br />
+			<br />
+			
 		</main>
 	</div>
+
+
+@* 	Modales *@
+
+
 
 	<footer class="custom-footer">
 		<div class="footer-container">
@@ -153,6 +190,28 @@
 	<script src="~/js/site.js" asp-append-version="true"></script>
 	<script src="~/js/Docente/footer.js" asp-append-version="true"></script>
 	<script src="~/js/Alumnos/layout.js" asp-append-version="true"></script>
+
+	@* Estilos creacion de clases *@
+	<script src="~/js/Alumnos/Clases.js" asp-append-version="true"></script>
+	
+	@* Estilos card materias *@
+	<script src="~/js/Alumnos/materias.js" asp-append-version="true"></script>
+
+	@* Estilos de materias(avisos,act, etc.) *@
+	<script src="~/js/Alumnos/Vistamaterias.js" asp-append-version="true"></script>
+
+	@* Estilos de notifiaciones *@
+	<script src="~/js/Alumnos/Notificaciones.js" asp-append-version="true"></script>
+
+	@* 	Estilos del calendario *@
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+	<script src="~/js/Alumnos/Calendario.js" asp-append-version="true"></script>
+
+
 	@await RenderSectionAsync("Scripts", required: false)
+
+
 </body>
 </html>

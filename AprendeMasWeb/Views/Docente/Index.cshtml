@@ -6,7 +6,6 @@
 
 
 
-<h2>Gestión de Materias y Grupos</h2>
 
 <!-- Botones para abrir los modales -->
 <div class="d-flex gap-3">
@@ -15,6 +14,29 @@
 </div>
 
 <br /><br />
+
+<div class="materia-card-unique">
+
+    <button class="materia-menu-btn-unique" onclick="event.stopPropagation(); togglesMenu()">⋮</button>
+    <a asp-controller="Docente" asp-action="Materias" class="materia-card-link-unique">
+        <div class="materia-titulo-unique">Ciencias</div>
+
+    </a>
+    <hr />
+    <div class="materia-actividades-unique">Actividades pendientes: 2</div>
+    <div class="materia-iconos-unique">
+
+        <img class="iconos-nav" src="@Url.Content("~/Iconos/TABLA-26.svg")" alt="Icono de Inicio" />
+        <img class="iconos-nav" src="@Url.Content("~/Iconos/PAR-26.svg")" alt="Icono de Inicio" />
+        <img class="iconos-nav" src="@Url.Content("~/Iconos/ESTRELLA-26.svg")" alt="Icono de Inicio" />
+    </div>
+    <div class="materia-menu-unique" id="menuMateria">
+        <a href="#">Editar</a>
+        <a href="#">Eliminar</a>
+    </div>
+</div>
+
+
 
 <!-- Modales -->
 @Html.Partial("~/Views/Docente/MateriasModal.cshtml")
