@@ -8,6 +8,17 @@ namespace AprendeMasWeb.Controllers.WEB
     {
         public IActionResult Index()
         {
+            //Sin funcionar
+            // obtener el DocenteID del claim
+            var docenteIdClaim = User.FindFirst("DocenteId"); //Usar el nombre correcto del claim
+            if (docenteIdClaim != null)
+            {
+                ViewData["DocenteId"] = docenteIdClaim.Value;
+            }
+            else
+            {
+                ViewData["DocenteId"] = "No Encontrado";
+            }
             return View();
         }
 
@@ -17,9 +28,9 @@ namespace AprendeMasWeb.Controllers.WEB
             return View();
         }
 
-        public IActionResult Materias()
+        public IActionResult MateriasDetalles()
         {
-            // Lógica para mostrar las materias del docente
+            // Lógica para mostrar en vista cuando se accede a una materia. Nada de logica. para logica y consultas sera controlador api
             return View();
         }
     }
