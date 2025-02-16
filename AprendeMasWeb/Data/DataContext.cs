@@ -149,15 +149,17 @@ namespace AprendeMasWeb.Data
                 .OnDelete(DeleteBehavior.NoAction);
 
             //Calificaciones
+            //modelBuilder.Entity<Calificaciones>()
+            //    .HasOne(a => a.Actividades)
+            //    .WithMany(a => a.Calificaciones)
+            //    .HasForeignKey(a => a.ActividadId)
+            //    .OnDelete(DeleteBehavior.NoAction); 
+            
             modelBuilder.Entity<Calificaciones>()
-                .HasOne(a => a.Actividades)
+                .HasOne(a => a.EntregablesAlumno)
                 .WithMany(a => a.Calificaciones)
-                .HasForeignKey(a => a.ActividadId)
+                .HasForeignKey(a => a.EntregaId)
                 .OnDelete(DeleteBehavior.NoAction);
-
-
-
-
 
 
 

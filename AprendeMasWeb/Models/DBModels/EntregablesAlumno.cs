@@ -18,5 +18,7 @@ namespace AprendeMasWeb.Models.DBModels
         public string? Respuesta {  get; set; }
 
         public AlumnosActividades? AlumnosActividades { get; set; }
+        public virtual ICollection<Calificaciones>? Calificaciones { get; set; }
+
     }
 }

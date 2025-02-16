@@ -8,15 +8,18 @@ namespace AprendeMasWeb.Models.DBModels
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public required int CalificacionId { get; set; }
+        public int CalificacionId { get; set; }
 
-        public required int ActividadId { get; set; }
+        //public required int ActividadId { get; set; }
 
-        public virtual Actividades? Actividades { get; set; }
+        //public virtual Actividades? Actividades { get; set; }
+
+        public required int EntregaId { get; set; }
 
         public required DateTime FechaCalificacionAsignada {  get; set; }
 
-        public required string Comentarios {  get; set; }
+        public string? Comentarios {  get; set; }
         public required int Calificacion { get; set; }
+        public virtual EntregablesAlumno? EntregablesAlumno { get; set; }
     }
 }
