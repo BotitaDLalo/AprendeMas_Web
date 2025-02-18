@@ -56,6 +56,7 @@ namespace AprendeMasWeb.Controllers
                 {
                     return Ok(new
                     {
+                        EntregaId = datosEntregable.EntregaId,
                         AlumnoActividadId = alumnoActividadId,
                         Respuesta = datosEntregable?.Respuesta ?? "",
                         Status = datosAlumnoActividad.EstatusEntrega
@@ -76,10 +77,12 @@ namespace AprendeMasWeb.Controllers
             try
             {
 
-                var datosAlumnoActividad = await _context.tbAlumnosActividades.Where(a => a.ActividadId == ActividadId && a.AlumnoId == AlumnoId).FirstOrDefaultAsync();
+                var datosAlumnoActividad = await _context.tbAlumnosActividades.Where(a => a.ActividadId == ActividadId && a.AlumnoId == AlumnoId).Select(a => new{ a.AlumnoActividadId, a.FechaEntrega, a.EstatusEntrega}).FirstOrDefaultAsync();
 
 
                 var alumnoActividadId = datosAlumnoActividad?.AlumnoActividadId ?? 0;
+
+                var fechaEntrega = datosAlumnoActividad?.FechaEntrega;
 
                 var datosEntregable = await _context.tbEntregablesAlumno.Where(a => a.AlumnoActividadId == alumnoActividadId).FirstOrDefaultAsync();
 
@@ -87,9 +90,11 @@ namespace AprendeMasWeb.Controllers
                 {
                     return Ok(new
                     {
+                        EntregaId = datosEntregable.EntregaId,
                         AlumnoActividadId = alumnoActividadId,
                         Respuesta = datosEntregable?.Respuesta ?? "",
-                        Status = datosAlumnoActividad.EstatusEntrega
+                        Status = datosAlumnoActividad.EstatusEntrega,
+                        FechaEntrega = fechaEntrega
                     });
                 }
 
@@ -265,48 +270,49 @@ namespace AprendeMasWeb.Controllers
                 int materiaId = alumnoGMRegistro.MateriaId;
 
 
+                //TODO: EN CASO DE REGISTRAR UN ALUMNO A UNA MATERIA CON UN GRUPO
+                //if (grupoId != 0 && materiaId != 0)
+                //{
+                //    foreach (var aluId in lsAlumnosId)
+                //    {
+                //        bool alumnoRegistradoGrupo = _context.tbAlumnosGrupos.Any(a => a.GrupoId == grupoId && a.AlumnoId == aluId);
+                //        bool alumnoRegistradoMateria = _context.tbAlumnosMaterias.Any(a => a.MateriaId == materiaId && a.AlumnoId == aluId);
+                //        if (!alumnoRegistradoGrupo)
+                //        {
+                //            AlumnosGrupos alumnosGrupos = new()
+                //            {
+                //                AlumnoId = aluId,
+                //                GrupoId = grupoId
+                //            };
+                //            await _context.tbAlumnosGrupos.AddAsync(alumnosGrupos);
+                //        }
+                //        else
+                //        {
+                //            BadRequest(new { mensaje = "El alumno ya esta registrado" });
+                //        }
 
-                if (grupoId != 0 && materiaId != 0)
-                {
-                    foreach (var aluId in lsAlumnosId)
-                    {
-                        bool alumnoRegistradoGrupo = _context.tbAlumnosGrupos.Any(a => a.GrupoId == grupoId && a.AlumnoId == aluId);
-                        bool alumnoRegistradoMateria = _context.tbAlumnosMaterias.Any(a => a.MateriaId == materiaId && a.AlumnoId == aluId);
-                        if (!alumnoRegistradoGrupo)
-                        {
-                            AlumnosGrupos alumnosGrupos = new()
-                            {
-                                AlumnoId = aluId,
-                                GrupoId = grupoId
-                            };
-                            await _context.tbAlumnosGrupos.AddAsync(alumnosGrupos);
-                        }
-                        else
-                        {
-                            BadRequest(new { mensaje = "El alumno ya esta registrado" });
-                        }
+                //        if (!alumnoRegistradoMateria)
+                //        {
+                //            AlumnosMaterias alumnosMaterias = new()
+                //            {
+                //                AlumnoId = aluId,
+                //                MateriaId = materiaId
+                //            };
+                //            await _context.tbAlumnosMaterias.AddAsync(alumnosMaterias);
+                //        }
+                //        else
+                //        {
+                //            BadRequest(new { mensaje = "El alumno ya esta registrado" });
+                //        }
+                //    }
+                //    _context.SaveChanges();
 
-                        if (!alumnoRegistradoMateria)
-                        {
-                            AlumnosMaterias alumnosMaterias = new()
-                            {
-                                AlumnoId = aluId,
-                                MateriaId = materiaId
-                            };
-                            await _context.tbAlumnosMaterias.AddAsync(alumnosMaterias);
-                        }
-                        else
-                        {
-                            BadRequest(new { mensaje = "El alumno ya esta registrado" });
-                        }
-                    }
-                    _context.SaveChanges();
+                //    var lsAlumnos = await ObtenerListaAlumnos(lsAlumnosId);
 
-                    var lsAlumnos = await ObtenerListaAlumnos(lsAlumnosId);
-
-                    return Ok(lsAlumnos);
-                }
-                else if (grupoId != 0)
+                //    return Ok(lsAlumnos);
+                //}
+                //else 
+                if (grupoId != 0)
                 {
                     foreach (var aluId in lsAlumnosId)
                     {
@@ -320,18 +326,18 @@ namespace AprendeMasWeb.Controllers
                                 GrupoId = grupoId
                             };
 
-                            List<int> lsMateriasId = await _context.tbGruposMaterias.Where(a => a.GrupoId == grupoId).Select(a => a.MateriaId).ToListAsync();
+                            //List<int> lsMateriasId = await _context.tbGruposMaterias.Where(a => a.GrupoId == grupoId).Select(a => a.MateriaId).ToListAsync();
 
-                            foreach (var matId in lsMateriasId)
-                            {
-                                AlumnosMaterias alumnosMaterias = new()
-                                {
-                                    AlumnoId = aluId,
-                                    MateriaId = matId
-                                };
+                            //foreach (var matId in lsMateriasId)
+                            //{
+                            //    AlumnosMaterias alumnosMaterias = new()
+                            //    {
+                            //        AlumnoId = aluId,
+                            //        MateriaId = matId
+                            //    };
 
-                                await _context.tbAlumnosMaterias.AddAsync(alumnosMaterias);
-                            }
+                            //    await _context.tbAlumnosMaterias.AddAsync(alumnosMaterias);
+                            //}
 
                             await _context.tbAlumnosGrupos.AddAsync(alumnosGrupos);
                         }
@@ -407,13 +413,23 @@ namespace AprendeMasWeb.Controllers
         {
             try
             {
+                int grupoId = indice.GrupoId;
                 int materiaId = indice.MateriaId;
 
-                List<int> lsAlumnosId = await _context.tbAlumnosMaterias.Where(a => a.MateriaId == materiaId).Select(a => a.AlumnoId).ToListAsync();
+                if (grupoId > 0 && materiaId > 0)
+                {
+                    List<int> lsAlumnosGruposId = await _context.tbAlumnosGrupos.Where(a=>a.GrupoId == grupoId).Select(a=>a.AlumnoId).ToListAsync();
+                    List<EmailVerificadoAlumno> lsAlumnos = await ObtenerListaAlumnos(lsAlumnosGruposId);
+                    return Ok(lsAlumnos);
+                }
+                else
+                {
+                    List<int> lsAlumnosId = await _context.tbAlumnosMaterias.Where(a => a.MateriaId == materiaId).Select(a => a.AlumnoId).ToListAsync();
 
-                List<EmailVerificadoAlumno> lsAlumnos = await ObtenerListaAlumnos(lsAlumnosId);
+                    List<EmailVerificadoAlumno> lsAlumnos = await ObtenerListaAlumnos(lsAlumnosId);
 
-                return Ok(lsAlumnos);
+                    return Ok(lsAlumnos);
+                }
             }
             catch (Exception e)
             {

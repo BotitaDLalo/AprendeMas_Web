@@ -4,22 +4,22 @@ using AprendeMasWeb.Models;
 using Microsoft.EntityFrameworkCore;
 using AprendeMasWeb.Models.DBModels;
 using AprendeMasWeb.Services;
+using System.Linq;
+using Microsoft.Identity.Client;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http.HttpResults;
+using System.Security.AccessControl;
 
 namespace AprendeMasWeb.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ActividadesController : ControllerBase
+    public class ActividadesController(UserManager <IdentityUser> userManager, DataContext context, ITiposActividadesService tiposActividadesService) : ControllerBase
     {
-        private readonly DataContext _context;
-        private readonly ITiposActividadesService _tiposActividadesService;
-
-        public ActividadesController(DataContext context, ITiposActividadesService tiposActividadesService)
-        {
-            _context = context;
-            _tiposActividadesService = tiposActividadesService;
-        }
-
+        private readonly DataContext _context = context;
+        private readonly ITiposActividadesService _tiposActividadesService = tiposActividadesService;
+        private readonly UserManager<IdentityUser> _userManager = userManager;
+        
         // Cambiar el tipo de retorno a ActionResult<List<object>> para que pueda ser usado en respuestas HTTP
         public async Task<List<object>> ConsultaActividades()
         {
@@ -302,6 +302,116 @@ namespace AprendeMasWeb.Controllers
         }
 
 
+        [HttpGet("ObtenerAlumnosEntregables")]
+        public async Task<ActionResult<RespuestaAlumnosEntregables>> ObtenerAlumnosEntregables(int actividadId)
+        {
+            try
+            {
+                List<AlumnoEntregable> lsEntregables = new List<AlumnoEntregable>();
+                RespuestaAlumnosEntregables respuestaAlumnos = new RespuestaAlumnosEntregables();
+                
+                var lsAlumnosActividades = await _context.tbAlumnosActividades
+                    .Where(a => a.ActividadId == actividadId && a.EstatusEntrega == true)
+                    .Include(a=>a.EntregablesAlumno)
+                    .Include(a=>a.Actividades)
+                    .Include(a=>a.Alumnos).ToListAsync();
+
+                int puntaje = lsAlumnosActividades.Select(a=>a.Actividades!.Puntaje).FirstOrDefault();
+
+                int totalEntregados = lsAlumnosActividades.Count();
+
+                respuestaAlumnos.ActividadId = actividadId;
+                respuestaAlumnos.Puntaje = puntaje;
+                respuestaAlumnos.TotalEntregados = totalEntregados;
+
+                foreach (var alumnoActividad in lsAlumnosActividades)
+                {
+                    AlumnoEntregable alumnoEntregable = new AlumnoEntregable();
+                    var alumno = alumnoActividad.Alumnos;
+                    var entregableAlumno = alumnoActividad.EntregablesAlumno;
+                    if (alumno != null && entregableAlumno!=null)
+                    {
+                        var entregaId = entregableAlumno.EntregaId;
+
+                        var alumnoId = alumno.AlumnoId;
+                        var userId = alumno.UserId;
+                        var nombres = alumno.Nombre;
+                        var apellidoPaterno = alumno.ApellidoPaterno;
+                        var apellidoMaterno = alumno.ApellidoMaterno;
+                        var user = await _userManager.FindByIdAsync(userId ?? "");
+
+                        if (user != null)
+                        {
+                            var userName = user.UserName;
+                            alumnoEntregable.AlumnoId = alumnoId;
+                            alumnoEntregable.NombreUsuario = userName ?? "";
+                            alumnoEntregable.Nombres = nombres ?? "";
+                            alumnoEntregable.ApellidoPaterno = apellidoPaterno ?? "";
+                            alumnoEntregable.ApellidoMaterno = apellidoMaterno ?? "";
+                        }
+
+                        alumnoEntregable.FechaEntrega = alumnoActividad.FechaEntrega;
+
+                        alumnoEntregable.EntregaId = entregableAlumno.EntregaId;
+                        alumnoEntregable.Respuesta = entregableAlumno.Respuesta ?? "";
+
+                        var calificacion = await _context.tbCalificaciones.Where(a=>a.EntregaId == entregaId).FirstOrDefaultAsync();
+
+                        alumnoEntregable.Calificacion = calificacion?.Calificacion ?? -1;
+
+                        lsEntregables.Add(alumnoEntregable);
+                    }
+
+                }
+
+                respuestaAlumnos.AlumnosEntregables = lsEntregables;
+
+
+                return Ok(respuestaAlumnos);
+            }
+            catch (Exception e)
+            {
+                return BadRequest($"Error: {e.Message}");
+            }
+        }
+
+
+        [HttpPost("AsignarCalificacion")]
+        public async Task<ActionResult> AsignarCalificacion([FromBody] AsignarCalificacionPeticion asignarCalificacion)
+        {
+            try
+            {
+                var entregaId = asignarCalificacion.EntregaId;
+                var fechaNuevaCalificacion = DateTime.Now;
+                var nuevaCalificacion = asignarCalificacion.Calificacion;
+
+                var calificacion = await _context.tbCalificaciones.Where(a=>a.EntregaId == entregaId).FirstOrDefaultAsync();
+                
+                if (calificacion==null)
+                {
+                    Calificaciones calificaciones = new Calificaciones()
+                    {
+                        Calificacion = nuevaCalificacion,
+                        EntregaId = entregaId,
+                        FechaCalificacionAsignada = fechaNuevaCalificacion
+                    };
+
+                    await _context.tbCalificaciones.AddAsync(calificaciones);
+                    _context.SaveChanges();
+                    return Ok();
+                }
+                else
+                {
+                    calificacion.Calificacion = nuevaCalificacion;
+                    calificacion.FechaCalificacionAsignada = fechaNuevaCalificacion;
+                    _context.SaveChanges();
+                    return Ok();
+                }
+            }catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
 
     }
 }

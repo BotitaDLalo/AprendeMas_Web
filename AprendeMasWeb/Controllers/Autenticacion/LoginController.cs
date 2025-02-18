@@ -133,13 +133,13 @@ namespace AprendeMasWeb.Controllers.Autenticacion
                 {
                     return BadRequest(new
                     {
-                        ErrorCode = ErrorCatalogo.ErrorCodigos.UsuarioNoEncontrado,
-                        ErrorMessage = ErrorCatalogo.GetMensajeError(ErrorCatalogo.ErrorCodigos.UsuarioNoEncontrado)
+                        ErrorCode = ErrorCatalogo.ErrorCodigos.CredencialesInvalidas,
+                        ErrorMessage = ErrorCatalogo.GetMensajeError(ErrorCatalogo.ErrorCodigos.CredencialesInvalidas)
                     });
                 }
 
                 //Verificar password
-                var user = await _signInManager.CheckPasswordSignInAsync(emailEncontrado, model.Clave, lockoutOnFailure: true);
+                var user = await _signInManager.CheckPasswordSignInAsync(emailEncontrado, model.Clave, lockoutOnFailure: false);
                 if (!user.Succeeded)
                 {
                     return BadRequest(new

@@ -23,7 +23,7 @@ namespace AprendeMasWeb.Controllers
         {
             _context = context;
         }
-        #region Profesor
+        #region Docente
         private static string ObtenerClave()
         {
             int length = 8;
@@ -49,8 +49,6 @@ namespace AprendeMasWeb.Controllers
             try
             {
                 var lsGrupos = _context.tbGrupos.Where(a=>a.DocenteId == docenteId).ToList();
-
-                //var lsGruposMaterias = _context.tbGruposMaterias.Where(a=> lsGrupos.Contains(a.GrupoId)).ToList();
 
                 var listaGruposMaterias = new List<object>();
                 foreach (var grupo in lsGrupos)
@@ -297,59 +295,6 @@ namespace AprendeMasWeb.Controllers
 
 
         #region Alumno
-        [HttpGet("ObtenerGruposAsignados")]
-        public async Task<ActionResult<List<Grupos>>> ObtenerGruposAsignados(int alumnoId)
-        {
-            try
-            {
-                var lsAlumnoGrupos = await _context.tbAlumnosGrupos.Where(a => a.AlumnoId == alumnoId).ToListAsync();
-
-                var listaGruposMaterias = new List<object>();
-                foreach (var grupo in lsAlumnoGrupos)
-                {
-
-                    var datosGrupo = await _context.tbGrupos.Where(a=>a.GrupoId == grupo.GrupoId).FirstOrDefaultAsync();
-
-                    if (datosGrupo!=null)
-                    {
-
-                        var lsMateriasId = await _context.tbGruposMaterias.Where(a => a.GrupoId == grupo.GrupoId).Select(a => a.MateriaId).ToListAsync();
-
-                        var lsMaterias = await _context.tbMaterias.Where(a => lsMateriasId.Contains(a.MateriaId)).Select(m => new
-                        {
-                            m.MateriaId,
-                            m.NombreMateria,
-                            m.Descripcion,
-                            actividades = _context.tbActividades.Where(a => a.MateriaId == m.MateriaId).ToList()
-                        }).ToListAsync();
-
-
-                        listaGruposMaterias.Add(new
-                        {
-                            grupoId = grupo.GrupoId,
-                            nombreGrupo = datosGrupo.NombreGrupo,
-                            descripcion = datosGrupo.Descripcion,
-                            codigoAcceso = datosGrupo.CodigoAcceso,
-                            codigoColor = datosGrupo.CodigoColor,
-                            materias = lsMaterias
-                        });
-                    }
-                }
-
-
-                return Ok(listaGruposMaterias);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(new
-                {
-                    e.Message
-                });
-            }
-        }
-
-
-
         [HttpGet("ObtenerGruposMateriasAlumno")]
         public async Task<ActionResult<List<Grupos>>> ObtenerGruposMateriasAlumno(int alumnoId)
         {
@@ -400,18 +345,5 @@ namespace AprendeMasWeb.Controllers
 
 
         #endregion
-
-        //[HttpPost]
-        //public async Task<IActionResult> EliminarGrupo([FromBody] )
-        //{
-        //    try
-        //    {
-
-        //    }
-        //    catch (Exception e)
-        //    {
-
-        //    }
-        //}
     }
 }

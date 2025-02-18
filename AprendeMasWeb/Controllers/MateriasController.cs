@@ -19,7 +19,7 @@ namespace AprendeMasWeb.Controllers
             _context = context;
         }
 
-        #region Profesor
+        #region Docente
         private static string ObtenerClave()
         {
             int length = 8;
@@ -117,17 +117,23 @@ namespace AprendeMasWeb.Controllers
             }
         }
 
-        [HttpGet("ObtenerMateriasPorDocente")]
-        public async Task<ActionResult<List<Materias>>> ObtenerMateriasPorDocente(int docenteId)
+        [HttpGet("ObtenerMateriasDocente")]
+        public async Task<ActionResult<List<Materias>>> ObtenerMateriasSinGrupoDocente(int docenteId)
         {
             try
             {
-                var lsMaterias = await _context.tbMaterias.Where(a => a.DocenteId == docenteId)
-                    .Select(a => new
-                    {
-                        a.MateriaId,
-                        a.NombreMateria
-                    }).ToListAsync();
+                List<int> lsMateriasId = await _context.tbMaterias.Where(a => a.DocenteId == docenteId).Select(a => a.MateriaId).ToListAsync();
+
+                List<int> lsGruposMateriasId = await _context.tbGruposMaterias.Where(a => lsMateriasId.Contains(a.MateriaId)).Select(a=>a.MateriaId).ToListAsync();
+
+                lsMateriasId = lsMateriasId.Where(a=>!lsGruposMateriasId.Contains(a)).ToList();
+
+                var lsMaterias = await _context.tbMaterias.Where(a => lsMateriasId.Contains(a.MateriaId)).Select(a => new
+                {
+                    a.MateriaId,
+                    a.NombreMateria,
+                    actividades = _context.tbActividades.Where(b=>b.MateriaId == a.MateriaId).ToList()
+                }).ToListAsync();
 
                 return Ok(lsMaterias);
             }
@@ -272,16 +278,35 @@ namespace AprendeMasWeb.Controllers
 
         #region Alumno
 
-        [HttpGet("ObtenerMateriasAsignadas")]
-        public async Task<ActionResult<List<Materias>>> ObtenerMateriasAsignadas(int alumnoId)
+        [HttpGet("ObtenerMateriasAlumno")]
+        public async Task<ActionResult<List<Materias>>> ObtenerMateriasSinGrupoAlumno(int alumnoId)
         {
             try
             {
-                var lsMateriasAlumno = _context.tbAlumnosMaterias.Where(a => a.AlumnoId == alumnoId).Select(a => a.MateriaId);
+                var lsMateriasAlumnoId = _context.tbAlumnosMaterias.Where(a => a.AlumnoId == alumnoId).Select(a => a.MateriaId);
 
-                var lsMateriasSinGrupo = await _context.tbMaterias.Where(a => lsMateriasAlumno.Contains(a.MateriaId)).ToListAsync();
+                var lsMateriasSinGrupo = await _context.tbMaterias.Where(a => lsMateriasAlumnoId.Contains(a.MateriaId)).Select(a => new
+                {
+                    a.MateriaId,
+                    a.NombreMateria,
+                    a.Descripcion,
+                    actividades = _context.tbActividades.Where(b=>b.MateriaId== a.MateriaId).ToList()
+                }).ToListAsync();
 
-                return lsMateriasSinGrupo;
+                //foreach (var materia in lsMateriasSinGrupo)
+                //{
+                //    var laMaterias = lsMateriasSinGrupo.Select(a => new
+                //    {
+                //        a.MateriaId,
+                //        a.NombreMateria,
+                //        a.Descripcion,
+                //        actividades = _context.tbActividades.Where(b => b.MateriaId == a.MateriaId).ToList()
+                //    });
+
+                //    lsMateriasActividades.Add(laMaterias);
+                //}
+
+                return Ok(lsMateriasSinGrupo);
             }
             catch (Exception e)
             {
