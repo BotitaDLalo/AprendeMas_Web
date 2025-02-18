@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "GruposModal";
 }
 
@@ -17,7 +16,7 @@
                 <!-- Formulario para crear o editar grupos -->
                 <form id="gruposForm">
                     <div class="mb-3">
-                        <label for="nombreGrupo" class="form-label">Nombre del Grupo</label>
+                        <label for="nombreGrupo" class="form-label">Nombre del Grupo <span class="text-danger">Campo Requerido*</span>  </label>
                         <input type="text" class="form-control" id="nombreGrupo" placeholder="Ingrese el nombre del grupo" required>
                     </div>
                     <div class="mb-3">
@@ -27,16 +26,16 @@
                     <div class="mb-3">
                         <label for="codigoColorGrupo" class="form-label">Color</label>
                         <select class="form-select" id="codigoColorGrupo">
-                            <option value="#ff0000">Rojo</option>
-                            <option value="#00ff00">Verde</option>
-                            <option value="#0000ff">Azul</option>
+                            <option value="#ffc0cb">Rosa Suave</option>
+                            <option value="#669966">Verde oliva</option>
+                            <option value="#99ccff">Azul cielo</option>
                             <!-- Agregar más colores según necesidad -->
                         </select>
                     </div>
                 </form>
-                <div id="listaGrupos">
-                    <!-- Aquí se renderiza la lista de grupos -->
-                </div>
+                <!--<div id="listaGrupos">
+                    <!-- Aquí se renderiza la lista de grupos
+                  </div> -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -45,3 +44,15 @@
         </div>
     </div>
 </div>
+
+<!--
+<script>
+    document.getElementById("gruposModal").addEventListener("show.bs.modal", function() {
+        const docenteId = 1; // ⚠️ Aquí pon el ID del docente actual dinámicamente
+        cargarGrupos(docenteId);
+    });
+
+    function abrirGrupo(grupoId) {
+        window.location.href = `/Docente/ContenidoGrupo/${grupoId}`;
+    }
+</script>-->

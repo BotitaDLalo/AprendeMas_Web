@@ -22,5 +22,11 @@ namespace AprendeMasWeb.Controllers.WEB
             // Lógica para mostrar las actividades del alumno
             return View();
         }
+
+        public IActionResult Materia()
+        {
+            // Lógica para mostrar las actividades del alumno
+            return View();
+        }
     }
 }

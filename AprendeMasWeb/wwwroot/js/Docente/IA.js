@@ -5,6 +5,14 @@
     const sendMessage = document.getElementById("sendMessage");
     const userInput = document.getElementById("userInput");
     const chatContent = document.getElementById("chatContent");
+    const chatModal = document.querySelector(".chat-modal");
+
+
+    // Función para alternar el modal
+    chatIcon.addEventListener("click", function (event) {
+        event.preventDefault();
+        chatModal.classList.toggle("active");
+    });
 
     chatIcon.addEventListener("click", function (e) {
         e.preventDefault();
@@ -24,6 +32,14 @@
             sendUserMessage();
         }
     });
+
+    // Cierra el modal al hacer clic fuera de él
+    document.addEventListener("click", function (event) {
+        if (!chatModal.contains(event.target) && !chatIcon.contains(event.target)) {
+            chatModal.classList.remove("active");
+        }
+    });
+
 
     const geminiApiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=AIzaSyAoXeYbMKSLVxFsAFgHF9rJOppK8Xz2txg";
 
