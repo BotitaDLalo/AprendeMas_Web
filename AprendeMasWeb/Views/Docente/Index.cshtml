@@ -1,22 +1,40 @@
 ﻿@{
     Layout = "~/Views/Shared/_LayoutDocente.cshtml";
     ViewData["Title"] = "Inicio - Docente";
+    /*Modales utilizados*/
+    @Html.Partial("~/Views/Docente/GruposModal.cshtml")
+    @Html.Partial("~/Views/Docente/MateriasModal.cshtml")
 }
 
+@section Scripts {
+    <script src="~/js/Docente/Grupos/docente.js"></script>
+}
 
 
 
 <h2>Gestión de Materias y Grupos</h2>
 
-<!-- Botones para abrir los modales -->
+<!-- Botones para abrir los modales de creacion de grupos y materias -->
 <div class="d-flex gap-3">
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#materiasModal">Gestionar Materias</button>
-    <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#gruposModal">Gestionar Grupos</button>
+    <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#gruposModal" id="gestionarGruposBtn">Gestionar Grupos</button>
 </div>
 
-<br /><br />
-
-<!-- Modales -->
-@Html.Partial("~/Views/Docente/MateriasModal.cshtml")
 <br />
-@Html.Partial("~/Views/Docente/GruposModal.cshtml")
+<br />
+<!-- Contenedor donde se mostrarán los grupos -->
+<div id="listaGrupos" class="mt-4">
+    <!-- Aquí aparecerán la cards de los grupos después de crearlos lo controla docente.js-->
+</div>
+
+<div class="divider"></div>
+
+<div class="section-title">
+    Materias sin grupo registrado
+</div>
+
+<!-- Contenedor donde se mostraran las materias que no tienen asignado un grupo-->
+
+<div id="listaMateriasSinGrupo" class="mt-4">
+    <!--Aqui se mostraran las materias sin grupo despues de crearlos. -->
+</div>

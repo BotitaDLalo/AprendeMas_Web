@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Threading.Tasks;
-
+using AprendeMasWeb.Data; //Agregar referencia al contexto
+using AprendeMasWeb.Models.DBModels; //Se agrega referencia a los modelos
+using Microsoft.EntityFrameworkCore; // Agregar para consultas async con _context
 
 namespace AprendeMasWeb.Controllers.WEB
 {
@@ -9,19 +12,18 @@ namespace AprendeMasWeb.Controllers.WEB
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly DataContext _context; //Agregar context
 
-        public CuentaController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager)
+        public CuentaController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, DataContext context)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _context = context; //Asignar context
         }
-
-
 
         [HttpGet]
         public IActionResult IniciarSesion()
         {
-
             return View();
         }
 
@@ -38,6 +40,27 @@ namespace AprendeMasWeb.Controllers.WEB
                 var user = await _userManager.FindByEmailAsync(email);
                 if (user != null)
                 {
+                    //Buscar al docente en la base de datos
+                    var docente = await _context.tbDocentes.FirstOrDefaultAsync(d => d.UserId == user.Id);
+
+                    if (docente != null)
+                    {
+                        List<Claim> claims = new List<Claim>()
+                        {
+                            new Claim("DocenteId",docente.DocenteId.ToString()) //Aqui se guarda el DocenteId en claim para ser utilizado en diferentes controllers
+                        };
+
+                        //Crear un claimsidentity con los claims
+                        var claimsIdentity = new ClaimsIdentity(claims, "login");
+                        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+                        //signIn el usuario con los claims adicionales
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+
+                        //Agregar los claims al usuario autenticado
+                        HttpContext.User = claimsPrincipal;
+                    }
+
                     var roles = await _userManager.GetRolesAsync(user);
                     if (roles.Contains("Alumno"))
                     {
@@ -52,7 +75,6 @@ namespace AprendeMasWeb.Controllers.WEB
 
             ModelState.AddModelError(string.Empty, "Correo o contraseña incorrectos.");
             return View();
-
         }
 
         [HttpPost]

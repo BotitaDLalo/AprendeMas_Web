@@ -1,0 +1,31 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutDocente.cshtml";
+    ViewData["Title"] = "Detalles de Materias";
+}
+
+@section Scripts {
+    <script src="~/js/Docente/Grupos/materia.js"></script>
+    <link rel="stylesheet" href="~/css/Docente/materias.css" />
+}
+
+
+<div class="materia-container">
+    <div class="materia-header" id="materiaHeader" style="background-color: #d63384;">
+        <h1> <span id="materiaNombre"></span> </h1>
+        <div class="materia-info">
+            <span>Código de clase: <strong id="codigoAcceso">...</strong></span>
+            <i class="fas fa-cog"></i>
+        </div>
+    </div>
+    <nav class="materia-nav">
+        <button class="tab-button active" onclick="cambiarSeccion('avisos')">Avisos</button>
+        <button class="tab-button" onclick="cambiarSeccion('actividades')">Actividades</button>
+        <button class="tab-button" onclick="cambiarSeccion('alumnos')">Alumnos</button>
+        <button class="tab-button" onclick="cambiarSeccion('calificaciones')">Calificaciones</button>
+    </nav>
+    <div class="materia-content" id="contenidoMateria">
+        <p>Selecciona una opción para ver su contenido.</p>
+    </div>
+</div>
+
+

@@ -20,6 +20,20 @@
 
     @* Estilos de Fuentes *@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    @* 	Estilos del calendario *@
+    <link rel="stylesheet" href="~/css/Docente/Calendario.css" asp-append-version="true" />
+
+    @* Estilos de notifiaciones *@
+    <link rel="stylesheet" href="~/css/Docente/Notificaciones.css" asp-append-version="true" />
+
+    @* Estilos card materias *@
+    <link rel="stylesheet" href="~/css/Docente/Materias.css" asp-append-version="true" />
+
+    @* Estilos de materias(avisos,act, etc.) *@
+    <link rel="stylesheet" href="~/css/Docente/VistaMateriasD.css" asp-append-version="true" />
+
+
 </head>
 <body>
     <header>
@@ -41,17 +55,29 @@
                                 <img class="iconos-nav" src="@Url.Content("~/Iconos/1-26.svg")" alt="Icono de Inicio" />
                             </a>
                         </li>
-                        
+
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Docente" asp-action="Index">
+                            <a id="calendario-icono" class="nav-link text-dark" href="#">
                                 <img class="iconos-nav" src="@Url.Content("~/Iconos/AGENDA-26.svg")" alt="Icono de Calendario" />
                             </a>
+                            <div id="calendario-panel" class="calendario-container">
+                                <input type="text" id="calendario-input">
+                            </div>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link text-dark" id="chatIcon" href="#">
                                 <img class="iconos-nav" src="@Url.Content("~/Iconos/IA-26.svg")" alt="Icono de Chat IA" />
                             </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a id="notificaciones-icono" class="nav-link text-dark" href="#">
+                                <img class="iconos-nav" src="@Url.Content("~/Iconos/NOTIFICACIONES-26.svg")" alt="Icono de Notificaciones" />
+                            </a>
+                            <div id="notificaciones-panel" class="notificaciones-container">
+                                <p>🔔 No tienes nuevas notificaciones</p>
+                            </div>
                         </li>
 
                         <!-- Modal lateral para el chat de la IA -->
@@ -79,7 +105,10 @@
 
                             </a>
                             <div class="dropdown-menu" id="user-menu">
-                                <p class="dropdown-item">@User.Identity.Name</p>
+                                <div class="user-info">
+                                    <img class="iconos1-nav" src="@Url.Content("~/Iconos/PERFIL-26.svg")" alt="Icono de Usuario" />
+                                    <p class="dropdown-item">@User.Identity.Name</p>
+                                </div>
                                 <form asp-action="CerrarSesion" asp-controller="Cuenta" method="post" class="dropdown-item">
                                     <button type="submit" class="btn btn-danger btn-sm w-100">Cerrar Sesión</button>
                                 </form>
@@ -140,6 +169,22 @@
         </div>
     </div>
 
+
+
+    @* 	Estilos del calendario *@
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    <script src="~/js/Docente/Grupos/Calendario.js" asp-append-version="true"></script>
+
+    @* Estilos de notifiaciones *@
+    <script src="~/js/Docente/Grupos/Notificaciones.js" asp-append-version="true"></script>
+
+    @* Estilos card materias *@
+    <script src="~/js/Docente/Grupos/Materias.js" asp-append-version="true"></script>
+
+    @* Estilos de materias(avisos,act, etc.) *@
+    <script src="~/js/Docente/Grupos/VistaMateriasD.js" asp-append-version="true"></script>
 
   
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
