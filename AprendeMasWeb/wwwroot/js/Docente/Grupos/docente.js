@@ -1,6 +1,7 @@
 ﻿
 //Generar algun claim para reemplazar en la consulta deseada. 
 
+//Me guarda las materias las asigna sin grupo, no hay enlace, son las que se guarda rellenar el modal de MateriasModal ------------------
 async function guardarMateriaSinGrupo() { //Logica para guardar materia
     const nombre = document.getElementById("nombreMateria").value;
     const descripcion = document.getElementById("descripcionMateria").value;
@@ -28,6 +29,105 @@ async function guardarMateriaSinGrupo() { //Logica para guardar materia
         alert('Error al guardar la materia.');
     }
 }
+//Guarda los grupos del modal GruposModal -------------------------------------------------------------
+
+async function guardarGrupo() { // Lógica para guardar el grupo
+    const nombre = document.getElementById("nombreGrupo").value;
+    const descripcion = document.getElementById("descripcionGrupo").value;
+    const color = document.getElementById("codigoColorGrupo").value;
+    const checkboxes = document.querySelectorAll(".materia-checkbox:checked");
+
+    if (nombre.trim() === '') {
+        alert('Ingrese Nombre Del Grupo.');
+        return;
+    }
+
+    // Obtener IDs de las materias seleccionadas
+    const materiasSeleccionadas = Array.from(checkboxes).map(cb => cb.value);
+
+    const response = await fetch('/api/GruposApi/CrearGrupo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            NombreGrupo: nombre,
+            Descripcion: descripcion,
+            CodigoColor: color,
+            DocenteId: 2 // Remplazar por el claim que usa el docente.
+        })
+    });
+
+    if (response.ok) {
+        const grupoCreado = await response.json(); // Obtener el ID del grupo creado
+
+        if (materiasSeleccionadas.length > 0) {
+            await asociarMateriasAGrupo(grupoCreado.GrupoId, materiasSeleccionadas);
+        }
+
+        alert('Grupo guardado con éxito.');
+        document.getElementById("gruposForm").reset();
+        cargarGrupos(); // Función para recargar la lista de grupos
+    } else {
+        alert('Error al guardar el grupo.');
+    }
+}
+
+// Función para asociar materias al grupo
+async function asociarMateriasAGrupo(grupoId, materias) {
+    const response = await fetch('/api/GruposApi/AsociarMaterias', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            GrupoId: grupoId,
+            MateriaIds: materias
+        })
+    });
+
+    if (!response.ok) {
+        alert('Error al asociar materias al grupo.');
+    }
+}
+
+
+// Función para cargar las materias disponibles en el modal 
+async function cargarMaterias() {
+    try {
+        const response = await fetch('/api/MateriasApi/ObtenerMateriasSinGrupo/2'); // solo  para checar funcionamiento se agrega la funcion de cargar materias sin grupo
+        if (response.ok) {
+            const materias = await response.json();
+            const contenedorMaterias = document.getElementById("materiasLista");
+           // contenedorMaterias.innerHTML = ""; // Limpiar antes de agregar
+
+            if (materias.length === 0) {
+                contenedorMaterias.innerHTML = "<p>No hay materias disponibles.</p>";
+                return;
+            }
+
+            materias.forEach(materia => {
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.className = "materia-checkbox";
+                checkbox.value = materia.materiaId;
+
+                const label = document.createElement("label");
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(" " + materia.nombreMateria));
+
+                const div = document.createElement("div");
+                div.className = "form-check";
+                div.appendChild(label);
+
+                contenedorMaterias.appendChild(div);
+            });
+        }
+    } catch (error) {
+        console.error("Error al cargar materias:", error);
+    }
+}
+
+// Llamar a cargarMaterias cuando se abre el modal de grupos
+document.getElementById("gruposModal").addEventListener("shown.bs.modal", cargarMaterias);
+
+/*
 async function guardarGrupo() { //Logica para guadar el grupo
     const nombre = document.getElementById("nombreGrupo").value;
     const descripcion = document.getElementById("descripcionGrupo").value;
@@ -59,8 +159,9 @@ async function guardarGrupo() { //Logica para guadar el grupo
     }
 }
 
+*/
 
-
+// Cargar materias sin grupo -------------------------------------------------------
 async function cargarMateriasSinGrupo(docenteId) {
     docenteId = 2;
     console.log("DocenteId: ", docenteId);
