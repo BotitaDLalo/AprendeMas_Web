@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AprendeMasWeb.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250122074756_BD WEB")]
-    partial class BDWEB
+    [Migration("20250222080516_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
