@@ -1,8 +1,10 @@
 ﻿
-//Generar algun claim para reemplazar en la consulta deseada. 
+//Generar algun claim para reemplazar en la consulta deseada.
 
-//Me guarda las materias las asigna sin grupo, no hay enlace, son las que se guarda rellenar el modal de MateriasModal ------------------
-async function guardarMateriaSinGrupo() { //Logica para guardar materia
+//usar el claim como variable global dentro del inicio de sesion.
+
+//Guarda las materias en la tabla tbMaterias -------------------
+async function guardarMateriaSinGrupo() { 
     const nombre = document.getElementById("nombreMateria").value;
     const descripcion = document.getElementById("descripcionMateria").value;
     const color = document.getElementById("codigoColorMateria").value;
@@ -29,7 +31,7 @@ async function guardarMateriaSinGrupo() { //Logica para guardar materia
         alert('Error al guardar la materia.');
     }
 }
-//Guarda los grupos del modal GruposModal -------------------------------------------------------------
+//Guarda el grupo con o sin materias enlazadas --------------
 
 async function guardarGrupo() { // Lógica para guardar el grupo
     const nombre = document.getElementById("nombreGrupo").value;
@@ -42,7 +44,7 @@ async function guardarGrupo() { // Lógica para guardar el grupo
         return;
     }
 
-    // Obtener IDs de las materias seleccionadas
+    // Obtener IDs de las materias seleccionadas que seran agregadas a el grupo.
     const materiasSeleccionadas = Array.from(checkboxes).map(cb => cb.value);
 
     const response = await fetch('/api/GruposApi/CrearGrupo', {
@@ -57,7 +59,8 @@ async function guardarGrupo() { // Lógica para guardar el grupo
     });
 
     if (response.ok) {
-        const grupoCreado = await response.json(); // Obtener el ID del grupo creado
+        const grupoCreado = await response.json(); // Obtener el ID del grupo que se acaba de crear para 
+                                                    //utilizarlo al crear enlace con materias.
 
         if (materiasSeleccionadas.length > 0) {
             await asociarMateriasAGrupo(grupoCreado.GrupoId, materiasSeleccionadas);
@@ -95,7 +98,7 @@ async function cargarMaterias() {
         if (response.ok) {
             const materias = await response.json();
             const contenedorMaterias = document.getElementById("materiasLista");
-           // contenedorMaterias.innerHTML = ""; // Limpiar antes de agregar
+            contenedorMaterias.innerHTML = ""; // Limpiar antes de agregar
 
             if (materias.length === 0) {
                 contenedorMaterias.innerHTML = "<p>No hay materias disponibles.</p>";
@@ -127,39 +130,6 @@ async function cargarMaterias() {
 // Llamar a cargarMaterias cuando se abre el modal de grupos
 document.getElementById("gruposModal").addEventListener("shown.bs.modal", cargarMaterias);
 
-/*
-async function guardarGrupo() { //Logica para guadar el grupo
-    const nombre = document.getElementById("nombreGrupo").value;
-    const descripcion = document.getElementById("descripcionGrupo").value;
-    const color = document.getElementById("codigoColorGrupo").value;
-
-
-    if (nombre.trim() === '') {
-        alert('Ingrese Nombre Del Grupo.');
-        return;
-    }
-
-    const response = await fetch('/api/GruposApi/CrearGrupo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            NombreGrupo: nombre,
-            Descripcion: descripcion,
-            CodigoColor: color,
-            DocenteId: 2 // Remplazar por el claim que usa el docente.
-        })
-    });
-
-    if (response.ok) {
-        alert('Grupo guardado con éxito.');
-        document.getElementById("gruposForm").reset();
-        cargarGrupos(); // Función para recargar la lista de grupos
-    } else {
-        alert('Error al guardar el grupo.');
-    }
-}
-
-*/
 
 // Cargar materias sin grupo -------------------------------------------------------
 async function cargarMateriasSinGrupo(docenteId) {
@@ -233,12 +203,10 @@ function irAMateria(materiaId) {
 }
 
 
-//---------------------------------------------------------------------------------------------------------------------------------------------------------------
+//Funcion para obtener los grupos de la base de datos. -----------------------------------------------------
 
 async function cargarGrupos(docenteId) { // Lógica para actualizar la lista de grupos en vista
     docenteId = 2;
-    console.log("DocenteId: ", docenteId); // Muestra el docenteId solo para depuración
-
     const response = await fetch(`/api/GruposApi/ObtenerGrupos/${docenteId}`);
 
     if (response.ok) {
@@ -272,10 +240,7 @@ async function cargarGrupos(docenteId) { // Lógica para actualizar la lista de 
 
 
 
-
-
-//--------------------------------------------------------------------------------------------------------------------------------------
-// NUEVA FUNCIÓN PARA CARGAR EL MODAL DINÁMICAMENTE
+// FUNCIÓN PARA CARGAR EL MODAL DINÁMICAMENTE ------------------------------------------
 
 document.getElementById("gestionarGruposBtn").addEventListener("click", async function (event) {
     const modalContainer = document.getElementById("modalContainer");
@@ -305,24 +270,24 @@ document.getElementById("gestionarGruposBtn").addEventListener("click", async fu
 });
 
 
-
+//Opciones de los iconos de las  Cards de materias.----------------------------------------------------------------
 function verActividades(MateriaId) {
     alert(`Ver actividades del grupo ID: ${MateriaId}`);
     // Aquí puedes redirigir o cargar las actividades relacionadas con el grupo
 }
 
-function verIntegrantes(grupoId) {
-    alert(`Ver integrantes del grupo ID: ${grupoId}`);
+function verIntegrantes(MateriaId) {
+    alert(`Ver integrantes del grupo ID: ${MateriaId}`);
     // Aquí puedes abrir un modal o redirigir para mostrar los integrantes
 }
 
-function destacarGrupo(grupoId) {
-    alert(`Grupo ID: ${grupoId} marcado como destacado`);
-    // Aquí puedes implementar la lógica para destacar el grupo
+function destacarGrupo(MateriaId) {
+    alert(`Grupo ID: ${MateriaId} marcado como destacado`);
+    // Aquí puedes implementar la lógica para destacar la materia
 }
 
 
-
+//Prioriza la ejecucion al cargar index -------------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', function () {
     cargarGrupos(); // Esta función cargará los grupos automáticamente al abrir el Index
     cargarMateriasSinGrupo(); //Cargara las materias sin grupo asignado al abrir index

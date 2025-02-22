@@ -20,7 +20,7 @@ namespace AprendeMasWeb.Controllers.WEB
 
         }
 
-        //Aqui se crea el grupo 
+        //Aqui se crea el grupo a traves de API peticion post 
         [HttpPost("CrearGrupo")]
         public async Task<IActionResult> CrearGrupo([FromBody] Grupos grupo)
         {
@@ -42,6 +42,8 @@ namespace AprendeMasWeb.Controllers.WEB
             return new string(Enumerable.Range(0, 8).Select(_ => (char)random.Next('A', 'Z')).ToArray());
         }
 
+
+        //Controlador que ayuda obtener los grupos que estan en la base de datos que le pertenecen al docente que inicia sesion.
         [HttpGet("ObtenerGrupos/{docenteId}")]
         public async Task<IActionResult> ObtenerGrupos(int docenteId)
         {
@@ -52,7 +54,7 @@ namespace AprendeMasWeb.Controllers.WEB
         }
 
 
-        // POST: api/GruposApi/AsociarMaterias
+        // peticion api para registrar a la base de datos el enlace de un grupo con una materia.
         [HttpPost("AsociarMaterias")]
         public async Task<IActionResult> AsociarMaterias([FromBody] AsociarMateriasRequest request)
         {
@@ -61,7 +63,7 @@ namespace AprendeMasWeb.Controllers.WEB
                 return BadRequest("Datos Invalidos");
             }
 
-            // Verificar si el grupo existe
+            // Verifica si el grupo existe
             var grupo = await _context.tbGrupos.FindAsync(request.GrupoId);
             if (grupo == null)
             {
