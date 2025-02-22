@@ -21,6 +21,10 @@ namespace AprendeMasWeb.Models.DBModels
 
         public required string Descripcion {  get; set; }
 
+        public DateTime FechaCreacion { get; set; }
+
+        public string Enlace { get; set; }
+
         //public required DateTime FechaInicio { get; set; }
 
         //public required DateTime FechaFin {  get; set; }

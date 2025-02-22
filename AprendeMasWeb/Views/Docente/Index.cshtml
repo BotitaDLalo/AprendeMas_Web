@@ -12,13 +12,26 @@
 
 
 
-<h2>Gestión de Materias y Grupos</h2>
+<div class="misCursos-header">
+    <h2 class="misCursos-titulo">
+        Mis cursos
+        <img src="@Url.Content("~/Iconos/FILTRO-26.svg")"
+             alt="ActivIA Logo"
+             class="misCursos-icono">
+    </h2>
 
-<!-- Botones para abrir los modales de creacion de grupos y materias -->
-<div class="d-flex gap-3">
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#materiasModal">Gestionar Materias</button>
-    <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#gruposModal" id="gestionarGruposBtn">Gestionar Grupos</button>
+    <!-- Botón desplegable -->
+    <div class="misCursos-dropdown">
+        <button class="misCursos-btn-crear" id="misCursos-dropdownBtn">CREAR</button>
+        <div class="misCursos-dropdown-menu" id="misCursos-dropdownMenu">
+            <button class="misCursos-dropdown-item" data-bs-toggle="modal" data-bs-target="#materiasModal">Gestionar Materias</button>
+            <button class="misCursos-dropdown-item" data-bs-toggle="modal" data-bs-target="#gruposModal" id="gestionarGruposBtn">Gestionar Grupos</button>
+        </div>
+    </div>
 </div>
+
+<button class="misCursos-btn-crear" onclick="window.location.href='/Docente/MateriasDetalles'">Avisos Pruebas</button>
+
 
 <br />
 <br />
