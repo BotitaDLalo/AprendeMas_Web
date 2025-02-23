@@ -118,8 +118,6 @@ namespace AprendeMasWeb.Controllers
                 if (grupoId != 0)
                 {
                     lsAvisos = await _context.tbAvisos.Where(a => a.GrupoId == grupoId).ToListAsync();
-
-
                 }
                 else if (materiaId != 0)
                 {
@@ -161,7 +159,9 @@ namespace AprendeMasWeb.Controllers
                 return BadRequest();
             }
         }
-        
+       
+
+
         [HttpPost("EliminarAviso")]
         public async Task<ActionResult> EliminarAviso(int avisoId)
         {
