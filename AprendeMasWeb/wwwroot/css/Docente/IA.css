@@ -40,21 +40,75 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+    overflow: hidden;
 }
 
+    /* Figuras animadas */
+    .chat-header::before,
+    .chat-header::after {
+        content: "";
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        background: #e0f7fa;
+        border-radius: 50%;
+        transition: transform 3s ease-in-out, opacity 1.5s ease-in-out;
+        opacity: 0.6;
+    }
+
+    /* Primera figura */
+    .chat-header::before {
+        top: -10px;
+        left: -10px;
+        animation: moveFigure1 6s infinite alternate;
+    }
+
+    /* Segunda figura */
+    .chat-header::after {
+        bottom: -10px;
+        right: -10px;
+        animation: moveFigure2 6s infinite alternate;
+    }
+
+/* Animaciones */
+@keyframes moveFigure1 {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    100% {
+        transform: translate(20px, 20px) scale(1.2);
+    }
+}
+
+@keyframes moveFigure2 {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    100% {
+        transform: translate(-20px, -20px) scale(1.2);
+    }
+}
+
+
 .close-chat {
+    position: absolute; /* Lo coloca en relación al contenedor padre */
+    top: 10px; /* Espaciado desde la parte superior */
+    right: 10px; /* Espaciado desde la derecha */
     background: none;
     border: none;
     font-size: 34px;
-    color: #ef2424;
+    color: #ff0000;
     cursor: pointer;
-    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Suaviza la animación */
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
-/* Efecto hover */
+    /* Efecto hover */
     .close-chat:hover {
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Sombra alrededor del ícono */
-        transform: scale(1.1); /* Aumenta ligeramente el tamaño al pasar el cursor */
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        transform: scale(1.1);
     }
 
 /* Contenido y mensajes */
