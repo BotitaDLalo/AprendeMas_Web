@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using FirebaseAdmin.Messaging;
+using FirebaseAdmin;
 
 namespace AprendeMasWeb.Controllers
 {
@@ -20,7 +22,7 @@ namespace AprendeMasWeb.Controllers
         {
             try
             {
-                DateTime dateTime = DateTime.Now;   
+                DateTime dateTime = DateTime.Now;
                 Avisos avisos = new Avisos()
                 {
                     DocenteId = crearAviso.DocenteId,
@@ -31,10 +33,11 @@ namespace AprendeMasWeb.Controllers
 
                 var materiaId = crearAviso.MateriaId;
                 var grupoId = crearAviso.GrupoId;
-                if (grupoId!=null)
+                if (grupoId != null)
                 {
                     avisos.GrupoId = grupoId;
-                }else if (materiaId != null)
+                }
+                else if (materiaId != null)
                 {
                     avisos.MateriaId = materiaId;
                 }
@@ -42,13 +45,63 @@ namespace AprendeMasWeb.Controllers
                 await _context.tbAvisos.AddAsync(avisos);
                 await _context.SaveChangesAsync();
 
-                var nuevoAviso = await _context.tbAvisos.Where(a=>a.AvisoId == avisos.AvisoId).FirstOrDefaultAsync();
+                var nuevoAviso = await _context.tbAvisos.Where(a => a.AvisoId == avisos.AvisoId).FirstOrDefaultAsync();
 
                 return Ok(nuevoAviso);
             }
             catch (Exception)
             {
                 return BadRequest();
+            }
+            finally
+            {
+                var message = new Message()
+                {
+                    Notification = new Notification
+                    {
+                        Title = crearAviso.Titulo,
+                        Body = crearAviso.Descripcion
+                    },
+
+                };
+                List<int> lsAlumnosId = new List<int>();
+
+                var materiaId = crearAviso.MateriaId;
+                var grupoId = crearAviso.GrupoId;
+
+                if (grupoId != null)
+                {
+                    lsAlumnosId = await _context.tbAlumnosGrupos.Where(a => a.GrupoId == grupoId).Select(a => a.AlumnoId).ToListAsync();
+                }
+                else if (materiaId != null)
+                {
+                    lsAlumnosId = await _context.tbAlumnosMaterias.Where(a => a.MateriaId == materiaId).Select(a => a.AlumnoId).ToListAsync();
+
+                }
+
+                foreach (var alumnoId in lsAlumnosId)
+                {
+                    var lsAlumnoTokens = await _context.tbAlumnosTokens.Where(a => a.AlumnoId == alumnoId).ToListAsync();
+
+                    foreach (var alumnoToken in lsAlumnoTokens)
+                    {
+                        try
+                        {
+                            message.Token = alumnoToken.Token;
+                            string result = await FirebaseMessaging.DefaultInstance.SendAsync(message);
+                            Console.WriteLine(result);
+                            break;
+                        }
+                        catch (FirebaseMessagingException fcme)
+                        {
+                            if (fcme.ErrorCode == ErrorCode.NotFound)
+                            {
+                                _context.tbAlumnosTokens.Remove(alumnoToken);
+                                await _context.SaveChangesAsync();
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -62,15 +115,15 @@ namespace AprendeMasWeb.Controllers
                 int grupoId = consultarAvisos.GrupoId;
                 int materiaId = consultarAvisos.MateriaId;
 
-                if (grupoId !=0)
+                if (grupoId != 0)
                 {
-                   lsAvisos = await _context.tbAvisos.Where(a=>a.GrupoId == grupoId).ToListAsync();
+                    lsAvisos = await _context.tbAvisos.Where(a => a.GrupoId == grupoId).ToListAsync();
 
-                   
+
                 }
-                else if (materiaId!=0)
+                else if (materiaId != 0)
                 {
-                   lsAvisos = await _context.tbAvisos.Where(a=>a.MateriaId == materiaId).ToListAsync();
+                    lsAvisos = await _context.tbAvisos.Where(a => a.MateriaId == materiaId).ToListAsync();
                 }
 
                 foreach (var aviso in lsAvisos)
@@ -108,6 +161,7 @@ namespace AprendeMasWeb.Controllers
                 return BadRequest();
             }
         }
+        
         [HttpPost("EliminarAviso")]
         public async Task<ActionResult> EliminarAviso(int avisoId)
         {
@@ -117,7 +171,7 @@ namespace AprendeMasWeb.Controllers
 
                 if (aviso == null)
                 {
-                  return BadRequest();
+                    return BadRequest();
                 }
 
                 _context.tbAvisos.Remove(aviso);

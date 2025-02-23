@@ -9,6 +9,8 @@ using AprendeMasWeb.Models;
 using AprendeMasWeb.Data;
 using AprendeMasWeb.Models.DBModels;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace AprendeMasWeb.Controllers.Autenticacion
 {
@@ -22,6 +24,50 @@ namespace AprendeMasWeb.Controllers.Autenticacion
         private readonly RoleManager<IdentityRole> _roleManager = roleManager;
         private readonly DataContext _context = context;
 
+
+
+        [HttpPost("VerificarTokenFcm")]
+        public async Task<ActionResult> VerificarTokenFcm(int id, string fcmToken, string role)
+        {
+            try
+            {
+                if (role == "Alumno")
+                {
+                    bool existeToken = await _context.tbAlumnosTokens.AnyAsync(a => a.Token == fcmToken);
+                    if (existeToken)
+                    {
+                        return Ok(new { Mensaje = $"El token del alumno con Id ${id} existe" });
+                    }
+                    else
+                    {
+                        AlumnosTokens alumnosTokens = new()
+                        {
+                            AlumnoId = id,
+                            Token = fcmToken,
+                        };
+                        await _context.tbAlumnosTokens.AddAsync(alumnosTokens);
+                        await _context.SaveChangesAsync();
+                        return Ok(new { Mensaje = $"El token del alumno con Id ${id} existe" });
+                    }
+                }
+                else if (role == "Docente")
+                {
+
+                    //return Ok(new { Mensaje = $"El token del alumno con Id ${id} existe" });
+                    return Ok();
+                }
+                else if (role == "Administrador")
+                {
+                    return Ok();
+                }
+
+                return BadRequest(new { Mensaje = "No se pudo verificar el token." });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { Mensaje = "No se pudo verificar el token." });
+            }
+        }
 
         [HttpPost("RegistroUsuario")]
         public async Task<IActionResult> RegistroUsuario([FromBody] UsuarioRegistro modelo)
@@ -94,23 +140,45 @@ namespace AprendeMasWeb.Controllers.Autenticacion
                     }
                     else if (modelo.TipoUsuario == "Alumno")
                     {
-                        var identityUserId = await _userManager.GetUserIdAsync(usuario);
-                        Alumnos alumnos = new()
+                        var token = modelo.FcmToken;
+
+                        if (token != null)
                         {
-                            ApellidoPaterno = modelo.ApellidoPaterno,
-                            ApellidoMaterno = modelo.ApellidoMaterno,
-                            Nombre = modelo.Nombre,
-                            UserId = identityUserId,
-                        };
-                        _context.tbAlumnos.Add(alumnos);
-                        _context.SaveChanges();
+                            var identityUserId = await _userManager.GetUserIdAsync(usuario);
+                            Alumnos alumnos = new()
+                            {
+                                ApellidoPaterno = modelo.ApellidoPaterno,
+                                ApellidoMaterno = modelo.ApellidoMaterno,
+                                Nombre = modelo.Nombre,
+                                UserId = identityUserId,
+                            };
+                            await _context.tbAlumnos.AddAsync(alumnos);
+
+
+                            await _context.SaveChangesAsync();
+
+                            AlumnosTokens alumnosTokens = new()
+                            {
+                                AlumnoId = alumnos.AlumnoId,
+                                Token = token,
+                            };
+
+                            await _context.tbAlumnosTokens.AddAsync(alumnosTokens);
+
+                            await _context.SaveChangesAsync();
+
+
+                        }
+                        else
+                        {
+                            return BadRequest(new {Mensaje = "Hubo un error en el registro"});
+                        }
+
                     }
-
-
                     return Ok(new { nombre = userName, correo = email, rol });
-
                 }
                 return BadRequest(new { Mensaje = "Hubo un error en el registro" });
+
             }
             catch (Exception e)
             {
@@ -255,7 +323,7 @@ namespace AprendeMasWeb.Controllers.Autenticacion
 
         }
 
-        private static ClaimsIdentity GenerarClaims(int idUsuario,IdentityUser usuario, string rol)
+        private static ClaimsIdentity GenerarClaims(int idUsuario, IdentityUser usuario, string rol)
         {
             var claims = new ClaimsIdentity();
 
