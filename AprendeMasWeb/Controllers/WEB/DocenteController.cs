@@ -59,10 +59,15 @@ namespace AprendeMasWeb.Controllers.WEB
 
                 return RedirectToAction("MateriasDetalles");
             }
-
             return View(aviso);
-
-            
         }
+
+        public IActionResult MateriasDetalles()
+        {
+            // Lógica para mostrar en vista cuando se accede a una materia. Nada de logica. para logica y consultas sera controlador api
+            return View();
+        }
+
+
     }
 }

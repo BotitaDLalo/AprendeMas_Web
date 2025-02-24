@@ -7,7 +7,7 @@
 async function guardarMateriaSinGrupo() { 
     const nombre = document.getElementById("nombreMateria").value;
     const descripcion = document.getElementById("descripcionMateria").value;
-    const color = document.getElementById("codigoColorMateria").value;
+    const color = "#2196F3";
 
     if (nombre.trim() === '') {
         alert('Ingrese Nombre De La Materia.');
@@ -36,7 +36,7 @@ async function guardarMateriaSinGrupo() {
 async function guardarGrupo() { // Lógica para guardar el grupo
     const nombre = document.getElementById("nombreGrupo").value;
     const descripcion = document.getElementById("descripcionGrupo").value;
-    const color = document.getElementById("codigoColorGrupo").value;
+    const color = "#2196F3";
     const checkboxes = document.querySelectorAll(".materia-checkbox:checked");
 
     if (nombre.trim() === '') {
@@ -63,7 +63,7 @@ async function guardarGrupo() { // Lógica para guardar el grupo
                                                     //utilizarlo al crear enlace con materias.
 
         if (materiasSeleccionadas.length > 0) {
-            await asociarMateriasAGrupo(grupoCreado.GrupoId, materiasSeleccionadas);
+            await asociarMateriasAGrupo(grupoCreado.grupoId, materiasSeleccionadas);
         }
 
         alert('Grupo guardado con éxito.');
