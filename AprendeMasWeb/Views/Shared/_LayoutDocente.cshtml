@@ -169,6 +169,35 @@
         </div>
     </div>
 
+@*     Modal de Agenda *@
+    <div id="modalEvento" class="modal-evento">
+        <div class="modal-content">
+            <span class="close-modal12">&times;</span>
+            <h2>Agregar Evento</h2>
+            <form id="formEvento">
+                <label for="titulo">Título:</label>
+                <input type="text" id="titulo" name="titulo" required>
+
+                <label for="descripcion">Descripción:</label>
+                <textarea id="descripcion" name="descripcion" required></textarea>
+
+                <label for="fechaInicio">Fecha Inicio:</label>
+                <input type="datetime-local" id="fechaInicio" name="fechaInicio" required>
+
+                <label for="fechaFinal">Fecha Final:</label>
+                <input type="datetime-local" id="fechaFinal" name="fechaFinal" required>
+
+                <label for="color">Color:</label>
+                <select id="color" name="color" required>
+                    <option value="azul">Azul</option>
+                    <option value="gris">Gris</option>
+                </select>
+
+                <button type="submit">Guardar</button>
+            </form>
+        </div>
+    </div>
+
 
 
     @* 	Estilos del calendario *@
@@ -176,6 +205,7 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
     <script src="~/js/Docente/Grupos/Calendario.js" asp-append-version="true"></script>
+    <script src="~/js/Docente/Agenda.js" asp-append-version="true"></script>
 
     @* Estilos de notifiaciones *@
     <script src="~/js/Docente/Grupos/Notificaciones.js" asp-append-version="true"></script>
