@@ -316,9 +316,10 @@ namespace AprendeMasWeb.Controllers
                     .Include(a=>a.Actividades)
                     .Include(a=>a.Alumnos).ToListAsync();
 
-                int puntaje = lsAlumnosActividades.Select(a=>a.Actividades!.Puntaje).FirstOrDefault();
 
-                int totalEntregados = lsAlumnosActividades.Count();
+                int puntaje = await _context.tbActividades.Where(a=>a.ActividadId == actividadId).Select(a=>a.Puntaje).FirstOrDefaultAsync();
+
+                int totalEntregados = lsAlumnosActividades.Count;
 
                 respuestaAlumnos.ActividadId = actividadId;
                 respuestaAlumnos.Puntaje = puntaje;

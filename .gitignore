@@ -489,3 +489,7 @@ $RECYCLE.BIN/
 
 # Migrations
 Migrations/
+
+
+# Firebase keys
+wwwroot/keys/*.json
