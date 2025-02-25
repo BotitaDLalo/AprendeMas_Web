@@ -4,240 +4,248 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"]</title>
 
-    @* Estilos del layout *@
-    <link rel="icon" href="~/Iconos/LOGO VERTICAL-26.svg" type="image/x-icon" />
-    <link rel="stylesheet" href="~/css/Docente/Layout.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/Docente/IA.css" asp-append-version="true" />
+	@* Estilos del layout *@
+	<link rel="icon" href="~/Iconos/LOGO VERTICAL-26.svg" type="image/x-icon" />
+	<link rel="stylesheet" href="~/css/Docente/Layout.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/Docente/IA.css" asp-append-version="true" />
 
-    @* Estilos Footer *@
-    <link rel="stylesheet" href="~/css/Docente/footer.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	@* Estilos Footer *@
+	<link rel="stylesheet" href="~/css/Docente/footer.css" asp-append-version="true" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/AprendeMasWeb.styles.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/AprendeMasWeb.styles.css" asp-append-version="true" />
 
-    @* Estilos de Fuentes *@
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+	@* Estilos de Fuentes *@
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
-    @* 	Estilos del calendario *@
-    <link rel="stylesheet" href="~/css/Docente/Calendario.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/Docente/Confirmacion.css" asp-append-version="true" />
+	@* 	Estilos del calendario *@
+	<link rel="stylesheet" href="~/css/Docente/Calendario.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/Docente/Confirmacion.css" asp-append-version="true" />
 
 
 
-    @* Estilos de notifiaciones *@
-    <link rel="stylesheet" href="~/css/Docente/Notificaciones.css" asp-append-version="true" />
+	@* Estilos de notifiaciones *@
+	<link rel="stylesheet" href="~/css/Docente/Notificaciones.css" asp-append-version="true" />
 
-    @* Estilos card materias *@
-    <link rel="stylesheet" href="~/css/Docente/Materias.css" asp-append-version="true" />
+	@* Estilos card materias *@
+	<link rel="stylesheet" href="~/css/Docente/Materias.css" asp-append-version="true" />
 
-    @* Estilos de materias(avisos,act, etc.) *@
-    <link rel="stylesheet" href="~/css/Docente/VistaMateriasD.css" asp-append-version="true" />
+	@* Estilos de materias(avisos,act, etc.) *@
+	<link rel="stylesheet" href="~/css/Docente/VistaMateriasD.css" asp-append-version="true" />
 
 
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 layout">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Docente" asp-action="Index">
-                    <img src="@Url.Content("~/Iconos/LOGO HORIZONTAL-26.svg")" alt="ActivIA Logo" class="navbar-icon">
-                </a>
-               
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+	<header>
+		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 layout">
+			<div class="container-fluid">
+				<a class="navbar-brand" asp-area="" asp-controller="Docente" asp-action="Index">
+					<img src="@Url.Content("~/Iconos/LOGO HORIZONTAL-26.svg")" alt="ActivIA Logo" class="navbar-icon">
+				</a>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Docente" asp-action="Index">
-                                <img class="iconos-nav" src="@Url.Content("~/Iconos/1-26.svg")" alt="Icono de Inicio" />
-                            </a>
-                        </li>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+						aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+					<ul class="navbar-nav flex-grow-1">
 
-                        <li class="nav-item">
-                            <a id="calendario-icono" class="nav-link text-dark" href="#">
-                                <img class="iconos-nav" src="@Url.Content("~/Iconos/AGENDA-26.svg")" alt="Icono de Calendario" />
-                            </a>
-                            <div id="calendario-panel" class="calendario-container">
-                                <input type="text" id="calendario-input">
-                            </div>
-                        </li>
+						<li class="nav-item">
+							<a class="nav-link text-dark" asp-area="" asp-controller="Docente" asp-action="Index">
+								<img class="iconos-nav" src="@Url.Content("~/Iconos/1-26.svg")" alt="Icono de Inicio" />
+							</a>
+						</li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" id="chatIcon" href="#">
-                                <img class="iconos-nav" src="@Url.Content("~/Iconos/IA-26.svg")" alt="Icono de Chat IA" />
-                            </a>
-                        </li>
+						<li class="nav-item">
+							<a id="calendario-icono" class="nav-link text-dark" href="#">
+								<img class="iconos-nav" src="@Url.Content("~/Iconos/AGENDA-26.svg")" alt="Icono de Calendario" />
+							</a>
+							<div id="calendario-panel" class="calendario-container">
+								<input type="text" id="calendario-input">
+							</div>
+						</li>
 
-                        <li class="nav-item">
-                            <a id="notificaciones-icono" class="nav-link text-dark" href="#">
-                                <img class="iconos-nav" src="@Url.Content("~/Iconos/NOTIFICACIONES-26.svg")" alt="Icono de Notificaciones" />
-                            </a>
-                            <div id="notificaciones-panel" class="notificaciones-container">
-                                <p>🔔 No tienes nuevas notificaciones</p>
-                            </div>
-                        </li>
+						<li class="nav-item">
+							<a class="nav-link text-dark" id="chatIcon" href="#">
+								<img class="iconos-nav" src="@Url.Content("~/Iconos/IA-26.svg")" alt="Icono de Chat IA" />
+							</a>
+						</li>
 
-                        <!-- Modal lateral para el chat de la IA -->
-                        <div id="iaChatModal" class="chat-modal">
-                            <div class="chat-header">
-                                <img src="@Url.Content("~/Iconos/LOGO HORIZONTAL-26.svg")" alt="ActivIA Logo" class="Icono_IA">
-                                <button id="closeChat" class="close-chat">&times;</button>
-                            </div>
-                            <div class="chat-body">
-                                <p class="titulo">Hola, ¡Pregúntame lo que quieras!</p>
-                                <div id="chatContent">
-                                    <!-- Aquí se mostrarán los mensajes -->
-                                </div>
-                                <input type="text" id="userInput" class="chat-input" placeholder="Escribe un mensaje...">
-                                <button id="sendMessage" class="send-button">Enviar</button>
-                            </div>
-                        </div>
+						<li class="nav-item">
+							<a id="notificaciones-icono" class="nav-link text-dark" href="#">
+								<img class="iconos-nav" src="@Url.Content("~/Iconos/NOTIFICACIONES-26.svg")" alt="Icono de Notificaciones" />
+							</a>
+							<div id="notificaciones-panel" class="notificaciones-container">
+								<p>🔔 No tienes nuevas notificaciones</p>
+							</div>
+						</li>
 
-                        
-                           
-
-                        <li class="nav-item dropdown">
-                            <a href="#" class="nav-link text-dark " id="user-icon" onclick="toggleMenu(event)">
-                                <img class="iconos-nav dropdown-toggle" src="@Url.Content("~/Iconos/PERFIL-26.svg")" alt="Icono de Usuario" />
-
-                            </a>
-                            <div class="dropdown-menu" id="user-menu">
-                                <div class="user-info">
-                                    <img class="iconos1-nav" src="@Url.Content("~/Iconos/PERFIL-26.svg")" alt="Icono de Usuario" />
-                                    <p class="dropdown-item">@User.Identity.Name</p>
-                                </div>
-                                <form asp-action="CerrarSesion" asp-controller="Cuenta" method="post" class="dropdown-item">
-                                    <button type="submit" class="btn btn-danger btn-sm w-100">Cerrar Sesión</button>
-                                </form>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-    <footer class="custom-footer">
-        <div class="footer-container">
-            <!-- Imagen desplazada a la izquierda -->
-            <div class="footer-left">
-                <img src="@Url.Content("~/Iconos/iconizer-LOGO HORIZONTAL-AzulF.svg")" alt="Logo" class="footer-logo">
-            </div>
-
-            <!-- Iconos de contacto en el centro -->
-            <div class="footer-center">
-                <a href="mailto:correo@example.com" class="footer-icon"><i class="fa fa-envelope"></i> Aprende@gmail.com</a>
-                <a href="https://facebook.com" target="_blank" class="footer-icon"><i class="fa-brands fa-facebook"></i>Aprende +</a>
-                <a href="tel:+123456789" class="footer-icon"><i class="fa fa-phone"></i>(735) 152 8500</a>
-
-                <!-- Frase centrada debajo -->
-                <br />
-                <p class="footer-text">© Copyright Aprende+. Todos los Derechos Reservados.</p>
-            </div>
-           
-            <!-- Enlace de privacidad a la derecha -->
-            <div class="footer-right">
-                <a href="#" id="privacy-link" class="privacy-link">Aviso de Privacidad</a>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Modal de privacidad -->
-    <div id="privacy-modal" class="modal">
-        <div class="modal-content">
-            <!-- Botón para cerrar (X) -->
-            <span class="close-modal">&times;</span>
-
-            <!-- Título del modal -->
-            <h2 class="modal-title">Aviso de Privacidad</h2>
-            <hr />
-
-            <!-- Contenido del aviso -->
-            <p class="modal-text">
-                En Aprende+ valoramos tu privacidad. Este aviso describe cómo recopilamos, usamos y protegemos la información personal que compartes con nosotros. Si tienes alguna duda, no dudes en contactarnos.
-            </p>
-
-            <!-- Botón de aceptar -->
-            <button class="modal-button" id="modal-accept">Aceptar</button>
-        </div>
-    </div>
-
-@*     Modal de Agenda *@
-    <div id="modalEvento" class="modal-evento">
-        <div class="modal-content">
-            <span class="close-modal12">&times;</span>
-            <h2>Agregar Evento</h2>
-            <form id="formEvento">
-                <label for="titulo">Título:</label>
-                <input type="text" id="titulo" name="titulo" required>
-
-                <label for="descripcion">Descripción:</label>
-                <textarea id="descripcion" name="descripcion" required></textarea>
-
-                <label for="fechaInicio">Fecha Inicio:</label>
-                <input type="datetime-local" id="fechaInicio" name="fechaInicio" required>
-
-                <label for="fechaFinal">Fecha Final:</label>
-                <input type="datetime-local" id="fechaFinal" name="fechaFinal" required>
-
-                <label for="color">Color:</label>
-                <select id="color" name="color" required>
-                    <option value="azul">Azul</option>
-                    <option value="gris">Gris</option>
-                </select>
-
-                <button type="submit">Guardar</button>
-            </form>
-        </div>
-    </div>
-
-    @* 	Modal de confirmacion *@
-    <script src="~/js/Docente/Confirmacion.js" asp-append-version="true"></script>
-
-    @* 	Estilos del calendario *@
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-    <script src="~/js/Docente/Grupos/Calendario.js" asp-append-version="true"></script>
-    <script src="~/js/Docente/Agenda.js" asp-append-version="true"></script>
-
-    @* Estilos de notifiaciones *@
-    <script src="~/js/Docente/Grupos/Notificaciones.js" asp-append-version="true"></script>
-
-    @* Estilos card materias *@
-    <script src="~/js/Docente/Grupos/Materias.js" asp-append-version="true"></script>
-
-    @* Estilos de materias(avisos,act, etc.) *@
-    <script src="~/js/Docente/Grupos/VistaMateriasD.js" asp-append-version="true"></script>
-
-  
-    <script src="~/js/Docente/Grupos/PrincipalMG.js" asp-append-version="true"></script>
+						<!-- Modal lateral para el chat de la IA -->
+						<div id="iaChatModal" class="chat-modal">
+							<div class="chat-header">
+								<img src="@Url.Content("~/Iconos/LOGO HORIZONTAL-26.svg")" alt="ActivIA Logo" class="Icono_IA">
+								<button id="closeChat" class="close-chat">&times;</button>
+							</div>
+							<div class="chat-body">
+								<p class="titulo">Hola, ¡Pregúntame lo que quieras!</p>
+								<div id="chatContent">
+									<!-- Aquí se mostrarán los mensajes -->
+								</div>
+								<input type="text" id="userInput" class="chat-input" placeholder="Escribe un mensaje...">
+								<button id="sendMessage" class="send-button">Enviar</button>
+							</div>
+						</div>
 
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/js/Docente/footer.js" asp-append-version="true"></script>
-    <script src="~/js/Docente/layaut.js" asp-append-version="true"></script>
-    <script src="~/js/Docente/IA.js" asp-append-version="true"></script>
 
-    @* Materias - Grupos *@
-    <script src="~/js/Docente/Grupos/docente.js" asp-append-version="true"></script>
-   
 
-    @await RenderSectionAsync("Scripts", required: false)
+						<li class="nav-item dropdown">
+							<a href="#" class="nav-link text-dark " id="user-icon" onclick="toggleMenu(event)">
+								<img class="iconos-nav dropdown-toggle" src="@Url.Content("~/Iconos/PERFIL-26.svg")" alt="Icono de Usuario" />
+
+							</a>
+							<div class="dropdown-menu" id="user-menu">
+								<div class="user-info">
+									<img class="iconos1-nav" src="@Url.Content("~/Iconos/PERFIL-26.svg")" alt="Icono de Usuario" />
+									<p class="dropdown-item">@User.Identity.Name</p>
+								</div>
+								<form asp-action="CerrarSesion" asp-controller="Cuenta" method="post" class="dropdown-item">
+									<button type="submit" class="btn btn-danger btn-sm w-100">Cerrar Sesión</button>
+								</form>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</header>
+	<div class="container">
+		<main role="main" class="pb-3">
+			@RenderBody()
+		</main>
+	</div>
+	<footer class="custom-footer">
+		<div class="footer-container">
+			<!-- Imagen desplazada a la izquierda -->
+			<div class="footer-left">
+				<img src="@Url.Content("~/Iconos/iconizer-LOGO HORIZONTAL-AzulF.svg")" alt="Logo" class="footer-logo">
+			</div>
+
+			<!-- Iconos de contacto en el centro -->
+			<div class="footer-center">
+				<a href="mailto:correo@example.com" class="footer-icon"><i class="fa fa-envelope"></i> Aprende@gmail.com</a>
+				<a href="https://facebook.com" target="_blank" class="footer-icon"><i class="fa-brands fa-facebook"></i>Aprende +</a>
+				<a href="tel:+123456789" class="footer-icon"><i class="fa fa-phone"></i>(735) 152 8500</a>
+
+				<!-- Frase centrada debajo -->
+				<br />
+				<p class="footer-text">© Copyright Aprende+. Todos los Derechos Reservados.</p>
+			</div>
+
+			<!-- Enlace de privacidad a la derecha -->
+			<div class="footer-right">
+				<a href="#" id="privacy-link" class="privacy-link">Aviso de Privacidad</a>
+			</div>
+		</div>
+	</footer>
+
+	<!-- Modal de privacidad -->
+	<div id="privacy-modal" class="modal">
+		<div class="modal-content">
+			<!-- Botón para cerrar (X) -->
+			<span class="close-modal">&times;</span>
+
+			<!-- Título del modal -->
+			<h2 class="modal-title">Aviso de Privacidad</h2>
+			<hr />
+
+			<!-- Contenido del aviso -->
+			<p class="modal-text">
+				En Aprende+ valoramos tu privacidad. Este aviso describe cómo recopilamos, usamos y protegemos la información personal que compartes con nosotros. Si tienes alguna duda, no dudes en contactarnos.
+			</p>
+
+			<!-- Botón de aceptar -->
+			<button class="modal-button" id="modal-accept">Aceptar</button>
+		</div>
+	</div>
+
+	@*     Modal de Agenda *@
+	<div id="modalEvento" class="modal-evento">
+		<div class="modal-content">
+			<span class="close-modal12">&times;</span>
+			<h2>Eventos del <span id="fechaSeleccionadaTexto"></span></h2>
+
+			<div id="listaEventos"></div>
+
+			<button id="btnAgregarEvento">Agregar Evento</button>
+
+			<div id="formEventoContainer" style="display: none;">
+				<form id="formEvento">
+					<label for="titulo">Título:</label>
+					<input type="text" id="titulo" name="titulo" required>
+
+					<label for="descripcion">Descripción:</label>
+					<textarea id="descripcion" name="descripcion" required></textarea>
+
+					<label for="fechaInicio">Fecha Inicio:</label>
+					<input type="datetime-local" id="fechaInicio" name="fechaInicio" required>
+
+					<label for="fechaFinal">Fecha Final:</label>
+					<input type="datetime-local" id="fechaFinal" name="fechaFinal" required>
+
+					<label for="color">Color:</label>
+					<select id="color" name="color" required>
+						<option value="azul">Azul</option>
+						<option value="gris">Gris</option>
+					</select>
+
+					<button type="submit">Guardar</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+
+	@* 	Modal de confirmacion *@
+	<script src="~/js/Docente/Confirmacion.js" asp-append-version="true"></script>
+
+	@* 	Estilos del calendario *@
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+	<script src="~/js/Docente/Grupos/Calendario.js" asp-append-version="true"></script>
+	<script src="~/js/Docente/Agenda.js" asp-append-version="true"></script>
+
+	@* Estilos de notifiaciones *@
+	<script src="~/js/Docente/Grupos/Notificaciones.js" asp-append-version="true"></script>
+
+	@* Estilos card materias *@
+	<script src="~/js/Docente/Grupos/Materias.js" asp-append-version="true"></script>
+
+	@* Estilos de materias(avisos,act, etc.) *@
+	<script src="~/js/Docente/Grupos/VistaMateriasD.js" asp-append-version="true"></script>
+
+
+	<script src="~/js/Docente/Grupos/PrincipalMG.js" asp-append-version="true"></script>
+
+
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	<script src="~/js/Docente/footer.js" asp-append-version="true"></script>
+	<script src="~/js/Docente/layaut.js" asp-append-version="true"></script>
+	<script src="~/js/Docente/IA.js" asp-append-version="true"></script>
+
+	@* Materias - Grupos *@
+	<script src="~/js/Docente/Grupos/docente.js" asp-append-version="true"></script>
+
+
+	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

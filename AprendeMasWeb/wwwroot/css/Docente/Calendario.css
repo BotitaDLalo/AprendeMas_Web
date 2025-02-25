@@ -254,3 +254,30 @@ button {
         transform: translateY(15px) translateX(15px);
     }
 }
+
+
+.evento-item {
+    background: #f8f9fa;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.evento-titulo {
+    margin: 0;
+    font-size: 18px;
+    color: #007bff;
+}
+
+    .evento-titulo:hover {
+        text-decoration: underline;
+    }
+
+.evento-detalle {
+    background: #ffffff;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border-left: 4px solid #007bff;
+}

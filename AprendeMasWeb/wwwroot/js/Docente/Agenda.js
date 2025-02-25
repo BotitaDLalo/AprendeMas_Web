@@ -1,26 +1,78 @@
-﻿document.addEventListener("DOMContentLoaded", function () {
-    // Cargar idioma español
-    flatpickr.localize(flatpickr.l10ns.es);
-    flatpickr("#calendario-input", {
-        inline: true,
-        dateFormat: "d/m/Y", // Formato MX: día/mes/año
-        locale: "es", // Idioma español
-        defaultDate: new Date(),
-        onChange: function (selectedDates, dateStr) {
-            if (selectedDates.length > 0) {
-                abrirModal(dateStr);
-            }
-        }
-    });
+﻿
 
-    function abrirModal(fechaSeleccionada) {
-        document.getElementById("fechaInicio").value = fechaSeleccionada;
+document.addEventListener("DOMContentLoaded", function () {
+ 
+        flatpickr("#calendario-input", {
+            enableTime: false,
+            dateFormat: "Y-m-d",  // Formato correcto YYYY-MM-DD
+            locale: "es", // Idioma español
+            defaultDate: new Date(),
+            onChange: function (selectedDates, dateStr) {
+                if (selectedDates.length > 0) {
+                    cargarEventosPorFecha(dateStr);
+                }
+            }
+        });
+
+    function cargarEventosPorFecha(fechaSeleccionada) {
+        document.getElementById("fechaSeleccionadaTexto").textContent = fechaSeleccionada;
+        document.getElementById("listaEventos").innerHTML = "<p>Cargando...</p>";
+        document.getElementById("formEventoContainer").style.display = "none";
+
+        fetch(`/api/EventosAgenda/fecha/${fechaSeleccionada}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Error al obtener eventos: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Respuesta de la API:", data); 
+                let listaEventosDiv = document.getElementById("listaEventos");
+                listaEventosDiv.innerHTML = "";
+
+                if (data.mensaje) {
+                    listaEventosDiv.innerHTML = `<p>${data.mensaje}</p>`;
+                } else {
+                    data.forEach(evento => {
+                        console.log("Evento recibido:", evento); 
+                        let eventoDiv = document.createElement("div");
+                        eventoDiv.classList.add("evento-item");
+                        eventoDiv.innerHTML = `
+                <h3 class="evento-titulo" data-id="${evento.eventoId}">${evento.titulo}</h3>
+                <div class="evento-detalle" style="display: none;">
+                    <p><strong>Descripción:</strong> ${evento.descripcion}</p>
+                    <p><strong>Inicio:</strong> ${evento.fechaInicio}</p>
+                    <p><strong>Fin:</strong> ${evento.fechaFinal}</p>
+                    <p><strong>Color:</strong> ${evento.color}</p>
+                </div>
+            `;
+                        listaEventosDiv.appendChild(eventoDiv);
+                    });
+
+                    document.querySelectorAll(".evento-titulo").forEach(titulo => {
+                        titulo.addEventListener("click", function () {
+                            let detalle = this.nextElementSibling;
+                            detalle.style.display = detalle.style.display === "none" ? "block" : "none";
+                        });
+                    });
+                }
+            })
+
+            .catch(error => {
+                console.error("Error al cargar eventos:", error);
+                document.getElementById("listaEventos").innerHTML = `<p>Error al cargar eventos.</p>`;
+            });
+
         document.getElementById("modalEvento").style.display = "flex";
     }
+        document.getElementById("btnAgregarEvento").addEventListener("click", function () {
+            document.getElementById("formEventoContainer").style.display = "block";
+        });
 
-    document.querySelector(".close-modal12").addEventListener("click", function () {
-        document.getElementById("modalEvento").style.display = "none";
-    });
+        document.querySelector(".close-modal12").addEventListener("click", function () {
+            document.getElementById("modalEvento").style.display = "none";
+        });
 
     // Cerrar modal al hacer clic fuera del contenido
     document.getElementById("modalEvento").addEventListener("click", function (event) {
@@ -29,30 +81,30 @@
         }
     });
 
-    document.getElementById("formEvento").addEventListener("submit", function (e) {
-        e.preventDefault();
+        document.getElementById("formEvento").addEventListener("submit", function (e) {
+            e.preventDefault();
 
-        const evento = {
-            DocenteId: 1, // Cambia esto dinámicamente según el usuario logueado
-            Titulo: document.getElementById("titulo").value,
-            Descripcion: document.getElementById("descripcion").value,
-            FechaInicio: document.getElementById("fechaInicio").value,
-            FechaFinal: document.getElementById("fechaFinal").value,
-            Color: document.getElementById("color").value
-        };
+            const evento = {
+                DocenteId: 1,
+                Titulo: document.getElementById("titulo").value,
+                Descripcion: document.getElementById("descripcion").value,
+                FechaInicio: document.getElementById("fechaInicio").value,
+                FechaFinal: document.getElementById("fechaFinal").value,
+                Color: document.getElementById("color").value
+            };
 
-        fetch("/api/EventosAgenda", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(evento)
-        })
-            .then(response => response.json())
-            .then(data => {
-                mostrarModalConfirmacion(data.mensaje);
-                document.getElementById("modalEvento").style.display = "none";
+            fetch("/api/EventosAgenda", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(evento)
             })
-            .catch(error => console.error("Error:", error));
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.mensaje);
+                    document.getElementById("modalEvento").style.display = "none";
+                })
+                .catch(error => console.error("Error:", error));
+        });
     });
-});

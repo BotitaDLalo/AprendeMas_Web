@@ -38,5 +38,35 @@ namespace AprendeMasWeb.Controllers.WEB
 
             return Ok(new { mensaje = "Evento guardado exitosamente" });
         }
-    }
+		[HttpGet("fecha/{fecha}")]
+		public async Task<IActionResult> ObtenerEventosPorFecha(string fecha)
+		{
+			if (!DateTime.TryParse(fecha, out DateTime fechaSeleccionada))
+			{
+				return BadRequest(new { mensaje = "Fecha inválida." });
+			}
+
+			var eventos = await _context.tbEventosAgenda
+				.Where(e => e.FechaInicio.Date == fechaSeleccionada.Date)
+				.Select(e => new
+				{
+					eventoId = e.EventoId, 
+					titulo = e.Titulo,
+					descripcion = e.Descripcion,
+					fechaInicio = e.FechaInicio,
+					fechaFinal = e.FechaFinal,
+					color = e.Color
+				})
+				.ToListAsync();
+
+			if (!eventos.Any())
+			{
+				return Ok(new { mensaje = "No hay eventos para esta fecha." });
+			}
+
+			return Ok(eventos);
+		}
+
+	}
+
 }
