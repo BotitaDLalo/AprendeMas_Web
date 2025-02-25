@@ -22,6 +22,13 @@
         document.getElementById("modalEvento").style.display = "none";
     });
 
+    // Cerrar modal al hacer clic fuera del contenido
+    document.getElementById("modalEvento").addEventListener("click", function (event) {
+        if (event.target === this) { // Verifica si el clic fue en el fondo y no en el contenido del modal
+            this.style.display = "none";
+        }
+    });
+
     document.getElementById("formEvento").addEventListener("submit", function (e) {
         e.preventDefault();
 
@@ -43,7 +50,7 @@
         })
             .then(response => response.json())
             .then(data => {
-                alert(data.mensaje);
+                mostrarModalConfirmacion(data.mensaje);
                 document.getElementById("modalEvento").style.display = "none";
             })
             .catch(error => console.error("Error:", error));

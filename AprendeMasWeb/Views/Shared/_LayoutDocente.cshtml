@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@await Html.PartialAsync("~/Views/Shared/ModalConfirmacion.cshtml")
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -23,6 +26,9 @@
 
     @* 	Estilos del calendario *@
     <link rel="stylesheet" href="~/css/Docente/Calendario.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Docente/Confirmacion.css" asp-append-version="true" />
+
+
 
     @* Estilos de notifiaciones *@
     <link rel="stylesheet" href="~/css/Docente/Notificaciones.css" asp-append-version="true" />
@@ -198,7 +204,8 @@
         </div>
     </div>
 
-
+    @* 	Modal de confirmacion *@
+    <script src="~/js/Docente/Confirmacion.js" asp-append-version="true"></script>
 
     @* 	Estilos del calendario *@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
