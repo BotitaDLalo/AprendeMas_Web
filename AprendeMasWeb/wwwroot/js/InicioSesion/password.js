@@ -21,7 +21,7 @@ document.getElementById("togglePassword").addEventListener("click", function () 
     }
 });
 
-
+ 
 function validatePassword() {
     const password = document.getElementById("Password").value;
 

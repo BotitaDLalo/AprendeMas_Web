@@ -1,7 +1,22 @@
 ﻿
-//Generar algun claim para reemplazar en la consulta deseada.
-
 //usar el claim como variable global dentro del inicio de sesion.
+let docenteIdGlobal = null; //Variable global para almacenar el docenteId
+
+//Funcion que busca el claim del docenteId y usarlo en este archivo
+async function obtenerDocenteId() {
+    try {
+        const response = await fetch('/Cuenta/ObtenerDocenteId'); // Llamar al controlador
+        const data = await response.json();
+        if (data.docenteId) {
+            docenteIdGlobal = data.docenteId;
+            console.log("DocenteId obtenido:", docenteIdGlobal);
+        } else {
+            console.error("Error: No se encontró el DocenteId.");
+        }
+    } catch (error) {
+        console.error("Error al obtener el DocenteId:", error);
+    }
+}
 
 //Guarda las materias en la tabla tbMaterias -------------------
 async function guardarMateriaSinGrupo() { 
@@ -20,7 +35,7 @@ async function guardarMateriaSinGrupo() {
             NombreMateria: nombre,
             Descripcion: descripcion,
             CodigoColor: color,
-            DocenteId: 2 //Remplazar por el claim del docente.
+            DocenteId: docenteIdGlobal 
         })
     });
     if (response.ok) {
@@ -54,7 +69,7 @@ async function guardarGrupo() { // Lógica para guardar el grupo
             NombreGrupo: nombre,
             Descripcion: descripcion,
             CodigoColor: color,
-            DocenteId: 2 // Remplazar por el claim que usa el docente.
+            DocenteId: docenteIdGlobal 
         })
     });
 
@@ -94,7 +109,7 @@ async function asociarMateriasAGrupo(grupoId, materias) {
 // Función para cargar las materias disponibles en el modal 
 async function cargarMaterias() {
     try {
-        const response = await fetch('/api/MateriasApi/ObtenerMateriasSinGrupo/2'); // solo  para checar funcionamiento se agrega la funcion de cargar materias sin grupo
+        const response = await fetch(`/api/MateriasApi/ObtenerMateriasSinGrupo/${docenteIdGlobal}`); // solo  para checar funcionamiento se agrega la funcion de cargar materias sin grupo
         if (response.ok) {
             const materias = await response.json();
             const contenedorMaterias = document.getElementById("materiasLista");
@@ -132,11 +147,10 @@ document.getElementById("gruposModal").addEventListener("shown.bs.modal", cargar
 
 
 // Cargar materias sin grupo -------------------------------------------------------
-async function cargarMateriasSinGrupo(docenteId) {
-    docenteId = 2;
-    console.log("DocenteId: ", docenteId);
+async function cargarMateriasSinGrupo() {
+    console.log("DocenteId: ", docenteIdGlobal);
 
-    const response = await fetch(`/api/MateriasApi/ObtenerMateriasSinGrupo/${docenteId}`)
+    const response = await fetch(`/api/MateriasApi/ObtenerMateriasSinGrupo/${docenteIdGlobal}`)
     if (response.ok) {
         const materiasSinGrupo = await response.json();
         const listaMateriasSinGrupo = document.getElementById("listaMateriasSinGrupo");
@@ -179,7 +193,7 @@ async function cargarMateriasSinGrupo(docenteId) {
                             <div class="icon-container">
                                 <img class="icon-action" src="https://cdn-icons-png.flaticon.com/512/1828/1828817.png" alt="Ver Actividades" title="Ver Actividades" onclick="verActividades(${materiaSinGrupo.materiaId})">
                                 <img class="icon-action" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Ver Integrantes" title="Ver Integrantes" onclick="verIntegrantes(${materiaSinGrupo.materiaId})">
-                                <img class="icon-action" src="https://cdn-icons-png.flaticon.com/512/535/535285.png" alt="Destacar" title="Destacar Materia" onclick="destacarGrupo(${materiaSinGrupo.materiaId})">
+                                <img class="icon-action" src="https://cdn-icons-png.flaticon.com/512/535/535285.png" alt="Destacar" title="Destacar Materia" onclick="destacarMateria(${materiaSinGrupo.materiaId})">
                             </div>
                         </div>
                     </div>
@@ -191,7 +205,7 @@ async function cargarMateriasSinGrupo(docenteId) {
     }
 
     document.getElementById('materiasModal').addEventListener('hidden.bs.modal', function () {
-        cargarMateriasSinGrupo(docenteId);
+        cargarMateriasSinGrupo();
     });
 }
 
@@ -205,9 +219,8 @@ function irAMateria(materiaId) {
 
 //Funcion para obtener los grupos de la base de datos. -----------------------------------------------------
 
-async function cargarGrupos(docenteId) { // Lógica para actualizar la lista de grupos en vista
-    docenteId = 2;
-    const response = await fetch(`/api/GruposApi/ObtenerGrupos/${docenteId}`);
+async function cargarGrupos() { // Lógica para actualizar la lista de grupos en vista
+    const response = await fetch(`/api/GruposApi/ObtenerGrupos/${docenteIdGlobal}`);
 
     if (response.ok) {
         const grupos = await response.json();
@@ -219,14 +232,29 @@ async function cargarGrupos(docenteId) { // Lógica para actualizar la lista de 
         }
 
         listaGrupos.innerHTML = grupos.map(grupo => `
-        <div class="grupo-card " style="background-color: ${grupo.codigoColor || '#FFA500'};  border-radius: 10px;width: 220px; " 
-        onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0px 4px 10px rgba(0, 0, 0, 0.2)';" 
-        onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
-            <div class="grupo-header">
-                <i class="fas fa-clipboard-list"></i>
-                <span>${grupo.nombreGrupo}</span>
+        <div class="grupo-card mb-3" style="background-color: ${grupo.codigoColor || '#FFA500'};  
+            border-radius: 12px; width: 400px; padding: 15px; margin-bottom: 15px;
+            cursor: pointer; transition: all 0.3s ease-in-out;" 
+             onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0px 4px 12px rgba(0, 0, 0, 0.3)';" 
+             onmouseout="this.style.transform='none'; this.style.boxShadow='none';"
+             onclick="handleCardClick(${grupo.grupoId })">
+    
+         <div class="d-flex justify-content-between align-items-center">
+             <h5 class="text-white mb-0">
+                <strong class="font-weight-bold">${grupo.nombreGrupo}</strong> - ${grupo.descripcion || "Sin descripción"}
+             </h5>
+             
+         <div class="dropdown">
+             <button class="btn btn-link text-white p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
+                 <i class="fas fa-cog"></i> <!-- Icono de engranaje -->
+             </button>
+                     <ul class="dropdown-menu dropdown-menu-end">
+                     <li><a class="dropdown-item" href="#" onclick="editarGrupo(${grupo.grupoId})">Editar</a></li>
+                     <li><a class="dropdown-item" href="#" onclick="eliminarGrupo(${grupo.grupoId})">Eliminar</a></li>
+                     <li><a class="dropdown-item" href="#" onclick="desactivarGrupo(${grupo.grupoId})">Desactivar</a></li>
+                     </ul>
+                 </div>
             </div>
-            <p class="grupo-descripcion">${grupo.descripcion || "Sin descripción"}</p>
         </div>
         `).join('');
     } else {
@@ -234,7 +262,7 @@ async function cargarGrupos(docenteId) { // Lógica para actualizar la lista de 
     }
 
     document.getElementById('gruposModal').addEventListener('hidden.bs.modal', function () {
-        cargarGrupos(docenteId);
+        cargarGrupos();
     });
 }
 
@@ -270,7 +298,7 @@ document.getElementById("gestionarGruposBtn").addEventListener("click", async fu
 });
 
 
-//Opciones de los iconos de las  Cards de materias.----------------------------------------------------------------
+//Funcionalidades de los iconos de las  Cards de materias.----------------------------------------------------------------
 function verActividades(MateriaId) {
     alert(`Ver actividades del grupo ID: ${MateriaId}`);
     // Aquí puedes redirigir o cargar las actividades relacionadas con el grupo
@@ -281,15 +309,39 @@ function verIntegrantes(MateriaId) {
     // Aquí puedes abrir un modal o redirigir para mostrar los integrantes
 }
 
-function destacarGrupo(MateriaId) {
+function destacarMateria(MateriaId) {
     alert(`Grupo ID: ${MateriaId} marcado como destacado`);
     // Aquí puedes implementar la lógica para destacar la materia
 }
+//Funcionalidades de los iconos de las cards de grupos
+function handleCardClick(id) {
+    console.log("Card clickeada, puedes agregar funcionalidad aquí. ID:", id);
+    // Aquí puedes agregar la funcionalidad al dar clic en la card
+}
 
+function editarGrupo(id) {
+    alert("Editar grupo " + id);
+}
 
-//Prioriza la ejecucion al cargar index -------------------------------------------------------------------------
-document.addEventListener('DOMContentLoaded', function () {
-    cargarGrupos(); // Esta función cargará los grupos automáticamente al abrir el Index
-    cargarMateriasSinGrupo(); //Cargara las materias sin grupo asignado al abrir index
-}); /*Nos aseguramos de que el contenedor ya está disponible en el DOM 
-antes de que el JavaScript intente agregarle contenido. */
+function eliminarGrupo(id) {
+    alert("Eliminar grupo " + id);
+}
+
+function desactivarGrupo(id) {
+    alert("Desactivar grupo " + id);
+}
+
+// Ejecutar primero la obtención del DocenteId y luego cargar los datos
+async function inicializar() {
+    await obtenerDocenteId(); // Espera a que el ID se obtenga antes de continuar
+    if (docenteIdGlobal) {
+        cargarMateriasSinGrupo(docenteIdGlobal);
+        cargarGrupos(docenteIdGlobal);
+    } else {
+        console.error("No se pudo obtener el DocenteId.");
+    }
+}
+
+//Prioriza la ejecucion al cargar index
+// Llamar a la función inicializadora cuando se cargue la página
+document.addEventListener("DOMContentLoaded", inicializar);
