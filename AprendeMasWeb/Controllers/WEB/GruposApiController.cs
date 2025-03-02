@@ -1,104 +1,117 @@
-﻿using AprendeMasWeb.Data;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿// Se importan los espacios de nombres necesarios para trabajar con la base de datos y las API de ASP.NET Core
+using AprendeMasWeb.Data;
 using AprendeMasWeb.Models.DBModels;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AprendeMasWeb.Controllers.WEB
 {
+    // Se define la ruta base para este controlador API (utilizando la convención de API REST)
     [Route("api/[controller]")]
+    // Indica que este controlador es para una API
     [ApiController]
     public class GruposApiController : ControllerBase
     {
+        // Se declara el contexto de la base de datos para interactuar con los datos de la aplicación
         private readonly DataContext _context;
+
+        // Constructor que recibe el contexto de datos para poder interactuar con la base de datos
         public GruposApiController(DataContext context)
         {
-            _context = context;
-
+            _context = context; // Asigna el contexto de datos a la variable de la clase
         }
 
-        //Aqui se crea el grupo a traves de API peticion post 
+        // Acción para crear un grupo mediante una solicitud POST (API)
         [HttpPost("CrearGrupo")]
         public async Task<IActionResult> CrearGrupo([FromBody] Grupos grupo)
         {
+            // Verifica si el modelo enviado es válido (ejemplo: los datos del grupo están completos)
             if (!ModelState.IsValid)
             {
+                // Si el modelo no es válido, devuelve un mensaje de error con un estado BadRequest
                 return BadRequest("Datos del grupo invalidos.");
             }
 
+            // Genera un código de acceso para el grupo
             grupo.CodigoAcceso = ObtenerClaveGrupo();
+            // Agrega el grupo a la base de datos
             _context.tbGrupos.Add(grupo);
+            // Guarda los cambios en la base de datos
             await _context.SaveChangesAsync();
+            // Retorna una respuesta exitosa con un mensaje y el ID del grupo creado
             return Ok(new { mensaje = "Grupo creado con exito.", grupoId = grupo.GrupoId });
         }
 
-        //Genera una clave para el grupo
+        // Método privado que genera una clave aleatoria de 8 caracteres para el grupo
         private string ObtenerClaveGrupo()
         {
-            var random = new Random();
+            var random = new Random(); // Crea una instancia de la clase Random
+            // Genera una cadena de 8 caracteres aleatorios entre A y Z
             return new string(Enumerable.Range(0, 8).Select(_ => (char)random.Next('A', 'Z')).ToArray());
         }
 
-
-        //Controlador que ayuda obtener los grupos que estan en la base de datos que le pertenecen al docente que inicia sesion.
+        // Acción para obtener los grupos pertenecientes a un docente específico
         [HttpGet("ObtenerGrupos/{docenteId}")]
         public async Task<IActionResult> ObtenerGrupos(int docenteId)
         {
+            // Consulta los grupos en la base de datos que pertenecen al docente con el ID proporcionado
             var grupos = await _context.tbGrupos
                 .Where(g => g.DocenteId == docenteId)
                 .ToListAsync();
+            // Devuelve una respuesta exitosa con los grupos obtenidos
             return Ok(grupos);
         }
 
-
-        // peticion api para registrar a la base de datos el enlace de un grupo con una materia.
+        // Acción POST para asociar materias a un grupo
         [HttpPost("AsociarMaterias")]
         public async Task<IActionResult> AsociarMaterias([FromBody] AsociarMateriasRequest request)
         {
-            if(request == null || request.MateriaIds == null || request.MateriaIds.Count == 0)
+            // Verifica que los datos de la solicitud no sean nulos y que contengan al menos una materia
+            if (request == null || request.MateriaIds == null || request.MateriaIds.Count == 0)
             {
-                return BadRequest("Datos Invalidos");
+                return BadRequest("Datos Invalidos"); // Retorna un error si los datos son inválidos
             }
 
-            // Verifica si el grupo existe
+            // Verifica si el grupo existe en la base de datos
             var grupo = await _context.tbGrupos.FindAsync(request.GrupoId);
             if (grupo == null)
             {
-                return NotFound("Grupo no encontrado.");
+                return NotFound("Grupo no encontrado."); // Si no se encuentra el grupo, retorna un error
             }
 
-            // Eliminar asociaciones previas del grupo (opcional, si quieres reemplazar en lugar de agregar)
+            // Elimina las asociaciones previas entre el grupo y las materias (opcional, si quieres reemplazar en lugar de agregar nuevas)
             var asociacionesActuales = _context.tbGruposMaterias.Where(gm => gm.GrupoId == request.GrupoId);
             _context.tbGruposMaterias.RemoveRange(asociacionesActuales);
 
-            // Asociar las materias seleccionadas al grupo
+            // Asocia las materias seleccionadas al grupo
             foreach (var materiaId in request.MateriaIds)
             {
+                // Verifica si la materia existe en la base de datos
                 var materiaExiste = await _context.tbMaterias.AnyAsync(m => m.MateriaId == materiaId);
                 if (materiaExiste)
                 {
+                    // Crea una nueva relación entre el grupo y la materia
                     var nuevaRelacion = new GruposMaterias
                     {
                         GrupoId = request.GrupoId,
                         MateriaId = materiaId
                     };
+                    // Agrega la nueva relación a la base de datos
                     _context.tbGruposMaterias.Add(nuevaRelacion);
                 }
             }
 
+            // Guarda los cambios en la base de datos
             await _context.SaveChangesAsync();
+            // Retorna una respuesta exitosa con un mensaje
             return Ok(new { mensaje = "Materias asociadas correctamente." });
-
         }
     }
 }
 
-// Modelo para recibir la solicitud desde el frontend
+// Modelo para recibir la solicitud desde el frontend (para asociar materias a un grupo)
 public class AsociarMateriasRequest
 {
-    public int GrupoId { get; set; }
-    public List<int> MateriaIds { get; set; }
+    public int GrupoId { get; set; } // ID del grupo
+    public List<int> MateriaIds { get; set; } // Lista de IDs de las materias que se asociarán al grupo
 }

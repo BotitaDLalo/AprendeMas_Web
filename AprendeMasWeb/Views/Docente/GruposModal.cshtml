@@ -1,56 +1,62 @@
 ﻿@{
     ViewData["Title"] = "GruposModal";
 }
-
-
-
+<!-- Se asigna el título de la vista a "GruposModal" para mostrarlo en la barra del navegador o en otros elementos. -->
 <!-- Modal para Grupos -->
-<div class="modal fade" id="gruposModal" tabindex="-1" aria-labelledby="gruposModalLabel" aria-hidden="true" >
+<div class="modal fade" id="gruposModal" tabindex="-1" aria-labelledby="gruposModalLabel" aria-hidden="true">
+    <!-- Modal con la clase "fade" para efectos de animación, y atributos para manejar la visibilidad y accesibilidad. -->
     <div class="modal-dialog modal-lg">
+        <!-- Diálogo del modal con un tamaño grande. -->
         <div class="modal-content">
+            <!-- Contenido del modal. -->
             <div class="modal-header">
+                <!-- Cabecera del modal. -->
                 <h5 class="modal-title" id="gruposModalLabel">Gestión de Grupos</h5>
+                <!-- Título del modal. -->
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <!-- Botón de cierre para el modal, que cierra el modal cuando se hace clic. -->
             </div>
             <div class="modal-body">
+                <!-- Cuerpo del modal donde se incluirá el formulario para crear o editar grupos. -->
                 <!-- Formulario para crear o editar grupos -->
                 <form id="gruposForm">
+                    <!-- Formulario con el ID "gruposForm". -->
                     <div class="mb-3">
-                        <label for="nombreGrupo" class="form-label">Nombre del Grupo <span class="text-danger">Campo Requerido*</span>  </label>
+                        <!-- Contenedor para los campos de entrada, con margen inferior. -->
+                        <label for="nombreGrupo" class="form-label">Nombre del Grupo <span class="text-danger">Campo Requerido*</span></label>
+                        <!-- Etiqueta para el campo de texto del nombre del grupo, con indicación de campo requerido. -->
                         <input type="text" class="form-control" id="nombreGrupo" placeholder="Ingrese el nombre del grupo" required>
+                        <!-- Campo de texto para ingresar el nombre del grupo, marcado como obligatorio con "required". -->
                     </div>
                     <div class="mb-3">
+                        <!-- Contenedor para la descripción del grupo, con margen inferior. -->
                         <label for="descripcionGrupo" class="form-label">Descripción</label>
+                        <!-- Etiqueta para el campo de descripción del grupo. -->
                         <textarea class="form-control" id="descripcionGrupo" rows="3" placeholder="Ingrese una descripción"></textarea>
+                        <!-- Campo de texto de área (textarea) para ingresar una descripción del grupo. -->
                     </div>
                     <div class="mb-3">
+                        <!-- Contenedor para la selección de materias, con margen inferior. -->
                         <label class="form-label">Selecciona las Materias Disponibles</label>
+                        <!-- Etiqueta para la sección de selección de materias. -->
                         <div id="materiasLista">
-                            <!-- Aquí se cargarán dinámicamente las materias para agregarlas a el grupo por checkbox-->
+                            <!-- Aquí se cargarán dinámicamente las materias disponibles para agregar al grupo mediante checkboxes. -->
                         </div>
                     </div>
-
                 </form>
                 <!--<div id="listaGrupos">
-                    <!-- Aquí se renderiza la lista de grupos
-                  </div> -->
+                        <!-- Aquí se renderiza la lista de grupos
+                </div>-->
+                <!-- Esta sección está comentada, posiblemente se usará para mostrar una lista de grupos ya existentes. -->
             </div>
             <div class="modal-footer">
+                <!-- Pie de modal con botones de acción. -->
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <!-- Botón para cerrar el modal. -->
                 <button type="button" class="btn btn-primary" onclick="guardarGrupo()">Guardar Grupo</button>
+                <!-- Botón para guardar el grupo, ejecutando la función "guardarGrupo" al hacer clic. -->
             </div>
         </div>
     </div>
 </div>
-
-<!--
-<script>
-    document.getElementById("gruposModal").addEventListener("show.bs.modal", function() {
-        const docenteId = 1; // ⚠️ Aquí pon el ID del docente actual dinámicamente
-        cargarGrupos(docenteId);
-    });
-
-    function abrirGrupo(grupoId) {
-        window.location.href = `/Docente/ContenidoGrupo/${grupoId}`;
-    }
-</script>-->
+<!-- Fin del modal para grupos. -->

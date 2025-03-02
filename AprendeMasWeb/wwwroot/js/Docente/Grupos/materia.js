@@ -1,7 +1,9 @@
-﻿document.addEventListener("DOMContentLoaded", function () {
+﻿docenteIdGlobal = localStorage.getItem("docenteId");
+
+document.addEventListener("DOMContentLoaded", function () {
     const urlParams = new URLSearchParams(window.location.search);
     const materiaId = urlParams.get("materiaId");
-    const docenteId = 2; // 🔹 Reemplaza esto con el ID del docente autenticado
+    const docenteId = docenteIdGlobal; // 🔹 Reemplaza esto con el ID del docente autenticado
 
     if (materiaId && docenteId) {
         fetch(`/api/DetallesMateriaApi/ObtenerDetallesMateria/${materiaId}/${docenteId}`)

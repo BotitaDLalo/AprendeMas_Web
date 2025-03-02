@@ -1,39 +1,49 @@
 ﻿@{
-    ViewData["Title"] = "MateriasModal";
+    ViewData["Title"] = "MateriasModal";  // Asigna el título de la página en la propiedad "Title" de ViewData
 }
-
-
 
 <!-- Modal para Materias -->
 <div class="modal fade" id="materiasModal" tabindex="-1" aria-labelledby="materiasModalLabel" aria-hidden="true">
+    <!-- Modal se inicializa con la clase 'fade' para un efecto de desvanecimiento, 'tabindex' para el enfoque, y 'aria-hidden' para la accesibilidad -->
     <div class="modal-dialog modal-lg">
+        <!-- Modal con un diálogo grande -->
         <div class="modal-content">
+            <!-- Contenido del modal -->
             <div class="modal-header">
+                <!-- Cabecera del modal -->
                 <h5 class="modal-title" id="materiasModalLabel">Gestión de Materias</h5>
+                <!-- Título del modal que describe la funcionalidad del mismo -->
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <!-- Botón de cerrar el modal, con la clase 'btn-close' y un atributo de accesibilidad -->
             </div>
             <div class="modal-body">
+                <!-- Cuerpo del modal -->
                 <!-- Formulario para crear o editar materias -->
                 <form id="materiasForm">
+                    <!-- Formulario con id 'materiasForm' -->
                     <div class="mb-3">
-                        <!--Aun sin funcionar por el claim del docente, se pierde en el proceso-->
-                        <input type="hidden" id="docenteId" value="@ViewData["DocenteId"]">
-
+                        <!-- Div para el primer campo del formulario -->
                         <label for="nombreMateria" class="form-label">Nombre de la Materia</label>
+                        <!-- Etiqueta para el campo de nombre de la materia -->
                         <input type="text" class="form-control" id="nombreMateria" placeholder="Ingrese el nombre de la materia" required>
+                        <!-- Campo de texto para ingresar el nombre de la materia, con la clase 'form-control' para estilo y 'required' para validación -->
                     </div>
                     <div class="mb-3">
+                        <!-- Div para el segundo campo del formulario -->
                         <label for="descripcionMateria" class="form-label">Descripción</label>
+                        <!-- Etiqueta para el campo de descripción de la materia -->
                         <textarea class="form-control" id="descripcionMateria" rows="3" placeholder="Ingrese una descripción"></textarea>
-                    </div> 
+                        <!-- Campo de texto grande (textarea) para la descripción de la materia, con 3 filas visibles -->
+                    </div>
                 </form>
-                <div id="listaMaterias">
-                    <!-- Aquí se renderiza la lista de materias, por alguna razon si elimino la linea deja de funcionar mostrar grupos -->
-                </div>
+
             </div>
             <div class="modal-footer">
+                <!-- Pie del modal -->
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <!-- Botón para cerrar el modal con clase 'btn-secondary' -->
                 <button type="button" class="btn btn-primary" onclick="guardarMateriaSinGrupo()">Guardar Materia</button>
+                <!-- Botón para guardar la materia, que ejecuta la función 'guardarMateriaSinGrupo' cuando se hace clic -->
             </div>
         </div>
     </div>

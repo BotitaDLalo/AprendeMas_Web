@@ -1,53 +1,64 @@
 ﻿@{
+    // Establece el diseño de la vista utilizando una plantilla compartida específica para docentes
     Layout = "~/Views/Shared/_LayoutDocente.cshtml";
+
+    // Define el título de la página
     ViewData["Title"] = "Inicio - Docente";
-    /*Modales utilizados*/
+
+    // Incluye el modal para gestionar grupos
     @Html.Partial("~/Views/Docente/GruposModal.cshtml")
+
+    // Incluye el modal para gestionar materias
     @Html.Partial("~/Views/Docente/MateriasModal.cshtml")
 }
 
 @section Scripts {
-    <script src="~/js/Docente/Grupos/docente.js"></script>
+            // Incluye el archivo de JavaScript para manejar las funcionalidades específicas de los docentes
+        <script src="~/js/Docente/Grupos/docente.js"></script>
 }
 
-
-
+<!-- Sección del encabezado que contiene el título de la página y un icono -->
 <div class="misCursos-header">
     <h2 class="misCursos-titulo">
         Mis cursos
+        <!-- Icono de filtro para interactuar con los cursos -->
         <img src="@Url.Content("~/Iconos/FILTRO-26.svg")"
              alt="ActivIA Logo"
              class="misCursos-icono">
     </h2>
 
-    <!-- Botón desplegable -->
+    <!-- Menú desplegable que permite al docente crear o gestionar grupos y materias -->
     <div class="misCursos-dropdown">
         <button class="misCursos-btn-crear" id="misCursos-dropdownBtn">CREAR</button>
+        <!-- Menú desplegable que aparece al hacer clic en el botón CREAR -->
         <div class="misCursos-dropdown-menu" id="misCursos-dropdownMenu">
+            <!-- Botón que abre el modal para gestionar materias -->
             <button class="misCursos-dropdown-item" data-bs-toggle="modal" data-bs-target="#materiasModal">Gestionar Materias</button>
+            <!-- Botón que abre el modal para gestionar grupos -->
             <button class="misCursos-dropdown-item" data-bs-toggle="modal" data-bs-target="#gruposModal" id="gestionarGruposBtn">Gestionar Grupos</button>
         </div>
     </div>
 </div>
 
+<!-- Botón adicional para navegar a la página de detalles de materias -->
 <button class="misCursos-btn-crear" onclick="window.location.href='/Docente/MateriasDetalles'">Avisos Pruebas</button>
 
-
 <br />
 <br />
-<!-- Contenedor donde se mostrarán los grupos -->
+<!-- Contenedor que muestra la lista de grupos, los cuales serán manejados por el archivo docente.js -->
 <div id="listaGrupos" class="mt-4">
-    <!-- Aquí aparecerán la cards de los grupos después de crearlos lo controla docente.js-->
+    <!-- Aquí se mostrará la lista de grupos que el docente ha creado. Esta parte está controlada por el archivo docente.js -->
 </div>
 
+<!-- Separador visual para organizar las secciones -->
 <div class="divider"></div>
 
+<!-- Título que indica que esta sección contiene materias sin grupo asignado -->
 <div class="section-title">
     Materias sin grupo registrado
 </div>
 
-<!-- Contenedor donde se mostraran las materias que no tienen asignado un grupo-->
-
+<!-- Contenedor donde se mostrarán las materias que aún no tienen grupo asignado -->
 <div id="listaMateriasSinGrupo" class="mt-4">
-    <!--Aqui se mostraran las materias sin grupo despues de crearlos lo controla docente.js -->
+    <!-- Aquí se mostrarán las materias que no han sido asignadas a ningún grupo. Este contenido también es controlado por docente.js -->
 </div>
