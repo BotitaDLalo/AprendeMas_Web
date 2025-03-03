@@ -122,7 +122,7 @@ namespace AprendeMasWeb.Controllers
         }
 
 
-        [HttpPut("ActualizarEvento/{id}")]
+        [HttpPatch("ActualizarEvento/{id}")]
         public async Task<ActionResult> ActualizarEvento(int id, [FromBody] EventosAgenda eventoActualizado)
         {
             try
@@ -144,7 +144,7 @@ namespace AprendeMasWeb.Controllers
                 eventoExistente.FechaInicio = eventoActualizado.FechaInicio;
                 eventoExistente.FechaFinal = eventoActualizado.FechaFinal;
 
-                // **Eliminar relaciones anteriores solo si se enviaron nuevas**
+                // Eliminar relaciones anteriores solo si se enviaron nuevas
                 if ((eventoActualizado.EventosGrupos != null && eventoActualizado.EventosGrupos.Any()) ||
                     (eventoActualizado.EventosMaterias != null && eventoActualizado.EventosMaterias.Any()))
                 {
@@ -152,7 +152,14 @@ namespace AprendeMasWeb.Controllers
                     _dataContext.tbEventosMaterias.RemoveRange(eventoExistente.EventosMaterias);
                 }
 
-                // **Validar que los grupos existan antes de insertarlos**
+                // Verificar que solo uno de los dos (Grupos o Materias) sea asignado
+                if ((eventoActualizado.EventosGrupos != null && eventoActualizado.EventosGrupos.Any()) &&
+                    (eventoActualizado.EventosMaterias != null && eventoActualizado.EventosMaterias.Any()))
+                {
+                    return BadRequest(new { Message = "El evento no puede estar asignado a un grupo y una materia al mismo tiempo." });
+                }
+
+                // Validar que los grupos existan antes de insertarlos
                 if (eventoActualizado.EventosGrupos != null && eventoActualizado.EventosGrupos.Any())
                 {
                     var grupoIds = eventoActualizado.EventosGrupos.Select(g => g.GrupoId).ToList();
@@ -173,7 +180,7 @@ namespace AprendeMasWeb.Controllers
                     }).ToList();
                 }
 
-                // **Validar que las materias existan antes de insertarlas**
+                // Validar que las materias existan antes de insertarlas
                 if (eventoActualizado.EventosMaterias != null && eventoActualizado.EventosMaterias.Any())
                 {
                     var materiaIds = eventoActualizado.EventosMaterias.Select(m => m.MateriaId).ToList();
@@ -211,6 +218,7 @@ namespace AprendeMasWeb.Controllers
                 return StatusCode(500, new { Message = "Ocurrió un error al actualizar el evento.", Error = ex.Message, StackTrace = ex.StackTrace });
             }
         }
+
 
 
 
