@@ -1,4 +1,9 @@
-﻿@model AprendeMasWeb.Models.DBModels.Materias
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAlumno.cshtml";
+    ViewData["Title"] = "Inicio - Alumno";
+}
+
+@model AprendeMasWeb.Models.DBModels.Materias
 
 <h2>@Model.NombreMateria</h2>
 <p>@Model.Descripcion</p>
