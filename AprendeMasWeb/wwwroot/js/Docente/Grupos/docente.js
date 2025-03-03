@@ -10,14 +10,99 @@ async function obtenerDocenteId() {
         if (data.docenteId) {
             docenteIdGlobal = data.docenteId; // Guardamos el docenteId en la variable global
             localStorage.setItem("docenteId", docenteIdGlobal); // Guardamos el docenteId en el almacenamiento local
-            console.log("DocenteId obtenido:", docenteIdGlobal); // Mostramos el docenteId en la consola para confirmación
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Inicio sesión correctamente.",
+                showConfirmButton: false,
+                timer: 2500
+            });// Mostramos aviso que se inicio sesion correctamente
         } else {
-            console.error("Error: No se encontró el DocenteId."); // Mostramos un mensaje de error si no se obtiene el docenteId
+            let timerInterval;
+            Swal.fire({
+                title: "Parece que se perdió la conexión con tu sesión.",
+                html: "La cerraremos por seguridad y podrás volver a iniciar sesión en: <b></b>.",
+                timer: 5000,
+                timerProgressBar: true,
+                allowOutsideClick: false, // Evita que se cierre al hacer clic fuera
+                didOpen: () => {
+                    Swal.showLoading();
+                    const timer = Swal.getPopup().querySelector("b");
+                    timerInterval = setInterval(() => {
+                        timer.textContent = `${Math.floor(Swal.getTimerLeft() / 1000)} segundos`;
+                    }, 100);
+                },
+                willClose: () => {
+                    clearInterval(timerInterval);
+                    cerrarSesion();
+                }
+            }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    console.log("Cerrando sesión automáticamente.");
+                }
+            }); //Se cierra la sesion al no obtener el id del docente, ya que es necesario para todo. raramente se activara esto, pero es mejor tenerlo.
         }
     } catch (error) {
-        console.error("Error al obtener el DocenteId:", error); // Mostramos un mensaje de error en caso de fallo en la solicitud
+        let timerInterval;
+        Swal.fire({
+            title: "Parece que se perdió la conexión con tu sesión.",
+            html: "La cerraremos por seguridad y podrás volver a iniciar sesión en: <b></b>.",
+            timer: 5000,
+            timerProgressBar: true,
+            allowOutsideClick: false, // Evita que se cierre al hacer clic fuera
+            didOpen: () => {
+                Swal.showLoading();
+                const timer = Swal.getPopup().querySelector("b");
+                timerInterval = setInterval(() => {
+                    timer.textContent = `${Math.floor(Swal.getTimerLeft() / 1000)} segundos`;
+                }, 100);
+            },
+            willClose: () => {
+                clearInterval(timerInterval);
+                cerrarSesion();
+            }
+        }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.timer) {
+                console.log("Cerrando sesión automáticamente.");
+            }
+        }); //Se cierra la sesion al no obtener el id del docente, ya que es necesario para todo. raramente se activara esto, pero es mejor tenerlo.
     }
 }
+
+// 🔹 Función para cerrar sesión
+async function cerrarSesion() {
+    try {
+        const response = await fetch('/Cuenta/CerrarSesion', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            }
+        });
+
+        if (response.ok) {
+            console.log("Sesión cerrada correctamente.");
+            window.location.href = "/Cuenta/IniciarSesion"; // Redirigir al login
+        } else { //dificil que se ejecute, pero es mejor estar validado y dar ayuda
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "No se pudo cerrar sesión.",
+                allowOutsideClick: false, // Evita que se cierre al hacer clic fuera
+                footer: '<a href="mailto:soporte@tuempresa.com?subject=Problema%20con%20cierre%20de%20sesión&body=Hola,%20tengo%20un%20problema%20al%20cerrar%20sesión.%20Por%20favor,%20ayuda." target="_blank">Si el problema persiste, contáctanos.</a>'
+            });
+        }
+    } catch (error) {//dificil que se ejecute, pero es mejor estar validado y dar ayuda
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "No se pudo cerrar sesión.",
+            allowOutsideClick: false, // Evita que se cierre al hacer clic fuera
+            footer: '<a href="mailto:soporte@tuempresa.com?subject=Problema%20con%20cierre%20de%20sesión&body=Hola,%20tengo%20un%20problema%20al%20cerrar%20sesión.%20Por%20favor,%20ayuda." target="_blank">Si el problema persiste, contáctanos.</a>'
+        });
+    }
+}
+
 
 //Guarda las materias en la tabla tbMaterias -------------------
 async function guardarMateriaSinGrupo() {
@@ -26,7 +111,13 @@ async function guardarMateriaSinGrupo() {
     const color = "#2196F3"; // Asignamos un color predeterminado para la materia
 
     if (nombre.trim() === '') { // Verificamos que el nombre de la materia no esté vacío
-        alert('Ingrese Nombre De La Materia.'); // Mostramos una alerta si el nombre está vacío
+        Swal.fire({
+            position: "top-end",
+            icon: "question",
+            title: "Ingrese nombre de la materia.",
+            showConfirmButton: false,
+            timer: 2500
+        });// Mostramos una alerta si el nombre está vacío
         return;
     }
 
@@ -43,11 +134,24 @@ async function guardarMateriaSinGrupo() {
     });
 
     if (response.ok) { // Verificamos si la respuesta es exitosa
-        alert('Materia guardada con éxito.'); // Mostramos una alerta de éxito
+        Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Materia registrada correctamente.",
+            showConfirmButton: false,
+            timer: 2000
+        });
+        ;// Mostramos una alerta de éxito
         document.getElementById("materiasForm").reset(); // Limpiamos el formulario
         cargarMateriasSinGrupo(); // Recargamos la lista de materias sin grupo
     } else {
-        alert('Error al guardar la materia.'); // Mostramos una alerta si hubo un error al guardar
+        Swal.fire({
+            position: "top-end",
+            icon: "error",
+            title: "Error al registrar materia",
+            showConfirmButton: false,
+            timer: 2000
+        }); // Mostramos una alerta si hubo un error al guardar
     }
 }
 
@@ -345,3 +449,5 @@ async function inicializar() {
 //Prioriza la ejecucion al cargar index
 // Llamar a la función inicializadora cuando se cargue la página
 document.addEventListener("DOMContentLoaded", inicializar); // Ejecuta la función inicializadora cuando el DOM esté completamente cargado
+
+

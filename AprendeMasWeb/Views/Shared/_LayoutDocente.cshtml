@@ -115,7 +115,7 @@
 									<img class="iconos1-nav" src="@Url.Content("~/Iconos/PERFIL-26.svg")" alt="Icono de Usuario" />
 									<p class="dropdown-item">@User.Identity.Name</p>
 								</div>
-								<form asp-action="CerrarSesion" asp-controller="Cuenta" method="post" class="dropdown-item">
+								<form id="logoutForm" asp-action="CerrarSesion" asp-controller="Cuenta" method="post" class="dropdown-item">
 									<button type="submit" class="btn btn-danger btn-sm w-100">Cerrar Sesión</button>
 								</form>
 							</div>
