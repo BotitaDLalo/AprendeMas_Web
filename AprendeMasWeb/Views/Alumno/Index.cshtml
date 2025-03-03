@@ -11,33 +11,14 @@
 <div id="modalUnique" class="modal-overlay-unique">
     <div class="modal-container-unique">
         <h2>Unirme a una clase</h2>
-        <input type="text" class="modal-input-unique" placeholder="Escribe el código de la clase">
-        <button class="modal-btn-Centrados">Unirme</button>
+        <input type="text" id="codigoAccesoInput" class="modal-input-unique" placeholder="Escribe el código de la clase">
+        <button onclick="unirseAClase()" class="modal-btn-Centrados">Unirme</button>
         <button onclick="closeModal()" class="modal-btn-Centrados" style="background: #dc3545; margin-top: 10px;">Cerrar</button>
     </div>
 </div>
 
-<br />
-<br /><br />
 
-    <div class="materia-card-unique">
-        
-        <button class="materia-menu-btn-unique" onclick="event.stopPropagation(); togglesMenu()">⋮</button>
-    <a asp-controller="Alumno" asp-action="Materia" class="materia-card-link-unique">
-        <div class="materia-titulo-unique">Ciencias</div>
-      
-    </a>
-    <hr />
-        <div class="materia-actividades-unique">Actividades pendientes: 2</div>
-        <div class="materia-iconos-unique">
-            
-        <img class="iconos-nav" src="@Url.Content("~/Iconos/TABLA-26.svg")" alt="Icono de Inicio" />
-        <img class="iconos-nav" src="@Url.Content("~/Iconos/PAR-26.svg")" alt="Icono de Inicio" />
-        <img class="iconos-nav" src="@Url.Content("~/Iconos/ESTRELLA-26.svg")" alt="Icono de Inicio" />
-        </div>
-        <div class="materia-menu-unique" id="menuMateria">
-            <a href="#">Editar</a>
-            <a href="#">Eliminar</a>
-        </div>
-    </div>
+<!-- Contenedor donde se mostrarán las clases -->
+<div class="card-wrapper" id="contenedorClases"></div>
+
 
