@@ -72,32 +72,35 @@ async function obtenerDocenteId() {
 // 🔹 Función para cerrar sesión
 async function cerrarSesion() {
     try {
+        // Realiza una solicitud POST al endpoint de cierre de sesión
         const response = await fetch('/Cuenta/CerrarSesion', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                'Content-Type': 'application/x-www-form-urlencoded', // Especifica el tipo de contenido
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value // Obtiene el token de verificación CSRF
             }
         });
 
         if (response.ok) {
-            console.log("Sesión cerrada correctamente.");
-            window.location.href = "/Cuenta/IniciarSesion"; // Redirigir al login
-        } else { //dificil que se ejecute, pero es mejor estar validado y dar ayuda
+            console.log("Sesión cerrada correctamente."); // Mensaje en consola indicando que la sesión se cerró con éxito
+            window.location.href = "/Cuenta/IniciarSesion"; // Redirige al usuario a la página de inicio de sesión
+        } else {
+            // En caso de error en la respuesta del servidor, muestra un mensaje de alerta con SweetAlert2
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "No se pudo cerrar sesión.",
-                allowOutsideClick: false, // Evita que se cierre al hacer clic fuera
+                allowOutsideClick: false, // Evita que la alerta se cierre al hacer clic fuera de ella
                 footer: '<a href="mailto:soporte@tuempresa.com?subject=Problema%20con%20cierre%20de%20sesión&body=Hola,%20tengo%20un%20problema%20al%20cerrar%20sesión.%20Por%20favor,%20ayuda." target="_blank">Si el problema persiste, contáctanos.</a>'
             });
         }
-    } catch (error) {//dificil que se ejecute, pero es mejor estar validado y dar ayuda
+    } catch (error) {
+        // Captura cualquier error inesperado (por ejemplo, problemas de conexión) y muestra una alerta
         Swal.fire({
             icon: "error",
             title: "Oops...",
             text: "No se pudo cerrar sesión.",
-            allowOutsideClick: false, // Evita que se cierre al hacer clic fuera
+            allowOutsideClick: false, // Evita que la alerta se cierre al hacer clic fuera de ella
             footer: '<a href="mailto:soporte@tuempresa.com?subject=Problema%20con%20cierre%20de%20sesión&body=Hola,%20tengo%20un%20problema%20al%20cerrar%20sesión.%20Por%20favor,%20ayuda." target="_blank">Si el problema persiste, contáctanos.</a>'
         });
     }
@@ -148,7 +151,7 @@ async function guardarMateriaSinGrupo() {
         Swal.fire({
             position: "top-end",
             icon: "error",
-            title: "Error al registrar materia",
+            title: "Error al registrar materia.",
             showConfirmButton: false,
             timer: 2000
         }); // Mostramos una alerta si hubo un error al guardar
@@ -163,7 +166,13 @@ async function guardarGrupo() { // Lógica para guardar el grupo
     const checkboxes = document.querySelectorAll(".materia-checkbox:checked"); // Obtenemos todos los checkboxes seleccionados
 
     if (nombre.trim() === '') { // Verificamos que el nombre del grupo no esté vacío
-        alert('Ingrese Nombre Del Grupo.'); // Mostramos una alerta si el nombre está vacío
+        Swal.fire({
+            position: "top-end",
+            icon: "question",
+            title: "Ingrese nombre del grupo.",
+            showConfirmButton: false,
+            timer: 2500
+        });// Mostramos una alerta si el nombre está vacío
         return;
     }
 
@@ -190,11 +199,25 @@ async function guardarGrupo() { // Lógica para guardar el grupo
             await asociarMateriasAGrupo(grupoCreado.grupoId, materiasSeleccionadas); // Llamamos a la función para asociar las materias al grupo
         }
 
-        alert('Grupo guardado con éxito.'); // Mostramos una alerta de éxito
+        Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Grupo registrado correctamente.",
+            showConfirmButton: false,
+            timer: 2000
+        });
+        ;// Mostramos una alerta de éxito
         document.getElementById("gruposForm").reset(); // Limpiamos el formulario
         cargarGrupos(); // Recargamos la lista de grupos
+        cargarMaterias(); //Recarga las materias disponibles para enlazar
     } else {
-        alert('Error al guardar el grupo.'); // Mostramos una alerta si hubo un error al guardar el grupo
+        Swal.fire({
+            position: "top-end",
+            icon: "error",
+            title: "Error al registrar grupo.",
+            showConfirmButton: false,
+            timer: 2000
+        }); // Mostramos una alerta si hubo un error al guardar
     }
 }
 
@@ -253,14 +276,9 @@ async function cargarMaterias() {
     }
 }
 
-// Llamar a cargarMaterias cuando se abre el modal de grupos
-document.getElementById("gruposModal").addEventListener("shown.bs.modal", cargarMaterias); // Cuando se abre el modal de grupos, se llama a la función cargarMaterias
-
 
 // Cargar materias sin grupo -------------------------------------------------------
 async function cargarMateriasSinGrupo() {
-    console.log("DocenteId: ", docenteIdGlobal); // Muestra en consola el DocenteId global
-
     const response = await fetch(`/api/MateriasApi/ObtenerMateriasSinGrupo/${docenteIdGlobal}`) // Hace una solicitud GET para obtener las materias sin grupo usando el DocenteId global
     if (response.ok) { // Si la respuesta es exitosa
         const materiasSinGrupo = await response.json(); // Convierte la respuesta a formato JSON
@@ -309,9 +327,45 @@ async function cargarMateriasSinGrupo() {
             </div>
         `;
     } else {
-        console.error('Error al cargar los grupos.'); // Si la respuesta no es exitosa, muestra un error en la consola
-    }
+        let timerInterval; // Variable para almacenar el intervalo del temporizador
 
+        Swal.fire({
+            title: "Error al cargar materias sin grupo asignado.", // Título de la alerta
+            html: "Se reintentará automáticamente en: <b></b>.", // Mensaje con temporizador dinámico
+            timer: 4000, // Tiempo en milisegundos antes de que la alerta se cierre automáticamente
+            timerProgressBar: true, // Muestra una barra de progreso indicando el tiempo restante
+            allowOutsideClick: false, // Evita que el usuario cierre la alerta haciendo clic fuera de ella
+            showCancelButton: true, // Muestra un botón de cancelar
+            cancelButtonText: "Cerrar sesión", // Texto del botón de cancelar
+
+            didOpen: () => {
+                // Se ejecuta cuando la alerta se abre
+                Swal.showLoading(); // Muestra un indicador de carga
+                const timer = Swal.getPopup().querySelector("b"); // Obtiene el elemento <b> para mostrar el tiempo restante
+                timerInterval = setInterval(() => {
+                    timer.textContent = `${Math.floor(Swal.getTimerLeft() / 1000)} segundos`; // Actualiza el temporizador en segundos
+                }, 100); // Actualiza el temporizador cada 100ms
+            },
+
+            willClose: () => {
+                // Se ejecuta cuando la alerta está a punto de cerrarse
+                clearInterval(timerInterval); // Detiene la actualización del temporizador
+            }
+
+        }).then((result) => {
+            // Se ejecuta cuando la alerta se cierra manualmente o por el temporizador
+            if (result.dismiss === Swal.DismissReason.timer) {
+                // Si la alerta se cierra automáticamente por el temporizador
+                console.log("Reintentando cargar las materias sin grupo.");
+                cargarMateriasSinGrupo(); // Llama a la función para reintentar la carga de materias
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // Si el usuario hace clic en "Cerrar sesión"
+                console.log("El usuario decidió cerrar sesión.");
+                cerrarSesion(); // Llama a la función para cerrar sesión
+            }
+        });
+
+    }
     document.getElementById('materiasModal').addEventListener('hidden.bs.modal', function () {
         cargarMateriasSinGrupo(); // Vuelve a cargar las materias sin grupo cuando se cierra el modal
     });
@@ -364,43 +418,48 @@ async function cargarGrupos() { // Lógica para actualizar la lista de grupos en
         </div>
         `).join(''); // Muestra los grupos como tarjetas dinámicas
     } else {
-        console.error('Error al cargar los grupos.'); // Si la respuesta no es exitosa, muestra un error en la consola
-    }
+        let timerInterval; // Variable para almacenar el intervalo del temporizador
 
+        Swal.fire({
+            title: "Error al cargar los grupos.", // Mensaje de error en la alerta
+            html: "Se reintentará automáticamente en: <b></b>.", // Mensaje con temporizador dinámico
+            timer: 4000, // Tiempo en milisegundos antes de que la alerta se cierre automáticamente
+            timerProgressBar: true, // Muestra una barra de progreso indicando el tiempo restante
+            allowOutsideClick: false, // Evita que el usuario cierre la alerta haciendo clic fuera de ella
+            showCancelButton: true, // Muestra un botón de cancelar dentro de la alerta
+            cancelButtonText: "Cerrar sesión", // Texto que aparecerá en el botón de cancelar
+
+            didOpen: () => {
+                // Se ejecuta cuando la alerta se abre
+                Swal.showLoading(); // Muestra un indicador de carga
+                const timer = Swal.getPopup().querySelector("b"); // Obtiene el elemento <b> para mostrar el tiempo restante
+                timerInterval = setInterval(() => {
+                    timer.textContent = `${Math.floor(Swal.getTimerLeft() / 1000)} segundos`; // Actualiza el temporizador en segundos
+                }, 100); // Se actualiza cada 100ms
+            },
+
+            willClose: () => {
+                // Se ejecuta cuando la alerta está a punto de cerrarse
+                clearInterval(timerInterval); // Detiene la actualización del temporizador
+            }
+
+        }).then((result) => {
+            // Se ejecuta cuando la alerta se cierra manualmente o por el temporizador
+            if (result.dismiss === Swal.DismissReason.timer) {
+                // Si la alerta se cerró automáticamente por el temporizador
+                console.log("Reintentando cargar los grupos.");
+                cargarMateriasSinGrupo(); // Reintenta la carga de grupos automáticamente
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // Si el usuario hizo clic en "Cerrar sesión"
+                console.log("El usuario decidió cerrar sesión.");
+                cerrarSesion(); // Llama a la función para cerrar sesión
+            }
+        });
+    }
     document.getElementById('gruposModal').addEventListener('hidden.bs.modal', function () {
         cargarGrupos(); // Vuelve a cargar los grupos cuando se cierra el modal
     });
 }
-
-
-// FUNCIÓN PARA CARGAR EL MODAL DINÁMICAMENTE ------------------------------------------
-document.getElementById("gestionarGruposBtn").addEventListener("click", async function (event) {
-    const modalContainer = document.getElementById("modalContainer"); // Obtiene el contenedor del modal
-
-    // Si el modal ya está cargado, no volver a cargarlo
-    if (!modalContainer.innerHTML.trim()) { // Si el modal no ha sido cargado
-        event.preventDefault(); // Evita que el modal intente abrirse antes de que se cargue
-
-        try {
-            const response = await fetch('/Docente/GruposModal'); // Solicita el contenido del modal
-
-            if (response.ok) { // Si la respuesta es exitosa
-                const modalHtml = await response.text(); // Obtiene el HTML del modal
-                modalContainer.innerHTML = modalHtml; // Inserta el HTML del modal en el contenedor
-
-                // Ahora que el modal está cargado, forzamos a que se abra
-                const modalElement = new bootstrap.Modal(document.getElementById('gruposModal')); // Inicializa el modal de Bootstrap
-                modalElement.show(); // Muestra el modal
-            } else {
-                console.error('Error al cargar el modal.'); // Si la respuesta no es exitosa, muestra un error
-            }
-        } catch (error) {
-            console.error('Error al cargar el modal:', error); // Si ocurre un error en el fetch, muestra el error
-        }
-    }
-    // Si ya está cargado, no evitamos el comportamiento por defecto
-});
-
 
 //Funcionalidades de los iconos de las Cards de materias.----------------------------------------------------------------
 function verActividades(MateriaId) {
@@ -448,6 +507,8 @@ async function inicializar() {
 
 //Prioriza la ejecucion al cargar index
 // Llamar a la función inicializadora cuando se cargue la página
-document.addEventListener("DOMContentLoaded", inicializar); // Ejecuta la función inicializadora cuando el DOM esté completamente cargado
-
-
+document.addEventListener("DOMContentLoaded", () => {
+    inicializar(); // Carga inicial de datos
+    // ✅ Se ejecuta SOLO cuando se abre el modal
+    document.getElementById("gruposModal").addEventListener("shown.bs.modal", cargarMaterias);
+});
