@@ -114,16 +114,16 @@ function agregarCardClase(nombre, esGrupo) {
   <br><br><br><br>
   <div class="card-container1">
   
-    <p class="card-etiqueta">
+    <p class="card-etiqueta" onclick="verClase('${nombreEscapado}', ${esGrupo})">
     <img class="iconos-nav2" src="/Iconos/TABLAB.svg" alt="Icono de Calendario" />
     ${etiqueta} - ${nombre}
 </p> <!-- Etiqueta que indica si es Grupo o Materia -->
     <hr class="card-separator">
-    <img class="iconos-nav" src="/Iconos/TABLA-26.svg" alt="Icono de Calendario" /> 
-    <img class="iconos-nav" src="/Iconos/PAR-26.svg" alt="Icono de Calendario" /> 
-    <img class="iconos-nav" src="/Iconos/ESTRELLA-26.svg" alt="Icono de Calendario" /> 
+    <img class="iconos-nav2" src="/Iconos/TABLA-26.svg" alt="Icono de Calendario" /> 
+    <img class="iconos-nav2" src="/Iconos/PAR-26.svg" alt="Icono de Calendario" /> 
+    <img class="iconos-nav2" src="/Iconos/ESTRELLA-26.svg" alt="Icono de Calendario" /> 
 
-    <button class="card-button" onclick="verClase('${nombreEscapado}', ${esGrupo})">Entrar a la clase</button>
+
   </div>
 `;
 

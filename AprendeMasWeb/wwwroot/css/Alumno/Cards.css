@@ -8,14 +8,16 @@
 
 /* Estilo para cada card */
 .card-container1 {
-    background-color: #f0f0f0; /* Gris de fondo */
-    padding: 15px;
-    border-radius: 8px;
+    background-color: white; /* Gris de fondo */
+    padding: 0px;
+    border-radius: 10px;
     box-sizing: border-box;
     /* Tamaño máximo para que las cards no se estiren demasiado en pantallas grandes */
-    max-width: 300px;
+    max-width: 2800px;
     width: 100%;
     display: block;
+    min-height: 130px;
+    border: 2px solid #ccc;
 }
 
 .card-title {
@@ -58,7 +60,7 @@
 
 
 .card-etiqueta {
-    font-size: 15px;;
+    font-size: 15px;
     font-weight: bold;
     margin-bottom: 10px;
     color: white;
@@ -67,10 +69,21 @@
     border-radius: 5px;
     display: flex; /* Usamos flexbox para alinear los elementos */
     align-items: center; /* Alinea la imagen y el texto verticalmente */
- 
+    cursor: pointer;
 }
 
 .iconos-nav2 {
-    width: 60px; /* Ajusta el tamaño de la imagen */
+    width: 70px;
+    margin-right: -9px;
+    vertical-align: middle;
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Transición para el cambio de sombra y transformación */
     height: auto; /* Mantiene la proporción de la imagen */
+    float: right; /* Alinea la imagen a la derecha */
 }
+
+    /* Estado cuando se pasa el cursor */
+    .iconos-nav2:hover {
+        transform: scale(1.1); /* Aumenta ligeramente el tamaño de la imagen */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0
+
+
