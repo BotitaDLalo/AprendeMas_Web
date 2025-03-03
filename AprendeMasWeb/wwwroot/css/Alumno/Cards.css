@@ -22,12 +22,6 @@
     font-size: 1.5em;
     margin: 0;
 }
-.card-etiqueta {
-    font-size: 1.1em;
-    font-weight: bold;
-    margin-bottom: 10px; /* Espacio entre la etiqueta y el nombre */
-    color: #555;
-}
 
 /* Estilo para la línea de separación */
 .card-separator {
@@ -55,3 +49,28 @@
 
 
 
+
+
+.card-etiqueta-container {
+    display: flex;
+    align-items: center; /* Alinea verticalmente la imagen y el texto */
+}
+
+
+.card-etiqueta {
+    font-size: 15px;;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: white;
+    background-color: #007bffc6;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: flex; /* Usamos flexbox para alinear los elementos */
+    align-items: center; /* Alinea la imagen y el texto verticalmente */
+ 
+}
+
+.iconos-nav2 {
+    width: 60px; /* Ajusta el tamaño de la imagen */
+    height: auto; /* Mantiene la proporción de la imagen */
+}

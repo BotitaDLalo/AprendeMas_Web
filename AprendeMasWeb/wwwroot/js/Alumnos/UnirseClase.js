@@ -13,7 +13,11 @@ async function unirseAClase() {
     const alumnoId = 1; // Aquí debes obtener el ID del alumno autenticado
 
     if (!codigoAcceso) {
-        alert("Por favor, ingresa un código de acceso.");
+        Swal.fire({
+            icon: "warning",
+            title: "Código requerido",
+            text: "Por favor, ingresa un código de acceso."
+        });
         return;
     }
 
@@ -32,13 +36,22 @@ async function unirseAClase() {
 
     if (response.ok) {
         agregarCardClase(data.nombre, data.esGrupo);
-        alert(data.mensaje);
-        closeModal();
 
-        // Después de unirse, recargar las clases para actualizar la vista
-        cargarClases();
+        Swal.fire({
+            icon: "success",
+            title: "Unido con éxito",
+            text: data.mensaje
+        }).then(() => {
+            closeModal(); // Cierra el modal (si aplica)
+            cargarClases(); // Recarga las clases en la vista
+        });
+
     } else {
-        alert(data.mensaje);
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: data.mensaje
+        });
     }
 }
 
@@ -100,9 +113,16 @@ function agregarCardClase(nombre, esGrupo) {
     card.innerHTML = `
   <br><br><br><br>
   <div class="card-container1">
-    <p class="card-etiqueta">${etiqueta}</p> <!-- Etiqueta que indica si es Grupo o Materia -->
-    <h3 class="card-title">${nombre}</h3> <!-- Nombre de la clase -->
+  
+    <p class="card-etiqueta">
+    <img class="iconos-nav2" src="/Iconos/TABLAB.svg" alt="Icono de Calendario" />
+    ${etiqueta} - ${nombre}
+</p> <!-- Etiqueta que indica si es Grupo o Materia -->
     <hr class="card-separator">
+    <img class="iconos-nav" src="/Iconos/TABLA-26.svg" alt="Icono de Calendario" /> 
+    <img class="iconos-nav" src="/Iconos/PAR-26.svg" alt="Icono de Calendario" /> 
+    <img class="iconos-nav" src="/Iconos/ESTRELLA-26.svg" alt="Icono de Calendario" /> 
+
     <button class="card-button" onclick="verClase('${nombreEscapado}', ${esGrupo})">Entrar a la clase</button>
   </div>
 `;
