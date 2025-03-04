@@ -101,12 +101,58 @@ namespace AprendeMasWeb.Controllers.WEB
 			return View();
 		}
 
-		public IActionResult Avisos()
+		public async Task<IActionResult> Avisos(int alumnoId)
 		{
-			return PartialView("_Avisos");
+			var avisos = await _context.tbAvisos
+				.Where(a => _context.tbAlumnosGrupos.Any(ag => ag.AlumnoId == alumnoId && ag.GrupoId == a.GrupoId)
+						 || _context.tbAlumnosMaterias.Any(am => am.AlumnoId == alumnoId && am.MateriaId == a.MateriaId))
+				.ToListAsync();
+
+			return PartialView("_Avisos", avisos);
 		}
 
-		public IActionResult Actividades()
+
+        [AllowAnonymous]
+        [HttpGet("api/Alumno/Avisos/{alumnoId}")]
+        public async Task<IActionResult> ObtenerAvisos(int alumnoId)
+        {
+            // Obtener los grupos y materias del alumno
+            var gruposDelAlumno = await _context.tbAlumnosGrupos
+                .Where(ag => ag.AlumnoId == alumnoId)
+                .Select(ag => ag.GrupoId)
+                .ToListAsync();
+
+            var materiasDelAlumno = await _context.tbAlumnosMaterias
+                .Where(am => am.AlumnoId == alumnoId)
+                .Select(am => am.MateriaId)
+                .ToListAsync();
+
+            // Filtrar avisos solo de esos grupos o materias
+            var avisos = await _context.tbAvisos
+                .Where(a => (a.GrupoId.HasValue && gruposDelAlumno.Contains(a.GrupoId.Value)) ||
+                            (a.MateriaId.HasValue && materiasDelAlumno.Contains(a.MateriaId.Value)))
+                .Select(a => new
+                {
+                    a.AvisoId,
+                    a.Titulo,
+                    a.Descripcion,
+                    a.FechaCreacion
+                })
+                .ToListAsync();
+
+            if (!avisos.Any())
+            {
+                return NotFound("No hay avisos para este alumno.");
+            }
+
+            return Ok(avisos);
+        }
+
+
+
+
+
+        public IActionResult Actividades()
 		{
 			return PartialView("_Actividades");
 		}

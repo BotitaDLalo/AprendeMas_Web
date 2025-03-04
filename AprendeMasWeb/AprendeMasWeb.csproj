@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\css\Docente\IA.js" />
+    <Content Remove="wwwroot\js\Alumnos\Avisos.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,6 +17,7 @@
     <_ContentIncludedByDefault Remove="wwwroot\css\Alumno\PaginasDi.css" />
     <_ContentIncludedByDefault Remove="wwwroot\css\Docente\footer.css" />
     <_ContentIncludedByDefault Remove="wwwroot\css\Docente\IA.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\Alumnos\Avisos.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,6 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\js\Alumnos\Avisos.js" />
     <None Include="wwwroot\js\Docente\IA.js" />
   </ItemGroup>
 
