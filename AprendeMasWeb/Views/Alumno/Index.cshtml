@@ -1,20 +1,35 @@
 ﻿@{
-    Layout = "~/Views/Shared/_LayoutAlumno.cshtml";
-    ViewData["Title"] = "Inicio - Alumno";
+	Layout = "~/Views/Shared/_LayoutAlumno.cshtml";
+	ViewData["Title"] = "Inicio - Alumno";
 }
 
 
 <!-- Botón para abrir modal -->
-<button onclick="openModal()" class="modal-btn-unique">Unirme a una clase</button>
+
+<div class="misCursos-header">
+	<h2 class="misCursos-titulo">
+		Mis cursos
+		<!-- Icono de filtro para interactuar con los cursos -->
+		<img src="@Url.Content("~/Iconos/FILTRO-26.svg")"
+			 alt="ActivIA Logo"
+			 class="misCursos-icono">
+	</h2>
+	<div class="misCursos-dropdown">
+		<button onclick="openModal()" class="misCursos-btn-crear" id="misCursos-dropdownBtn">Unirme a una clase</button>
+	</div>
+
+</div>
+
+
 
 <!-- Modal -->
 <div id="modalUnique" class="modal-overlay-unique">
-    <div class="modal-container-unique">
-        <h2>Unirme a una clase</h2>
-        <input type="text" id="codigoAccesoInput" class="modal-input-unique" placeholder="Escribe el código de la clase">
-        <button onclick="unirseAClase()" class="modal-btn-Centrados">Unirme</button>
-        <button onclick="closeModal()" class="modal-btn-Centrados" style="background: #dc3545; margin-top: 10px;">Cerrar</button>
-    </div>
+	<div class="modal-container-unique">
+		<h2>Unirme a una clase</h2>
+		<input type="text" id="codigoAccesoInput" class="modal-input-unique" placeholder="Escribe el código de la clase">
+		<button onclick="unirseAClase()" class="modal-btn-Centrados">Unirme</button>
+		<button onclick="closeModal()" class="modal-btn-Centrados" style="background: #dc3545; margin-top: 10px;">Cerrar</button>
+	</div>
 </div>
 
 

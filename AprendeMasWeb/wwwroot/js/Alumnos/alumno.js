@@ -20,6 +20,7 @@ async function obtenerAlumnoId() {
                 icon: "success",
                 title: "Inicio de sesión correcto.",
                 showConfirmButton: false,
+                position: "center",
                 timer: 2500
             });
 
@@ -45,6 +46,7 @@ function manejarErrorSesion() {
         timer: 5000,
         timerProgressBar: true,
         allowOutsideClick: false,
+        position: "center",
         didOpen: () => {
             Swal.showLoading();
             const timer = Swal.getPopup().querySelector("b");
@@ -82,7 +84,8 @@ async function cerrarSesion() {
                 icon: "error",
                 title: "Oops...",
                 text: "No se pudo cerrar sesión.",
-                allowOutsideClick: false
+                allowOutsideClick: false,
+                position: "center"  
             });
         }
     } catch (error) {
@@ -90,7 +93,8 @@ async function cerrarSesion() {
             icon: "error",
             title: "Oops...",
             text: "No se pudo cerrar sesión.",
-            allowOutsideClick: false
+            allowOutsideClick: false,
+            position: "center"
         });
     }
 }

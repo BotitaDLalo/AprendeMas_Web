@@ -84,6 +84,58 @@
     /* Estado cuando se pasa el cursor */
     .iconos-nav2:hover {
         transform: scale(1.1); /* Aumenta ligeramente el tamaño de la imagen */
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0);
+    }
+
+
+
+/*iconos Cursos*/
+/* Contenedor para el título y botón */
+.misCursos-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* Título y logo */
+.misCursos-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0px;
+}
+
+.misCursos-icono {
+    width: 110px;
+    height: auto;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+    .misCursos-icono:hover {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+
+/* Botón CREAR */
+.misCursos-btn-crear {
+    background-color: #007bff; /* Azul */
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+    .misCursos-btn-crear:hover {
+        background-color: #0056b3; /* Azul más oscuro */
+    }
+
+    .misCursos-btn-crear:active {
+        transform: scale(0.95);
+    }
+
 
 

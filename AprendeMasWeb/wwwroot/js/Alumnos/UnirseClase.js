@@ -16,7 +16,8 @@ async function unirseAClase() {
         Swal.fire({
             icon: "warning",
             title: "Código requerido",
-            text: "Por favor, ingresa un código de acceso."
+            text: "Por favor, ingresa un código de acceso.",
+            position: "center"
         });
         return;
     }
@@ -40,6 +41,7 @@ async function unirseAClase() {
         Swal.fire({
             icon: "success",
             title: "Unido con éxito",
+            position: "center",
             text: data.mensaje
         }).then(() => {
             closeModal(); // Cierra el modal (si aplica)
@@ -50,6 +52,7 @@ async function unirseAClase() {
         Swal.fire({
             icon: "error",
             title: "Error",
+            position: "center",
             text: data.mensaje
         });
     }
@@ -111,7 +114,7 @@ function agregarCardClase(nombre, esGrupo) {
     // Agregar etiquetas para Materia o Grupo
     const etiqueta = esGrupo ? "Grupo" : "Materia";
     card.innerHTML = `
-  <br><br><br><br>
+ 
   <div class="card-container1">
   
     <p class="card-etiqueta" onclick="verClase('${nombreEscapado}', ${esGrupo})">

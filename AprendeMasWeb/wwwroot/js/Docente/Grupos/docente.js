@@ -14,6 +14,7 @@ async function obtenerDocenteId() {
                 position: "top-end",
                 icon: "success",
                 title: "Inicio sesión correctamente.",
+                position: "center",
                 showConfirmButton: false,
                 timer: 2500
             });// Mostramos aviso que se inicio sesion correctamente
@@ -24,6 +25,7 @@ async function obtenerDocenteId() {
                 html: "La cerraremos por seguridad y podrás volver a iniciar sesión en: <b></b>.",
                 timer: 5000,
                 timerProgressBar: true,
+                position: "center",
                 allowOutsideClick: false, // Evita que se cierre al hacer clic fuera
                 didOpen: () => {
                     Swal.showLoading();
@@ -50,6 +52,7 @@ async function obtenerDocenteId() {
             timer: 5000,
             timerProgressBar: true,
             allowOutsideClick: false, // Evita que se cierre al hacer clic fuera
+            position: "center",
             didOpen: () => {
                 Swal.showLoading();
                 const timer = Swal.getPopup().querySelector("b");
@@ -90,6 +93,7 @@ async function cerrarSesion() {
                 icon: "error",
                 title: "Oops...",
                 text: "No se pudo cerrar sesión.",
+                position: "center",
                 allowOutsideClick: false, // Evita que la alerta se cierre al hacer clic fuera de ella
                 footer: '<a href="mailto:soporte@tuempresa.com?subject=Problema%20con%20cierre%20de%20sesión&body=Hola,%20tengo%20un%20problema%20al%20cerrar%20sesión.%20Por%20favor,%20ayuda." target="_blank">Si el problema persiste, contáctanos.</a>'
             });
@@ -100,6 +104,7 @@ async function cerrarSesion() {
             icon: "error",
             title: "Oops...",
             text: "No se pudo cerrar sesión.",
+            position: "center",
             allowOutsideClick: false, // Evita que la alerta se cierre al hacer clic fuera de ella
             footer: '<a href="mailto:soporte@tuempresa.com?subject=Problema%20con%20cierre%20de%20sesión&body=Hola,%20tengo%20un%20problema%20al%20cerrar%20sesión.%20Por%20favor,%20ayuda." target="_blank">Si el problema persiste, contáctanos.</a>'
         });
@@ -118,6 +123,7 @@ async function guardarMateriaSinGrupo() {
             position: "top-end",
             icon: "question",
             title: "Ingrese nombre de la materia.",
+            position: "center",
             showConfirmButton: false,
             timer: 2500
         });// Mostramos una alerta si el nombre está vacío
@@ -141,6 +147,7 @@ async function guardarMateriaSinGrupo() {
             position: "top-end",
             icon: "success",
             title: "Materia registrada correctamente.",
+            position: "center",
             showConfirmButton: false,
             timer: 2000
         });
@@ -153,6 +160,7 @@ async function guardarMateriaSinGrupo() {
             icon: "error",
             title: "Error al registrar materia.",
             showConfirmButton: false,
+            position: "center",
             timer: 2000
         }); // Mostramos una alerta si hubo un error al guardar
     }
@@ -170,6 +178,7 @@ async function guardarGrupo() { // Lógica para guardar el grupo
             position: "top-end",
             icon: "question",
             title: "Ingrese nombre del grupo.",
+            position: "center",
             showConfirmButton: false,
             timer: 2500
         });// Mostramos una alerta si el nombre está vacío
@@ -203,6 +212,7 @@ async function guardarGrupo() { // Lógica para guardar el grupo
             position: "top-end",
             icon: "success",
             title: "Grupo registrado correctamente.",
+            position: "center",
             showConfirmButton: false,
             timer: 2000
         });
@@ -215,6 +225,7 @@ async function guardarGrupo() { // Lógica para guardar el grupo
             position: "top-end",
             icon: "error",
             title: "Error al registrar grupo.",
+            position: "center",
             showConfirmButton: false,
             timer: 2000
         }); // Mostramos una alerta si hubo un error al guardar
@@ -333,6 +344,7 @@ async function cargarMateriasSinGrupo() {
             title: "Error al cargar materias sin grupo asignado.", // Título de la alerta
             html: "Se reintentará automáticamente en: <b></b>.", // Mensaje con temporizador dinámico
             timer: 4000, // Tiempo en milisegundos antes de que la alerta se cierre automáticamente
+            position: "center",
             timerProgressBar: true, // Muestra una barra de progreso indicando el tiempo restante
             allowOutsideClick: false, // Evita que el usuario cierre la alerta haciendo clic fuera de ella
             showCancelButton: true, // Muestra un botón de cancelar
@@ -426,6 +438,7 @@ async function cargarGrupos() { // Lógica para actualizar la lista de grupos en
             timer: 4000, // Tiempo en milisegundos antes de que la alerta se cierre automáticamente
             timerProgressBar: true, // Muestra una barra de progreso indicando el tiempo restante
             allowOutsideClick: false, // Evita que el usuario cierre la alerta haciendo clic fuera de ella
+            position: "center",
             showCancelButton: true, // Muestra un botón de cancelar dentro de la alerta
             cancelButtonText: "Cerrar sesión", // Texto que aparecerá en el botón de cancelar
 
