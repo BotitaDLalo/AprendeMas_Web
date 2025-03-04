@@ -200,6 +200,11 @@
 	<!-- Incluir SweetAlert2 desde CDN -->
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+	<script>
+		let alumnoIdGlobal = @User.FindFirst("AlumnoId")?.Value ?? "null";
+		console.log("alumnoIdGlobal definido en HTML:", alumnoIdGlobal);
+	</script>
+
 	@* Mostrar avisos *@
 	<script src="~/js/Alumnos/Avisos.js" asp-append-version="true"></script>
 
