@@ -98,8 +98,20 @@ namespace AprendeMasWeb.Controllers.WEB
             return Json(new { docenteId }); // Devuelve el ID del docente en formato JSON
         }
 
-        // Acción HTTP GET para verificar los claims almacenados en el usuario autenticado
-        [HttpGet]
+		[HttpGet]
+		public IActionResult ObtenerAlumnoId()
+		{
+			var alumnoId = User.FindFirstValue("AlumnoId"); // Busca el claim con el ID del alumno
+			if (string.IsNullOrEmpty(alumnoId))
+			{
+				return Json(new { error = "No se encontró el AlumnoId" }); // Devuelve un error si no encuentra el claim
+			}
+			return Json(new { alumnoId }); // Devuelve el ID del alumno en formato JSON
+		}
+
+
+		// Acción HTTP GET para verificar los claims almacenados en el usuario autenticado
+		[HttpGet]
         public IActionResult VerificarClaims()
         {
             if (!User.Identity.IsAuthenticated) // Verifica si el usuario está autenticado

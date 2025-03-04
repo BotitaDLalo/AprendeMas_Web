@@ -202,7 +202,8 @@
 	@* Unirse a una clase API *@
 	<script src="~/js/Alumnos/UnirseClase.js" asp-append-version="true"></script>
 
-	
+	@* Llamar el claim alumno *@
+	<script src="~/js/Alumnos/alumno.js" asp-append-version="true"></script>
 
 	@* Estilos creacion de clases *@
 	<script src="~/js/Alumnos/Clases.js" asp-append-version="true"></script>
@@ -221,6 +222,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 	<script src="~/js/Alumnos/Calendario.js" asp-append-version="true"></script>
+
 
 
 	@await RenderSectionAsync("Scripts", required: false)
