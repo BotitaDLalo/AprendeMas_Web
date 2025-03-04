@@ -5,12 +5,12 @@
 
 async function obtenerAlumnoId() {
     console.log("Obteniendo alumno ID...");
-    return 1; // Debes cambiar esto para obtener el ID real
+    return alumnoIdGlobal; // Debes cambiar esto para obtener el ID real
 }
 
 async function unirseAClase() {
     const codigoAcceso = document.getElementById("codigoAccesoInput").value;
-    const alumnoId = 1; // Aquí debes obtener el ID del alumno autenticado
+    const alumnoId = alumnoIdGlobal; // Aquí debes obtener el ID del alumno autenticado
 
     if (!codigoAcceso) {
         Swal.fire({
