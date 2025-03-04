@@ -101,6 +101,28 @@ namespace AprendeMasWeb.Controllers.WEB
 			return View();
 		}
 
+		public IActionResult Avisos()
+		{
+			return PartialView("_Avisos");
+		}
+
+		public IActionResult Actividades()
+		{
+			return PartialView("_Actividades");
+		}
+
+		public IActionResult Alumnos()
+		{
+			return PartialView("_Alumnos");
+		}
+
+		public IActionResult Calificaciones()
+		{
+			return PartialView("_Calificaciones");
+		}
+
+
+
 
 
 		public IActionResult Perfil()
@@ -109,11 +131,7 @@ namespace AprendeMasWeb.Controllers.WEB
             return View();
         }
 
-        public IActionResult Actividades()
-        {
-            // Lógica para mostrar las actividades del alumno
-            return View();
-        }
+       
 
         public IActionResult Materia()
         {
