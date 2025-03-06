@@ -16,61 +16,67 @@ async function obtenerDocenteId() {
                 title: "Inicio sesión correctamente.",
                 position: "center",
                 showConfirmButton: false,
-                timer: 2500
+                timer: 2000
             });// Mostramos aviso que se inicio sesion correctamente
-        } else {
-            let timerInterval;
-            Swal.fire({
-                title: "Parece que se perdió la conexión con tu sesión.",
-                html: "La cerraremos por seguridad y podrás volver a iniciar sesión en: <b></b>.",
-                timer: 5000,
-                timerProgressBar: true,
-                position: "center",
-                allowOutsideClick: false, // Evita que se cierre al hacer clic fuera
-                didOpen: () => {
-                    Swal.showLoading();
-                    const timer = Swal.getPopup().querySelector("b");
-                    timerInterval = setInterval(() => {
-                        timer.textContent = `${Math.floor(Swal.getTimerLeft() / 1000)} segundos`;
-                    }, 100);
-                },
-                willClose: () => {
-                    clearInterval(timerInterval);
-                    cerrarSesion();
-                }
-            }).then((result) => {
-                if (result.dismiss === Swal.DismissReason.timer) {
-                    console.log("Cerrando sesión automáticamente.");
-                }
-            }); //Se cierra la sesion al no obtener el id del docente, ya que es necesario para todo. raramente se activara esto, pero es mejor tenerlo.
-        }
+        } 
     } catch (error) {
-        let timerInterval;
-        Swal.fire({
-            title: "Parece que se perdió la conexión con tu sesión.",
-            html: "La cerraremos por seguridad y podrás volver a iniciar sesión en: <b></b>.",
-            timer: 5000,
-            timerProgressBar: true,
-            allowOutsideClick: false, // Evita que se cierre al hacer clic fuera
-            position: "center",
-            didOpen: () => {
-                Swal.showLoading();
-                const timer = Swal.getPopup().querySelector("b");
-                timerInterval = setInterval(() => {
-                    timer.textContent = `${Math.floor(Swal.getTimerLeft() / 1000)} segundos`;
-                }, 100);
-            },
-            willClose: () => {
-                clearInterval(timerInterval);
-                cerrarSesion();
-            }
-        }).then((result) => {
-            if (result.dismiss === Swal.DismissReason.timer) {
-                console.log("Cerrando sesión automáticamente.");
-            }
-        }); //Se cierra la sesion al no obtener el id del docente, ya que es necesario para todo. raramente se activara esto, pero es mejor tenerlo.
+        AlertaCierreSesion(); //si existe un error fuera de la aplicacion cierra la sesión
     }
 }
+
+function alertaDeErroresGenerales(error) {
+    // Mensaje de error por defecto
+    let mensajeError = "Ocurrió un error inesperado.";
+
+    // Si el error tiene un mensaje, lo usamos
+    if (error && error.message) {
+        mensajeError = error.message;
+    }
+
+    // Enlace para enviar un correo con el error incluido en el cuerpo
+    const enlaceCorreo = `mailto:soporte@tuempresa.com?subject=Error%20en%20la%20aplicación
+        &body=Hola,%20tengo%20un%20problema%20en%20la%20aplicación.%0A%0ADetalles%20del%20error:%0A${encodeURIComponent(mensajeError)}
+        %0A%0APor%20favor,%20ayuda.`.replace(/\s+/g, ''); // Limpia espacios innecesarios
+
+    // Mostrar alerta
+    Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: mensajeError,
+        position: "center",
+        allowOutsideClick: false, // Evita que se cierre con un clic afuera
+        footer: `<a href="${enlaceCorreo}" target="_blank">Si el problema persiste, contáctanos.</a>`
+    });
+}
+
+
+function AlertaCierreSesion() { //funcion que activa la alerta y posteriormente cierra sesion
+    let timerInterval;
+    Swal.fire({
+        title: "Parece que se perdió la conexión con tu sesión.",
+        html: "La cerraremos por seguridad y podrás volver a iniciar sesión en: <br> <b></b>.",
+        timer: 5000,
+        timerProgressBar: true,
+        position: "center",
+        allowOutsideClick: false, // Evita que se cierre al hacer clic fuera
+        didOpen: () => {
+            Swal.showLoading();
+            const timer = Swal.getPopup().querySelector("b");
+            timerInterval = setInterval(() => {
+                timer.textContent = `${Math.floor(Swal.getTimerLeft() / 1000)} segundos`;
+            }, 100);
+        },
+        willClose: () => {
+            clearInterval(timerInterval);
+            cerrarSesion();
+        }
+    }).then((result) => {
+        if (result.dismiss === Swal.DismissReason.timer) {
+            console.log("Cerrando sesión automáticamente.");
+        }
+    }); //Se cierra la sesion al no obtener el id del docente, ya que es necesario para todo. raramente se activara esto, pero es mejor tenerlo.
+}
+
 
 // 🔹 Función para cerrar sesión
 async function cerrarSesion() {
@@ -100,17 +106,9 @@ async function cerrarSesion() {
         }
     } catch (error) {
         // Captura cualquier error inesperado (por ejemplo, problemas de conexión) y muestra una alerta
-        Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: "No se pudo cerrar sesión.",
-            position: "center",
-            allowOutsideClick: false, // Evita que la alerta se cierre al hacer clic fuera de ella
-            footer: '<a href="mailto:soporte@tuempresa.com?subject=Problema%20con%20cierre%20de%20sesión&body=Hola,%20tengo%20un%20problema%20al%20cerrar%20sesión.%20Por%20favor,%20ayuda." target="_blank">Si el problema persiste, contáctanos.</a>'
-        });
+        alertaDeErroresGenerales(error);
     }
 }
-
 
 //Guarda las materias en la tabla tbMaterias -------------------
 async function guardarMateriaSinGrupo() {
@@ -245,7 +243,14 @@ async function asociarMateriasAGrupo(grupoId, materias) {
     });
 
     if (!response.ok) { // Si la respuesta no es exitosa, mostramos una alerta de error
-        alert('Error al asociar materias al grupo.');
+        Swal.fire({
+            position: "top-end",
+            icon: "error",
+            title: "Error al asociar materias con grupo.",
+            showConfirmButton: false,
+            position: "center",
+            timer: 2000
+        }); // Mostramos una alerta si hubo un error al guardar
     }
 }
 
@@ -369,7 +374,7 @@ async function cargarMateriasSinGrupo() {
             if (result.dismiss === Swal.DismissReason.timer) {
                 // Si la alerta se cierra automáticamente por el temporizador
                 console.log("Reintentando cargar las materias sin grupo.");
-                cargarMateriasSinGrupo(); // Llama a la función para reintentar la carga de materias
+                inicializar(); // Llama a la función inicializar para reintentar la carga
             } else if (result.dismiss === Swal.DismissReason.cancel) {
                 // Si el usuario hace clic en "Cerrar sesión"
                 console.log("El usuario decidió cerrar sesión.");
@@ -382,6 +387,9 @@ async function cargarMateriasSinGrupo() {
         cargarMateriasSinGrupo(); // Vuelve a cargar las materias sin grupo cuando se cierra el modal
     });
 }
+
+
+
 
 
 // Función para redirigir a la vista Materias dentro del controlador Docente
@@ -428,6 +436,8 @@ async function cargarGrupos() { // Lógica para actualizar la lista de grupos en
                  </div>
             </div>
         </div>
+        <!-- Contenedor donde se mostrarán las materias -->
+         <div id="materiasContainer-${grupo.grupoId}" class="materias-container" style="display: none; padding-left: 20px;"></div>
         `).join(''); // Muestra los grupos como tarjetas dinámicas
     } else {
         let timerInterval; // Variable para almacenar el intervalo del temporizador
@@ -461,7 +471,7 @@ async function cargarGrupos() { // Lógica para actualizar la lista de grupos en
             if (result.dismiss === Swal.DismissReason.timer) {
                 // Si la alerta se cerró automáticamente por el temporizador
                 console.log("Reintentando cargar los grupos.");
-                cargarMateriasSinGrupo(); // Reintenta la carga de grupos automáticamente
+                inicializar(); // Reintenta la carga de grupos automáticamente
             } else if (result.dismiss === Swal.DismissReason.cancel) {
                 // Si el usuario hizo clic en "Cerrar sesión"
                 console.log("El usuario decidió cerrar sesión.");
@@ -473,6 +483,9 @@ async function cargarGrupos() { // Lógica para actualizar la lista de grupos en
         cargarGrupos(); // Vuelve a cargar los grupos cuando se cierra el modal
     });
 }
+
+
+
 
 //Funcionalidades de los iconos de las Cards de materias.----------------------------------------------------------------
 function verActividades(MateriaId) {
@@ -490,9 +503,70 @@ function destacarMateria(MateriaId) {
     // Aquí puedes implementar la lógica para destacar la materia
 }
 //Funcionalidades de los iconos de las cards de grupos
-function handleCardClick(id) {
-    console.log("Card clickeada, puedes agregar funcionalidad aquí. ID:", id); // Muestra un mensaje cuando se hace clic en una card de grupo
-    // Aquí puedes agregar la funcionalidad al dar clic en la card
+// Función para cargar materias de un grupo cuando se hace clic en la card del grupo
+async function handleCardClick(grupoId) {
+    console.log(grupoId);
+    const materiasContainer = document.getElementById(`materiasContainer-${grupoId}`);
+
+    if (materiasContainer.style.display === "block") {
+        // Si las materias están visibles, ocultarlas
+        materiasContainer.style.display = "none";
+        materiasContainer.innerHTML = "";
+    } else {
+        // Si están ocultas, obtener las materias y mostrarlas
+        const response = await fetch(`/api/GruposApi/ObtenerMateriasPorGrupo/${grupoId}`);
+        if (response.ok) {
+            const materias = await response.json();
+            if (materias.length === 0) {
+                materiasContainer.innerHTML = "<p>Aun no hay materias registradas para este grupo.</p>";
+            } else {
+                materiasContainer.innerHTML = `
+                    <div class="container-cards">
+                        ${materias.map(materia => `
+                            <div class="card card-custom" style="border-radius: 10px;">
+                                <div class="card-header-custom" style="background-color: ${materia.codigoColor || '#000'};">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-dark">${materia.nombreMateria}</span>
+                                        <div class="dropdown">
+                                            <button class="btn btn-link p-0 text-dark" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item" href="#" onclick="openEditModal(${materia.materiaId})">Editar</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="openDeleteModal(${materia.materiaId})">Eliminar</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="openDisableModal(${materia.materiaId})">Desactivar</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body card-body-custom" style="background-color: #e0e0e0">
+                                    <p class="card-text">${materia.descripcion || "Sin descripción"}</p>
+                                </div>
+                                <div class="card-footer card-footer-custom">
+                                    <button class="btn btn-sm btn-primary" onclick="irAMateria(${materia.materiaId})">Ver Materia</button>
+                                    <div class="icon-container">
+                                        <img class="icon-action" src="https://cdn-icons-png.flaticon.com/512/1828/1828817.png" alt="Ver Actividades" title="Ver Actividades" onclick="verActividades(${materia.materiaId})">
+                                        <img class="icon-action" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Ver Integrantes" title="Ver Integrantes" onclick="verIntegrantes(${materia.materiaId})">
+                                        <img class="icon-action" src="https://cdn-icons-png.flaticon.com/512/535/535285.png" alt="Destacar" title="Destacar Materia" onclick="destacarMateria(${materia.materiaId})">
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            materiasContainer.style.display = "block";
+        } else {
+            Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: "Error al obtener las materias del grupo.",
+                showConfirmButton: false,
+                position: "center",
+                timer: 2000
+            }); // Mostramos una alerta si hubo un error al mostrar las materias del grupo
+        }
+    }
 }
 
 function editarGrupo(id) {
@@ -513,8 +587,9 @@ async function inicializar() {
     if (docenteIdGlobal) { // Si el DocenteId es válido
         cargarMateriasSinGrupo(docenteIdGlobal); // Carga las materias sin grupo
         cargarGrupos(docenteIdGlobal); // Carga los grupos
-    } else {
-        console.error("No se pudo obtener el DocenteId."); // Si no se obtiene el DocenteId, muestra un error
+    } else {        
+        // Si no se obtiene el DocenteId, muestra un error
+        AlertaCierreSesion();
     }
 }
 
