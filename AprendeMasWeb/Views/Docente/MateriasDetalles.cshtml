@@ -1,31 +1,49 @@
-﻿@{
+@{
+    // Establece el diseño de la vista utilizando una plantilla compartida específica para docentes.
     Layout = "~/Views/Shared/_LayoutDocente.cshtml";
+
+    // Define el título de la página, que se usará en el navegador o en la pestaña.
     ViewData["Title"] = "Detalles de Materias";
 }
 
 @section Scripts {
+    <!--Incluye un archivo JavaScript específico para manejar las funcionalidades relacionadas con los grupos de materias.-->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="~/js/Docente/Grupos/materia.js"></script>
+
+    <!-- Incluye un archivo CSS específico para los estilos de las materias. -->
     <link rel="stylesheet" href="~/css/Docente/materias.css" />
 }
 
-
+<!-- Contenedor principal de la sección de materia -->
 <div class="materia-container">
+    <!-- Cabecera de la materia, con un fondo de color personalizado -->
     <div class="materia-header" id="materiaHeader" style="background-color: #d63384;">
+        <!-- Título de la materia, cuyo nombre se mostrará dinámicamente -->
         <h1> <span id="materiaNombre"></span> </h1>
+
+        <!-- Información adicional sobre la materia, como el código de clase y un icono de configuración -->
         <div class="materia-info">
             <span>Código de clase: <strong id="codigoAcceso">...</strong></span>
-            <i class="fas fa-cog"></i>
+            <i class="fas fa-cog"></i> <!-- Icono de configuración -->
         </div>
     </div>
+
+    <!-- Barra de navegación para cambiar entre secciones de la materia -->
     <nav class="materia-nav">
+        <!-- Botón para mostrar la sección de avisos -->
         <button class="tab-button active" onclick="cambiarSeccion('avisos')">Avisos</button>
+        <!-- Botón para mostrar la sección de actividades -->
         <button class="tab-button" onclick="cambiarSeccion('actividades')">Actividades</button>
+        <!-- Botón para mostrar la sección de alumnos -->
         <button class="tab-button" onclick="cambiarSeccion('alumnos')">Alumnos</button>
+        <!-- Botón para mostrar la sección de calificaciones -->
         <button class="tab-button" onclick="cambiarSeccion('calificaciones')">Calificaciones</button>
     </nav>
+
+    <!-- Contenedor principal para mostrar el contenido de la materia, que cambia según la sección seleccionada -->
     <div class="materia-content" id="contenidoMateria">
+        <!-- Mensaje predeterminado que se muestra antes de que se seleccione una opción -->
         <p>Selecciona una opción para ver su contenido.</p>
     </div>
 </div>
-
-

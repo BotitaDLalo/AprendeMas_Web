@@ -1,4 +1,4 @@
-﻿@await Html.PartialAsync("~/Views/Shared/ModalConfirmacion.cshtml")
+@await Html.PartialAsync("~/Views/Shared/ModalConfirmacion.cshtml")
 
 
 <!DOCTYPE html>
@@ -115,7 +115,7 @@
 									<img class="iconos1-nav" src="@Url.Content("~/Iconos/PERFIL-26.svg")" alt="Icono de Usuario" />
 									<p class="dropdown-item">@User.Identity.Name</p>
 								</div>
-								<form asp-action="CerrarSesion" asp-controller="Cuenta" method="post" class="dropdown-item">
+								<form id="logoutForm" asp-action="CerrarSesion" asp-controller="Cuenta" method="post" class="dropdown-item">
 									<button type="submit" class="btn btn-danger btn-sm w-100">Cerrar Sesión</button>
 								</form>
 							</div>
@@ -226,7 +226,7 @@
 	<script src="~/js/Docente/Grupos/Notificaciones.js" asp-append-version="true"></script>
 
 	@* Estilos card materias *@
-	<script src="~/js/Docente/Grupos/Materias.js" asp-append-version="true"></script>
+	<script src="~/js/Docente/Grupos/materia.js" asp-append-version="true"></script>
 
 	@* Estilos de materias(avisos,act, etc.) *@
 	<script src="~/js/Docente/Grupos/VistaMateriasD.js" asp-append-version="true"></script>

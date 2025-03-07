@@ -1,4 +1,4 @@
-﻿
+
 
 document.addEventListener("DOMContentLoaded", function () {
  
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return response.json();
             })
             .then(data => {
-                console.log("Respuesta de la API:", data); 
+                console.log("Respuesta de la API:", data); // 👈 Agrega esta línea
                 let listaEventosDiv = document.getElementById("listaEventos");
                 listaEventosDiv.innerHTML = "";
 
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     listaEventosDiv.innerHTML = `<p>${data.mensaje}</p>`;
                 } else {
                     data.forEach(evento => {
-                        console.log("Evento recibido:", evento); 
+                        console.log("Evento recibido:", evento); // 👈 También imprime cada evento
                         let eventoDiv = document.createElement("div");
                         eventoDiv.classList.add("evento-item");
                         eventoDiv.innerHTML = `
@@ -58,6 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
                 }
             })
+
 
             .catch(error => {
                 console.error("Error al cargar eventos:", error);
@@ -85,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
             e.preventDefault();
 
             const evento = {
-                DocenteId: 1,
+                DocenteId: docenteIdGlobal,
                 Titulo: document.getElementById("titulo").value,
                 Descripcion: document.getElementById("descripcion").value,
                 FechaInicio: document.getElementById("fechaInicio").value,
