@@ -492,4 +492,6 @@ Migrations/
 
 
 # Firebase keys
-wwwroot/keys/*.json
+AprendeMasWeb/wwwroot/keys/
+
+AprendeMasWeb/wwwroot/js/firebase-init.js
