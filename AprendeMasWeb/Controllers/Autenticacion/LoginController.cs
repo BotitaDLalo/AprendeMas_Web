@@ -11,19 +11,23 @@ using AprendeMasWeb.Models.DBModels;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.HttpResults;
+using AprendeMasWeb.Recursos;
+using AprendeMasWeb.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace AprendeMasWeb.Controllers.Autenticacion
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LoginController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IConfiguration configuration, RoleManager<IdentityRole> roleManager, DataContext context) : ControllerBase
+    public class LoginController(FuncionesGenerales fg, IEmailSender emailSender, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IConfiguration configuration, RoleManager<IdentityRole> roleManager, DataContext context) : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager = userManager;
         private readonly SignInManager<IdentityUser> _signInManager = signInManager;
         private readonly IConfiguration _configuration = configuration;
         private readonly RoleManager<IdentityRole> _roleManager = roleManager;
         private readonly DataContext _context = context;
-
+        private readonly IEmailSender _emailSender = emailSender;
+        private readonly FuncionesGenerales _fg = fg;
 
 
         [HttpPost("VerificarTokenFcm")]
@@ -31,39 +35,35 @@ namespace AprendeMasWeb.Controllers.Autenticacion
         {
             try
             {
-                if (role == "Alumno")
-                {
-                    bool existeToken = await _context.tbAlumnosTokens.AnyAsync(a => a.Token == fcmToken);
-                    if (existeToken)
-                    {
-                        return Ok(new { Mensaje = $"El token del alumno con Id ${id} existe" });
-                    }
-                    else
-                    {
-                        AlumnosTokens alumnosTokens = new()
-                        {
-                            AlumnoId = id,
-                            Token = fcmToken,
-                        };
-                        await _context.tbAlumnosTokens.AddAsync(alumnosTokens);
-                        await _context.SaveChangesAsync();
-                        return Ok(new { Mensaje = $"El token del alumno con Id ${id} existe" });
-                    }
-                }
-                else if (role == "Docente")
-                {
+                //bool existeToken = await _context.tbAlumnosTokens.AnyAsync(a => a.Token == fcmToken);
 
-                    //return Ok(new { Mensaje = $"El token del alumno con Id ${id} existe" });
-                    return Ok();
-                }
-                else if (role == "Administrador")
+                bool existeToken = await _context.tbUsuariosFcmTokens.AnyAsync(a => a.Token == fcmToken);
+                if (existeToken)
                 {
-                    return Ok();
+                    return Ok(new { Mensaje = $"El token del alumno con Id ${id} existe" });
+                }
+                else
+                {
+                    var identityUserId = "";
+
+                    if (role == Recursos.Roles.DOCENTE)
+                    {
+                        identityUserId = _context.tbDocentes.Where(a => a.DocenteId == id).Select(a => a.UserId).FirstOrDefault();
+                    }
+                    else if (role == Recursos.Roles.ALUMNO)
+                    {
+                        identityUserId = _context.tbAlumnos.Where(a => a.AlumnoId == id).Select(a => a.UserId).FirstOrDefault();
+                    }
+
+                    if (identityUserId == null) return BadRequest();
+
+                    await _fg.RegistrarFcmTokenUsuario(identityUserId, fcmToken);
+
+                    return Ok(new { Mensaje = $"El token del usuario con Id ${id} existe" });
                 }
 
-                return BadRequest(new { Mensaje = "No se pudo verificar el token." });
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return BadRequest(new { Mensaje = "No se pudo verificar el token." });
             }
@@ -76,23 +76,14 @@ namespace AprendeMasWeb.Controllers.Autenticacion
             {
                 if (ModelState.IsValid)
                 {
-                    var emailEncontrado = await _userManager.FindByEmailAsync(modelo.Correo);
-
-                    if (emailEncontrado != null)
-                    {
-                        return BadRequest(new
-                        {
-                            mensaje = "El correo ya esta en uso"
-                        });
-                    }
-
                     var nombreUsuarioEncontrado = await _userManager.FindByNameAsync(modelo.NombreUsuario);
 
                     if (nombreUsuarioEncontrado != null)
                     {
                         return BadRequest(new
                         {
-                            mensaje = "El nombre de usuario ya esta en uso"
+                            ErrorCode = ErrorCatalogo.ErrorCodigos.nombreUsuarioUsado,
+                            ErrorMessage = ErrorCatalogo.GetMensajeError(ErrorCatalogo.ErrorCodigos.nombreUsuarioUsado)
                         });
                     }
 
@@ -104,7 +95,7 @@ namespace AprendeMasWeb.Controllers.Autenticacion
                     var usuario = new IdentityUser()
                     {
                         UserName = userName,
-                        Email = email,
+                        Email = email
                     };
 
                     var usuarioRegistro = await _userManager.CreateAsync(usuario, modelo.Clave);
@@ -124,58 +115,85 @@ namespace AprendeMasWeb.Controllers.Autenticacion
                         return BadRequest(asignarRol.Errors);
                     }
 
-                    if (modelo.TipoUsuario == "Docente")
+                    if (modelo.TipoUsuario == Recursos.Roles.DOCENTE)
                     {
-                        var identityUserId = await _userManager.GetUserIdAsync(usuario);
+                        var fcmToken = modelo.FcmToken;
 
+                        if (fcmToken == null) return BadRequest();
+
+                        var identityUserId = await _userManager.GetUserIdAsync(usuario);
+                        DateTime fechaExpiracionCodigo = DateTime.UtcNow.AddMinutes(59);
+                        string codigo = RecursosGenerales.GenerarCodigoAleatorio();
                         Docentes docentes = new()
                         {
                             ApellidoPaterno = modelo.ApellidoPaterno,
                             ApellidoMaterno = modelo.ApellidoMaterno,
                             Nombre = modelo.Nombre,
                             UserId = identityUserId.ToString(),
+                            CodigoAutorizacion = codigo,
+                            FechaExpiracionCodigo = fechaExpiracionCodigo,
                         };
                         _context.tbDocentes.Add(docentes);
                         _context.SaveChanges();
+
+                        await _fg.RegistrarFcmTokenUsuario(identityUserId, fcmToken);
+
+                        return Ok(new AutenticacionRespuesta
+                        {
+                            EstaAutorizado = EstatusAutorizacion.PENDIENTE
+                        });
+
                     }
-                    else if (modelo.TipoUsuario == "Alumno")
+                    else if (modelo.TipoUsuario == Recursos.Roles.ALUMNO)
                     {
-                        var token = modelo.FcmToken;
+                        var fcmToken = modelo.FcmToken;
 
-                        if (token != null)
+                        if (fcmToken == null) return BadRequest();
+
+                        var identityUserId = await _userManager.GetUserIdAsync(usuario);
+
+                        Alumnos alumnos = new()
                         {
-                            var identityUserId = await _userManager.GetUserIdAsync(usuario);
-                            Alumnos alumnos = new()
-                            {
-                                ApellidoPaterno = modelo.ApellidoPaterno,
-                                ApellidoMaterno = modelo.ApellidoMaterno,
-                                Nombre = modelo.Nombre,
-                                UserId = identityUserId,
-                            };
-                            await _context.tbAlumnos.AddAsync(alumnos);
+                            ApellidoPaterno = modelo.ApellidoPaterno,
+                            ApellidoMaterno = modelo.ApellidoMaterno,
+                            Nombre = modelo.Nombre,
+                            UserId = identityUserId,
+                        };
+                        await _context.tbAlumnos.AddAsync(alumnos);
 
 
-                            await _context.SaveChangesAsync();
+                        await _context.SaveChangesAsync();
 
-                            AlumnosTokens alumnosTokens = new()
-                            {
-                                AlumnoId = alumnos.AlumnoId,
-                                Token = token,
-                            };
+                        await _fg.RegistrarFcmTokenUsuario(identityUserId, fcmToken);
 
-                            await _context.tbAlumnosTokens.AddAsync(alumnosTokens);
+                        var emailEncontrado = await _userManager.FindByIdAsync(identityUserId);
 
-                            await _context.SaveChangesAsync();
+                        if (emailEncontrado == null) return BadRequest();
 
+                        var tokenString = _fg.GenerarJwt(alumnos.AlumnoId, emailEncontrado, rol);
 
-                        }
-                        else
+                        return Ok(new AutenticacionRespuesta
                         {
-                            return BadRequest(new {Mensaje = "Hubo un error en el registro"});
-                        }
+                            Id = alumnos.AlumnoId,
+                            UserName = userName,
+                            Correo = email,
+                            Rol = rol,
+                            Token = tokenString,
+                            EstaAutorizado = EstatusAutorizacion.AUTORIZADO
+                        });
+
 
                     }
-                    return Ok(new { nombre = userName, correo = email, rol });
+                    else if (modelo.TipoUsuario == Recursos.Roles.ADMINISTRADOR)
+                    {
+                        return Ok();
+                    }
+                    else
+                    {
+                        return BadRequest(new { Mensaje = "Hubo un error en el registro" });
+
+                    }
+                    //return Ok(new { nombre = userName, correo = email, rol });
                 }
                 return BadRequest(new { Mensaje = "Hubo un error en el registro" });
 
@@ -187,6 +205,7 @@ namespace AprendeMasWeb.Controllers.Autenticacion
             }
 
         }
+
 
 
 
@@ -223,12 +242,6 @@ namespace AprendeMasWeb.Controllers.Autenticacion
                 var rolUsuario = rol.FirstOrDefault() ?? throw new Exception("El usuario no posee un rol asignado");
 
 
-                //Generando jwt
-                var handler = new JwtSecurityTokenHandler();
-                var confSecretKey = _configuration["jwt:SecretKey"];
-                var jwt = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(confSecretKey ?? throw new ArgumentNullException(confSecretKey, "Token no configurado")));
-                var credentials = new SigningCredentials(jwt, SecurityAlgorithms.HmacSha256);
-
 
                 int idUsuario = 0;
                 var identityUserId = await _userManager.GetUserIdAsync(emailEncontrado);
@@ -236,36 +249,49 @@ namespace AprendeMasWeb.Controllers.Autenticacion
                 if (rolUsuario == "Docente")
                 {
 
-                    idUsuario = _context.tbDocentes.Where(a => a.UserId == identityUserId).Select(a => a.DocenteId).FirstOrDefault();
-
+                    //idUsuario = _context.tbDocentes.Where(a => a.UserId == identityUserId).Select(a => a.DocenteId).FirstOrDefault();
+                    var docente = _context.tbDocentes.Where(a => a.UserId == identityUserId).FirstOrDefault();
+                    if (docente != null)
+                    {
+                        if (docente.estaAutorizado == null)
+                        {
+                            return Ok(new AutenticacionRespuesta
+                            {
+                                EstaAutorizado = EstatusAutorizacion.PENDIENTE
+                            });
+                        }
+                        else
+                        {
+                            if (!docente.estaAutorizado.Value)
+                            {
+                                return Ok(new AutenticacionRespuesta
+                                {
+                                    EstaAutorizado = EstatusAutorizacion.DENEGADO
+                                });
+                            }
+                            else
+                            {
+                                idUsuario = docente.DocenteId;
+                            }
+                        }
+                    }
                 }
                 else if (rolUsuario == "Alumno")
                 {
                     idUsuario = _context.tbAlumnos.Where(a => a.UserId == identityUserId).Select(a => a.AlumnoId).FirstOrDefault();
                 }
 
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Issuer = "Aprende_Mas",
-                    Audience = "Aprende_Mas",
-                    SigningCredentials = credentials,
-                    Expires = DateTime.UtcNow.AddDays(7),
-                    Subject = GenerarClaims(idUsuario, emailEncontrado, rolUsuario),
-                };
-
-                var token = handler.CreateToken(tokenDescriptor);
-
-                var tokenString = handler.WriteToken(token);
+                var tokenString = _fg.GenerarJwt(idUsuario, emailEncontrado, rolUsuario);
 
 
-
-                return Ok(new
+                return Ok(new AutenticacionRespuesta
                 {
                     Id = idUsuario,
-                    userName = emailEncontrado.UserName,
-                    correo = emailEncontrado.Email,
-                    rol = rolUsuario,
-                    token = tokenString
+                    UserName = emailEncontrado.UserName,
+                    Correo = emailEncontrado.Email,
+                    Rol = rolUsuario,
+                    Token = tokenString,
+                    EstaAutorizado = EstatusAutorizacion.AUTORIZADO
                 });
             }
             catch (Exception e)
@@ -275,6 +301,70 @@ namespace AprendeMasWeb.Controllers.Autenticacion
 
         }
 
+
+        [HttpPost("ValidarCodigoDocente")]
+        public async Task<IActionResult> ValidarCodigoAutorizacionDocente([FromBody] ValidarCodigoDocente datos)
+        {
+            try
+            {
+                string email = datos.Email;
+                string codigoValidar = datos.CodigoValidar;
+
+                var emailEncontrado = await _userManager.FindByEmailAsync(email);
+                if (emailEncontrado == null)
+                {
+                    return BadRequest(new
+                    {
+                        ErrorCode = ErrorCatalogo.ErrorCodigos.CredencialesInvalidas,
+                        ErrorMessage = ErrorCatalogo.GetMensajeError(ErrorCatalogo.ErrorCodigos.CredencialesInvalidas)
+                    });
+                }
+
+                //Obteniendo rol del usuario
+                var rol = await _userManager.GetRolesAsync(emailEncontrado);
+                var rolUsuario = rol.FirstOrDefault() ?? throw new Exception("El usuario no posee un rol asignado");
+
+                var identityUserId = emailEncontrado.Id;
+
+                var docente = _context.tbDocentes.Where(a => a.UserId == identityUserId).FirstOrDefault();
+                if (docente != null)
+                {
+                    int idUsuario = docente.DocenteId;
+
+                    if (codigoValidar != docente.CodigoAutorizacion)
+                    {
+                        return BadRequest(new { ErrorCode = ErrorCatalogo.ErrorCodigos.codigoAutorizacionInvalido });
+                    }
+                    //5:10                              5:15
+                    if (docente.FechaExpiracionCodigo < DateTime.Now)
+                    {
+                        return BadRequest(new { ErrorCode = ErrorCatalogo.ErrorCodigos.codigoAutorizacionExpirado });
+                    }
+
+                    docente.FechaExpiracionCodigo = null;
+                    docente.CodigoAutorizacion = null;
+                    docente.estaAutorizado = true;
+                    _context.SaveChanges();
+
+                    var tokenString = _fg.GenerarJwt(idUsuario, emailEncontrado, rolUsuario);
+                    return Ok(new
+                    {
+                        Id = idUsuario,
+                        userName = emailEncontrado.UserName,
+                        correo = emailEncontrado.Email,
+                        rol = rolUsuario,
+                        token = tokenString,
+                        estaAutorizado = EstatusAutorizacion.AUTORIZADO,
+                    });
+                }
+
+                return BadRequest(new { mensaje = "El docente no existe." });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { e.Message });
+            }
+        }
 
         [HttpGet("VerificarToken")]
         public IActionResult VerificarJWT(string token)
@@ -286,7 +376,6 @@ namespace AprendeMasWeb.Controllers.Autenticacion
 
             try
             {
-
                 var handler = new JwtSecurityTokenHandler();
 
                 var confSecretKey = _configuration["jwt:SecretKey"];
@@ -310,7 +399,14 @@ namespace AprendeMasWeb.Controllers.Autenticacion
                 var correo = claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value ?? "No existe correo";
                 var rol = claimsPrincipal.FindFirst(ClaimTypes.Role)?.Value ?? "No existe rol";
 
-                return Ok(new { id = int.Parse(idUsuario), userName, correo, rol, token });
+                return Ok(new AutenticacionRespuesta
+                {
+                    Id = int.Parse(idUsuario),
+                    UserName = userName,
+                    Correo = correo,
+                    Rol = rol,
+                    Token = token
+                });
             }
             catch (SecurityTokenExpiredException)
             {
@@ -323,17 +419,33 @@ namespace AprendeMasWeb.Controllers.Autenticacion
 
         }
 
-        private static ClaimsIdentity GenerarClaims(int idUsuario, IdentityUser usuario, string rol)
+        [HttpPost("VerificarEmailUsuario")]
+        public async Task<IActionResult> VerificarEmailUsuario(string email)
         {
-            var claims = new ClaimsIdentity();
+            try
+            {
+                var emailEsValido = await _userManager.FindByEmailAsync(email);
 
-            claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, idUsuario.ToString() ?? ""));
-            claims.AddClaim(new Claim(ClaimTypes.Name, usuario.UserName ?? ""));
-            claims.AddClaim(new Claim(ClaimTypes.Email, usuario.Email ?? ""));
-            claims.AddClaim(new Claim(ClaimTypes.Role, rol ?? ""));
+                if (emailEsValido == null)
+                {
+                    return Ok();
+                }
+                var codigoError = ErrorCatalogo.ErrorCodigos.CorreoUsuarioExistente;
 
-            return claims;
+                var problemDetails = new ProblemDetails();
+                problemDetails.Extensions["errorMessage"] = ErrorCatalogo.GetMensajeError(codigoError);
+                problemDetails.Extensions["errorComment"] = "¿Desea iniciar sesión?";
+                problemDetails.Extensions["errorCode"] = codigoError;
+
+                return BadRequest(problemDetails);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
+
+
 
 
     }

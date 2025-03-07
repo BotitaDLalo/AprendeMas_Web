@@ -219,7 +219,7 @@ namespace AprendeMasWeb.Controllers
                     DocenteId = group.DocenteId,
                     NombreGrupo = group.NombreGrupo,
                     Descripcion = group.Descripcion,
-                    CodigoColor = group.CodigoColor,
+                    //CodigoColor = group.CodigoColor,
                     CodigoAcceso = codigoAccesoGrupo
                 };
 

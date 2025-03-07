@@ -11,9 +11,9 @@ namespace AprendeMasWeb.Models.DBModels
 
         public int AlumnoActividadId { get; set; }
 
-        public string? Enlace {  get; set; }
+        //public string? Enlace {  get; set; }
 
-        public string? Archivo {  get; set; }
+        //public string? Archivo {  get; set; }
 
         public string? Respuesta {  get; set; }
 

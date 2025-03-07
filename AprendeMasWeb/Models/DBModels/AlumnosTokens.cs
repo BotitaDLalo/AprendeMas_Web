@@ -13,6 +13,8 @@ namespace AprendeMasWeb.Models.DBModels
 
         public required string Token { get; set; }
 
-        public virtual Alumnos? Alumnos { get; set; }
+        //public virtual Alumnos? Alumnos { get; set; }
+
+
     }
 }

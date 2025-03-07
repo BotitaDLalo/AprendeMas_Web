@@ -1,5 +1,4 @@
-﻿@model AprendeMasWeb.Models.DBModels.Avisos
-@{
+﻿@{
     Layout = "~/Views/Shared/_LayoutDocente.cshtml";
     ViewData["Title"] = "Detalles de Materias";
 }
@@ -24,36 +23,9 @@
         <button class="tab-button" onclick="cambiarSeccion('alumnos')">Alumnos</button>
         <button class="tab-button" onclick="cambiarSeccion('calificaciones')">Calificaciones</button>
     </nav>
- 
-
-    <div id="vista-avisos" class="materia-view-unique materia-content active">
-        <h2>Crear Nuevo Aviso</h2>
-        <form asp-action="CrearAviso" method="post">
-            <div class="form-group">
-                <label asp-for="Titulo" class="control-label"></label>
-                <input asp-for="Titulo" class="form-control" />
-                <span asp-validation-for="Titulo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Descripcion" class="control-label"></label>
-                <textarea asp-for="Descripcion" class="form-control"></textarea>
-                <span asp-validation-for="Descripcion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                @* <label asp-for="Enlace" class="control-label"></label> *@
-                @* <input asp-for="Enlace" class="form-control" /> *@
-                @* <span asp-validation-for="Enlace" class="text-danger"></span> *@
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Crear Aviso" class="btn btn-primary" />
-            </div>
-        </form>
+    <div class="materia-content" id="contenidoMateria">
+        <p>Selecciona una opción para ver su contenido.</p>
     </div>
-    <div id="vista-actividades" class="materia-view-unique materia-content">Contenido de Actividades</div>
-    <div id="vista-alumnos" class="materia-view-unique materia-content">Contenido de Alumnos</div>
-    <div id="vista-calificaciones" class="materia-view-unique materia-content">Contenido de Calificaciones</div>
-
-
 </div>
 
 
