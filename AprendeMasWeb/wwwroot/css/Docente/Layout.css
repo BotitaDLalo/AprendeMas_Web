@@ -43,6 +43,29 @@ p, body {
     object-fit: contain;
 }
 
+.iconos1-nav {
+    display: block;
+    margin: 0 auto; /* Centra horizontalmente */
+    width: 5rem;
+    height: 5rem;
+    object-fit: cover;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    cursor: pointer;
+}
+
+
+    /* Efecto al pasar el cursor */
+    .iconos1-nav:hover {
+        transform: scale(1.1); /* Aumenta ligeramente el tamaño */
+        filter: brightness(1.2); /* Hace que la imagen se vea más clara */
+    }
+
+    /* Efecto al hacer clic */
+    .iconos1-nav:active {
+        transform: scale(0.95); /* Hace un pequeño efecto de presión */
+    }
+
+
 .icon-nav {
     width: 64px;
     height: auto;

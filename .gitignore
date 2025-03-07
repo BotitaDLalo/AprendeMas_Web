@@ -489,3 +489,9 @@ $RECYCLE.BIN/
 
 # Migrations
 Migrations/
+
+
+# Firebase keys
+AprendeMasWeb/wwwroot/keys/
+
+AprendeMasWeb/wwwroot/js/firebase-init.js

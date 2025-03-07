@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using AprendeMasWeb.Recursos;
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtKey = builder.Configuration["jwt:SecretKey"];
@@ -35,6 +36,8 @@ builder.Services.AddScoped<ITiposActividadesService, TiposActividadesService>();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddScoped<IEmailSender, EmailSender>();
+
+builder.Services.AddScoped<FuncionesGenerales>();
 
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

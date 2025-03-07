@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using FirebaseAdmin.Messaging;
 using Google;
 using AprendeMasWeb.Data;
+using System.Security.Claims;
 
 namespace AprendeMasWeb.Controllers.WEB
 {
@@ -14,17 +15,6 @@ namespace AprendeMasWeb.Controllers.WEB
         private readonly DataContext _context;
         public IActionResult Index()
         {
-            //Sin funcionar
-            // obtener el DocenteID del claim
-            var docenteIdClaim = User.FindFirst("DocenteId"); //Usar el nombre correcto del claim
-            if (docenteIdClaim != null)
-            {
-                ViewData["DocenteId"] = docenteIdClaim.Value;
-            }
-            else
-            {
-                ViewData["DocenteId"] = "No Encontrado";
-            }
             return View();
         }
 
@@ -59,10 +49,15 @@ namespace AprendeMasWeb.Controllers.WEB
 
                 return RedirectToAction("MateriasDetalles");
             }
-
             return View(aviso);
-
-            
         }
+
+        public IActionResult MateriasDetalles()
+        {
+            // Lógica para mostrar en vista cuando se accede a una materia. Nada de logica. para logica y consultas sera controlador api
+            return View();
+        }
+
+
     }
 }

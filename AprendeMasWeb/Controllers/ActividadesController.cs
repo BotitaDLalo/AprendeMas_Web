@@ -215,45 +215,6 @@ namespace AprendeMasWeb.Controllers
             }
         }
 
-        //public async Task<ActionResult<List<object>>> ConsultaActividadesPorMateria(int materiaId)
-        //{
-        //    try
-        //    {
-        //        var materiasActividades = await _context.tbMateriasActividades
-        //            .Include(ma => ma.Actividades)
-        //            .Include(ma => ma.Materias)
-        //            .Where(ma => ma.MateriaId == materiaId && ma.Actividades != null && ma.Materias != null)
-        //            .ToListAsync();
-
-        //        var listaActividades = materiasActividades
-        //            .Select(ma => new
-        //            {
-        //                actividadId = ma.Actividades!.ActividadId,
-        //                nombreActividad = ma.Actividades!.NombreActividad,
-        //                descripcionActividad = ma.Actividades!.Descripcion,
-        //                fechaCreacionActividad = ma.Actividades!.FechaCreacion.ToString("yyyy-MM-ddTHH:mm:ss"),
-        //                fechaLimiteActividad = ma.Actividades!.FechaLimite.ToString("yyyy-MM-ddTHH:mm:ss"),
-        //                tipoActividadId = ma.Actividades!.TipoActividadId,
-        //                materiaId = ma.MateriaId
-        //            })
-        //            .ToList();
-
-        //        return listaActividades.Cast<object>().ToList();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest($"Ocurrió un error al obtener las actividades para la materia {materiaId}: {ex.Message}");
-        //    }
-        //}
-
-        //[HttpGet("ObtenerActividadesPorMateria/{materiaId}")]
-        //public async Task<ActionResult<List<object>>> ObtenerActividadesPorMateria(int materiaId)
-        //{
-        //    return await ConsultaActividadesPorMateria(materiaId);
-        //}
-
-
-
 
         [HttpPut("ActualizarActividad/{id}")]
         public async Task<ActionResult<Actividades>> UpdateActivity(int id, Actividades updatedActivity)
@@ -316,9 +277,10 @@ namespace AprendeMasWeb.Controllers
                     .Include(a=>a.Actividades)
                     .Include(a=>a.Alumnos).ToListAsync();
 
-                int puntaje = lsAlumnosActividades.Select(a=>a.Actividades!.Puntaje).FirstOrDefault();
 
-                int totalEntregados = lsAlumnosActividades.Count();
+                int puntaje = await _context.tbActividades.Where(a=>a.ActividadId == actividadId).Select(a=>a.Puntaje).FirstOrDefaultAsync();
+
+                int totalEntregados = lsAlumnosActividades.Count;
 
                 respuestaAlumnos.ActividadId = actividadId;
                 respuestaAlumnos.Puntaje = puntaje;

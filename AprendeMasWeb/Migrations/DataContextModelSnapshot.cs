@@ -266,6 +266,12 @@ namespace AprendeMasWeb.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CodigoAutorizacion")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("FechaExpiracionCodigo")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -273,6 +279,12 @@ namespace AprendeMasWeb.Migrations
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool?>("estaAutorizado")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("seEnvioCorreo")
+                        .HasColumnType("bit");
 
                     b.HasKey("DocenteId");
 

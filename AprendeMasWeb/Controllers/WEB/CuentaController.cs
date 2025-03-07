@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -27,55 +27,149 @@ namespace AprendeMasWeb.Controllers.WEB
             return View();
         }
 
+        //[HttpPost]
+        //public async Task<IActionResult> IniciarSesion(string email, string password)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return View();
+
+
+        //    var result = await _signInManager.PasswordSignInAsync(email, password, false, lockoutOnFailure: false);
+
+        //    if (result.Succeeded)
+        //    {
+        //        var user = await _userManager.FindByEmailAsync(email);
+        //        if (user != null)
+        //        {
+        //            //Buscar al docente en la base de datos
+        //            var docente = await _context.tbDocentes.FirstOrDefaultAsync(d => d.UserId == user.Id);
+
+        //            if (docente != null)
+        //            {
+        //                List<Claim> claims = new List<Claim>()
+        //                {
+        //                    new Claim("DocenteId",docente.DocenteId.ToString()) //Aqui se guarda el DocenteId en claim para ser utilizado en diferentes controllers
+        //                };
+
+        //                //Crear un claimsidentity con los claims
+        //                var claimsIdentity = new ClaimsIdentity(claims, "login");
+        //                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+        //                //signIn el usuario con los claims adicionales
+        //                await _signInManager.SignInAsync(user, isPersistent: false);
+
+        //                //Agregar los claims al usuario autenticado
+        //                HttpContext.User = claimsPrincipal;
+        //            }
+
+        //            var roles = await _userManager.GetRolesAsync(user);
+        //            if (roles.Contains("Alumno"))
+        //            {
+        //                return RedirectToAction("Index", "Alumno"); // Redirige a la vista del alumno
+        //            }
+        //            else if (roles.Contains("Docente"))
+        //            {
+        //                return RedirectToAction("Index", "Docente"); // Redirige a la vista del docente
+        //            }
+        //        }
+        //    }
+
+        //    ModelState.AddModelError(string.Empty, "Correo o contraseña incorrectos.");
+        //    return View();
+        //}
+
+
+
+
         [HttpPost]
         public async Task<IActionResult> IniciarSesion(string email, string password)
         {
             if (!ModelState.IsValid)
                 return View();
 
-            var result = await _signInManager.PasswordSignInAsync(email, password, false, lockoutOnFailure: false);
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "Correo o contraseña incorrectos.");
+                return View();
+            }
 
+            var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByEmailAsync(email);
-                if (user != null)
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id) // Guarda el ID del usuario en los claims
+        };
+
+                // Verificar si es docente
+                var docente = await _context.tbDocentes.FirstOrDefaultAsync(d => d.UserId == user.Id);
+                if (docente != null)
                 {
-                    //Buscar al docente en la base de datos
-                    var docente = await _context.tbDocentes.FirstOrDefaultAsync(d => d.UserId == user.Id);
+                    claims.Add(new Claim("DocenteId", docente.DocenteId.ToString()));
+                }
 
-                    if (docente != null)
-                    {
-                        List<Claim> claims = new List<Claim>()
-                        {
-                            new Claim("DocenteId",docente.DocenteId.ToString()) //Aqui se guarda el DocenteId en claim para ser utilizado en diferentes controllers
-                        };
+                // Verificar si es alumno
+                var alumno = await _context.tbAlumnos.FirstOrDefaultAsync(a => a.UserId == user.Id);
+                if (alumno != null)
+                {
+                    claims.Add(new Claim("AlumnoId", alumno.AlumnoId.ToString()));
+                }
 
-                        //Crear un claimsidentity con los claims
-                        var claimsIdentity = new ClaimsIdentity(claims, "login");
-                        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+                // Crear identidad de claims
+                var claimsIdentity = new ClaimsIdentity(claims, "login");
+                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-                        //signIn el usuario con los claims adicionales
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                // Iniciar sesión con los claims
+                await _signInManager.SignInWithClaimsAsync(user, isPersistent: false, claims);
 
-                        //Agregar los claims al usuario autenticado
-                        HttpContext.User = claimsPrincipal;
-                    }
-
-                    var roles = await _userManager.GetRolesAsync(user);
-                    if (roles.Contains("Alumno"))
-                    {
-                        return RedirectToAction("Index", "Alumno"); // Redirige a la vista del alumno
-                    }
-                    else if (roles.Contains("Docente"))
-                    {
-                        return RedirectToAction("Index", "Docente"); // Redirige a la vista del docente
-                    }
+                // Redirigir según el rol
+                var roles = await _userManager.GetRolesAsync(user);
+                if (roles.Contains("Alumno"))
+                {
+                    return RedirectToAction("Index", "Alumno");
+                }
+                else if (roles.Contains("Docente"))
+                {
+                    return RedirectToAction("Index", "Docente");
+                }else if (roles.Contains("Administrador"))
+                {
+                    return RedirectToAction("Index","Administrador");
                 }
             }
 
             ModelState.AddModelError(string.Empty, "Correo o contraseña incorrectos.");
             return View();
         }
+
+
+        [HttpGet]
+        public IActionResult ObtenerDocenteId()
+        {
+            var docenteId = User.FindFirstValue("DocenteId");
+            if (string.IsNullOrEmpty(docenteId))
+            {
+                return Json(new { error = "No se encontro el DocenteId" });
+            }
+            return Json(new { docenteId });
+        }
+
+        //Verificador de claims guardados desde url o postman>con cookies
+        [HttpGet]
+        public IActionResult VerificarClaims()
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized("El usuario no está autenticado.");
+            }
+
+            var claims = HttpContext.User.Claims
+                .Select(c => new { c.Type, c.Value })
+                .ToList();
+
+            return Ok(claims);
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
