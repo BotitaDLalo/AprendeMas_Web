@@ -23,7 +23,7 @@ namespace AprendeMasWeb.Controllers
             try
             {
                 DateTime dateTime = DateTime.Now;
-                Avisos avisos = new Avisos()
+                Avisos avisos = new()
                 {
                     DocenteId = crearAviso.DocenteId,
                     Titulo = crearAviso.Titulo,
@@ -55,6 +55,9 @@ namespace AprendeMasWeb.Controllers
             }
             finally
             {
+                var materiaId = crearAviso.MateriaId;
+                var grupoId = crearAviso.GrupoId;
+
                 var message = new Message()
                 {
                     Notification = new Notification
@@ -64,10 +67,8 @@ namespace AprendeMasWeb.Controllers
                     },
 
                 };
-                List<int> lsAlumnosId = new List<int>();
+                List<int> lsAlumnosId = [];
 
-                var materiaId = crearAviso.MateriaId;
-                var grupoId = crearAviso.GrupoId;
 
                 if (grupoId != null)
                 {
@@ -76,12 +77,15 @@ namespace AprendeMasWeb.Controllers
                 else if (materiaId != null)
                 {
                     lsAlumnosId = await _context.tbAlumnosMaterias.Where(a => a.MateriaId == materiaId).Select(a => a.AlumnoId).ToListAsync();
-
                 }
 
-                foreach (var alumnoId in lsAlumnosId)
+                //Obtener UserId
+
+                var lsAlumnosUserId = await _context.tbAlumnos.Where(a=> lsAlumnosId.Contains(a.AlumnoId)).Select(a=>a.UserId).ToListAsync();
+
+                foreach (var alumnoUserId in lsAlumnosUserId)
                 {
-                    var lsAlumnoTokens = await _context.tbAlumnosTokens.Where(a => a.AlumnoId == alumnoId).ToListAsync();
+                    var lsAlumnoTokens = await _context.tbUsuariosFcmTokens.Where(a=>a.UserId == alumnoUserId).ToListAsync();
 
                     foreach (var alumnoToken in lsAlumnoTokens)
                     {
@@ -96,13 +100,18 @@ namespace AprendeMasWeb.Controllers
                         {
                             if (fcme.ErrorCode == ErrorCode.NotFound)
                             {
-                                _context.tbAlumnosTokens.Remove(alumnoToken);
+                                _context.tbUsuariosFcmTokens.Remove(alumnoToken);
                                 await _context.SaveChangesAsync();
                             }
                         }
                     }
                 }
             }
+        }
+
+        public void DetonarNotificaciones(int grupoId, int materiaId)
+        {
+
         }
 
         [HttpGet("ConsultarAvisosCreados")]

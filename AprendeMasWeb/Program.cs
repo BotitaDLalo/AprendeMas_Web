@@ -9,22 +9,23 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using AprendeMasWeb.Recursos;
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtKey = builder.Configuration["jwt:SecretKey"];
 var jwt = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey ?? throw new ArgumentNullException(jwtKey, "Token no configurado")));
 
 //// Configura Firebase
-//var firebaseCredentialPath = builder.Configuration["Firebase:CredentialPath"];
-//if (string.IsNullOrEmpty(firebaseCredentialPath))
-//{
-//    throw new InvalidOperationException("La ruta del archivo de credenciales de Firebase no está configurada.");
-//}
+var firebaseCredentialPath = builder.Configuration["Firebase:CredentialPath"];
+if (string.IsNullOrEmpty(firebaseCredentialPath))
+{
+    throw new InvalidOperationException("La ruta del archivo de credenciales de Firebase no está configurada.");
+}
 
-//FirebaseApp.Create(new AppOptions()
-//{
-//    Credential = GoogleCredential.FromFile(firebaseCredentialPath),
-//});
+FirebaseApp.Create(new AppOptions()
+{
+    Credential = GoogleCredential.FromFile(firebaseCredentialPath),
+});
 
 
 // Add services to the container.
@@ -35,6 +36,8 @@ builder.Services.AddScoped<ITiposActividadesService, TiposActividadesService>();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddScoped<IEmailSender, EmailSender>();
+
+builder.Services.AddScoped<FuncionesGenerales>();
 
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

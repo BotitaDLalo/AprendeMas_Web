@@ -36,6 +36,7 @@ namespace AprendeMasWeb.Services
                 smtp.Send(emailGenerado);
                 smtp.Disconnect(true);
 
+
                 return Task.CompletedTask;
             }
             catch (Exception)

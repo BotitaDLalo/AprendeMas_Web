@@ -10,11 +10,13 @@ namespace AprendeMasWeb.Models.DBModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int DocenteId { get; set; }
-
         public required string ApellidoPaterno { get; set; }
         public required string ApellidoMaterno { get; set; }
         public required string Nombre { get; set; }
-
+        public bool? estaAutorizado { get; set; }
+        public bool? seEnvioCorreo {  get; set; }
+        public DateTime? FechaExpiracionCodigo { get; set; }
+        public string? CodigoAutorizacion {  get; set; }
 
         public virtual IdentityUser? IdentityUser { get; set; }
         [ForeignKey("IdentityUser")]
