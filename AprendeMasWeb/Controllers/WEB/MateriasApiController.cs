@@ -21,7 +21,7 @@ namespace AprendeMasWeb.Controllers.WEB
             _context = context; // Asigna el contexto de datos a la variable de la clase
         }
 
-        // Acción para crear una nueva materia mediante una solicitud POST (API)
+        // Controlador para crear una nueva materia mediante una solicitud POST (API)
         [HttpPost("CrearMateria")]
         public async Task<IActionResult> CrearMateria([FromBody] Materias materia)
         {
@@ -50,17 +50,42 @@ namespace AprendeMasWeb.Controllers.WEB
             return new string(Enumerable.Range(0, 10).Select(_ => (char)random.Next('A', 'Z')).ToArray());
         }
 
-        // Acción para obtener las materias que no tienen asignado un grupo
+        // Controlador para obtener las materias que no tienen asignado un grupo
         [HttpGet("ObtenerMateriasSinGrupo/{docenteId}")]
         public async Task<IActionResult> ObtenerMateriasSinGrupo(int docenteId)
         {
             // Consulta las materias que pertenecen al docente con el ID proporcionado
-            // Se asume que la condición es que no tengan grupo asignado
-            var materias = await _context.tbMaterias
-                .Where(g => g.DocenteId == docenteId) // Filtra las materias por docente
-                .ToListAsync(); // Recupera las materias de la base de datos
-            // Retorna una respuesta exitosa con las materias obtenidas
-            return Ok(materias);
+            // Obtiene las matgerias del docente que No estan en la tabla GruposYMaterias
+            var materiasSinGrupo = await _context.tbMaterias
+                .Where(m => m.DocenteId == docenteId &&
+                    !_context.tbGruposMaterias.Any(gm => gm.MateriaId == m.MateriaId))
+                .ToListAsync();
+            return Ok(materiasSinGrupo);
+        }
+
+        // Controlador para eliminar una materia por su id
+        [HttpDelete("EliminarMateria/{id}")]
+        public async Task<IActionResult> EliminarMateria(int id)
+        {
+            // Buscar la materia en la base de datos
+            var materia = await _context.tbMaterias.FindAsync(id);
+            if (materia == null)
+            {
+                return NotFound(new { mensaje = "La materia no existe" });
+            }
+
+            // Buscar relaciones en la tabla GruposYMaterias
+            var relaciones = _context.tbGruposMaterias.Where(gm => gm.MateriaId == id);
+
+            // Eliminar todas las relaciones de la materia con grupos
+            _context.tbGruposMaterias.RemoveRange(relaciones);
+            await _context.SaveChangesAsync(); // Guardamos cambios para eliminar las relaciones
+
+            // Ahora eliminamos la materia
+            _context.tbMaterias.Remove(materia);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = "Materia eliminada correctamente." });
         }
     }
 }
