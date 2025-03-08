@@ -52,7 +52,7 @@ function cambiarSeccion(seccion) {
     const contenido = document.getElementById("contenidoMateria");
 
     // Hacer una petición al controlador para cargar la vista parcial
-    fetch(`/Materias/CargarSeccion?seccion=${seccion}`)
+    fetch(`/MateriasSeccion/CargarSeccion?seccion=${seccion}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error("Error al cargar la sección.");

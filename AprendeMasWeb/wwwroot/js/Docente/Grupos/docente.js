@@ -685,3 +685,5 @@ document.addEventListener("DOMContentLoaded", () => {
     // ✅ Se ejecuta SOLO cuando se abre el modal
     document.getElementById("gruposModal").addEventListener("shown.bs.modal", cargarMaterias);
 });
+
+

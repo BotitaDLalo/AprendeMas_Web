@@ -2,11 +2,12 @@
 
 namespace AprendeMasWeb.Controllers.WEB
 {
-    public class MateriasController : Controller
+    public class MateriasSeccionController : Controller
     {
         // Acción para cargar las vistas parciales según la sección seleccionada
         public IActionResult CargarSeccion(string seccion)
         {
+            Console.WriteLine($"Se ejecutó CargarSeccion con la sección: {seccion}");
             if (string.IsNullOrEmpty(seccion))
             {
                 return BadRequest("Sección no válida.");
