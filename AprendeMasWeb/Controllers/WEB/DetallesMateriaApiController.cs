@@ -49,5 +49,28 @@ namespace AprendeMasWeb.Controllers.WEB
             // Si se encuentran los detalles, devuelve un resultado exitoso con los detalles de la materia
             return Ok(materiaDetalles);
         }
+
+        [HttpGet("BuscarAlumnosPorCorreo")]
+        public async Task<IActionResult> BuscarAlumnosPorCorreo(string correo)
+        {
+            if(string.IsNullOrWhiteSpace(correo))
+            {
+                return BadRequest("El correo no puede estar vacio.");
+            }
+
+            //Buscar los usuarios en aspnetusers que coincidan con el correo ingresado
+            var usuarios = await _context.Users //aspnetusers
+                .Where(u => u.Email.Contains(correo)) //filtrar por correo
+                .Select(u => new { u.Id, u.Email }) //Obtener solo id y email
+                .ToListAsync();
+
+            var alumnosConCorreo = await _context.tbAlumnos
+                .Where(a => usuarios.Select(u => u.Id).Contains(a.UserId)) //Solo alumnos registrados
+                .Include(a => a.IdentityUser) //Cargar datos de aspNetUsers
+                .Select(a => new { a.IdentityUser.Email }) //Solo el correo
+                .ToListAsync();
+
+            return Ok(alumnosConCorreo);
+        }
     }
 }

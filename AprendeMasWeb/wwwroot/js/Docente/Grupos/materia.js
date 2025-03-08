@@ -68,3 +68,8 @@ function cambiarSeccion(seccion) {
     document.querySelectorAll(".tab-button").forEach(btn => btn.classList.remove("active"));
     document.querySelector(`[onclick="cambiarSeccion('${seccion}')"]`).classList.add("active");
 }
+
+
+function invitarAlumno() {
+    alert("se dio clic en boton de agregar");
+}

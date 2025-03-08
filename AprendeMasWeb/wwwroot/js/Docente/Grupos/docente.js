@@ -13,7 +13,7 @@ async function obtenerDocenteId() {
             Swal.fire({
                 position: "top-end",
                 icon: "success",
-                title: "Inicio sesión correctamente.",
+                title: "Todo correcto.",
                 position: "center",
                 showConfirmButton: false,
                 timer: 2000
@@ -217,6 +217,7 @@ async function guardarGrupo() { // Lógica para guardar el grupo
         ;// Mostramos una alerta de éxito
         document.getElementById("gruposForm").reset(); // Limpiamos el formulario
         cargarGrupos(); // Recargamos la lista de grupos
+        cargarMateriasSinGrupo(); //Recargamos el listado de materias sin grupo
         cargarMaterias(); //Recarga las materias disponibles para enlazar
     } else {
         Swal.fire({
@@ -318,9 +319,9 @@ async function cargarMateriasSinGrupo() {
                                         <i class="fas fa-ellipsis-v"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end">
-                                        <li><a class="dropdown-item" href="#" onclick="openEditModal(${materiaSinGrupo.materiaId})">Editar</a></li> <!-- Opción para editar materia -->
-                                        <li><a class="dropdown-item" href="#" onclick="openDeleteModal(${materiaSinGrupo.materiaId})">Eliminar</a></li> <!-- Opción para eliminar materia -->
-                                        <li><a class="dropdown-item" href="#" onclick="openDisableModal(${materiaSinGrupo.materiaId})">Desactivar</a></li> <!-- Opción para desactivar materia -->
+                                        <li><a class="dropdown-item" href="#" onclick="editarMateria(${materiaSinGrupo.materiaId})">Editar</a></li> <!-- Opción para editar materia -->
+                                        <li><a class="dropdown-item" href="#" onclick="eliminarMateria(${materiaSinGrupo.materiaId})">Eliminar</a></li> <!-- Opción para eliminar materia -->
+                                        <li><a class="dropdown-item" href="#" onclick="desabilitarMateria(${materiaSinGrupo.materiaId})">Desactivar</a></li> <!-- Opción para desactivar materia -->
                                     </ul>
                                 </div>
                             </div>
@@ -502,10 +503,48 @@ function destacarMateria(MateriaId) {
     alert(`Grupo ID: ${MateriaId} marcado como destacado`); // Muestra una alerta con el ID de la materia destacada
     // Aquí puedes implementar la lógica para destacar la materia
 }
+
+function editarMateria(MateriaId) {
+
+}
+
+function desactivarMateria(MateriaId) {
+
+}
+
+async function eliminarMateria(MateriaId) {
+    const confirmacion = await Swal.fire({
+        title: "¿Estás seguro?",
+        text: "No podrás recuperar esta materia después de eliminarla.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
+    });
+
+    if (confirmacion.isConfirmed) {
+        try {
+            const response = await fetch(`/api/MateriasApi/EliminarMateria/${MateriaId}`, {
+                method: "DELETE"
+            });
+
+            const resultado = await response.json();
+
+            if (response.ok) {
+                Swal.fire("Eliminado", resultado.mensaje, "success");
+                // Se ejecuta funcion inicializar para actualizar vista completa
+                inicializar();
+            } else {
+                Swal.fire("Error", resultado.mensaje || "No se pudo eliminar la materia", "error");
+            }
+        } catch (error) {
+            Swal.fire("Error", "Hubo un problema al eliminar la materia", "error");
+        }
+    }
+}
 //Funcionalidades de los iconos de las cards de grupos
 // Función para cargar materias de un grupo cuando se hace clic en la card del grupo
 async function handleCardClick(grupoId) {
-    console.log(grupoId);
     const materiasContainer = document.getElementById(`materiasContainer-${grupoId}`);
 
     if (materiasContainer.style.display === "block") {
@@ -532,9 +571,9 @@ async function handleCardClick(grupoId) {
                                                 <i class="fas fa-ellipsis-v"></i>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end">
-                                                <li><a class="dropdown-item" href="#" onclick="openEditModal(${materia.materiaId})">Editar</a></li>
-                                                <li><a class="dropdown-item" href="#" onclick="openDeleteModal(${materia.materiaId})">Eliminar</a></li>
-                                                <li><a class="dropdown-item" href="#" onclick="openDisableModal(${materia.materiaId})">Desactivar</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="editarMateria(${materia.materiaId})">Editar</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="eliminarMateria(${materia.materiaId})">Eliminar</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="desactivarMateria(${materia.materiaId})">Desactivar</a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -573,9 +612,39 @@ function editarGrupo(id) {
     alert("Editar grupo " + id); // Muestra una alerta indicando que el grupo será editado
 }
 
-function eliminarGrupo(id) {
-    alert("Eliminar grupo " + id); // Muestra una alerta indicando que el grupo será eliminado
+async function eliminarGrupo(grupoId) {
+    Swal.fire({
+        title: "¿Qué deseas eliminar?",
+        text: "Elige si deseas eliminar solo el grupo o también las materias que contiene.",
+        icon: "warning",
+        showCancelButton: true,
+        showDenyButton: true,
+        confirmButtonText: "Eliminar solo grupo",
+        denyButtonText: "Eliminar grupo y materias",
+        cancelButtonText: "Cancelar"
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            // Llamar al controlador que elimina solo el grupo
+            const response = await fetch(`/api/GruposApi/EliminarGrupo/${grupoId}`, { method: "DELETE" });
+            if (response.ok) {
+                Swal.fire("Eliminado", "El grupo ha sido eliminado.", "success");
+                inicializar();
+            } else {
+                Swal.fire("Error", "No se pudo eliminar el grupo.", "error");
+            }
+        } else if (result.isDenied) {
+            // Llamar al nuevo controlador que elimina grupo y materias
+            const response = await fetch(`/api/GruposApi/EliminarGrupoConMaterias/${grupoId}`, { method: "DELETE" });
+            if (response.ok) {
+                Swal.fire("Eliminado", "El grupo y sus materias han sido eliminados.", "success");
+                inicializar();
+            } else {
+                Swal.fire("Error", "No se pudo eliminar el grupo y sus materias.", "error");
+            }
+        }
+    });
 }
+
 
 function desactivarGrupo(id) {
     alert("Desactivar grupo " + id); // Muestra una alerta indicando que el grupo será desactivado
