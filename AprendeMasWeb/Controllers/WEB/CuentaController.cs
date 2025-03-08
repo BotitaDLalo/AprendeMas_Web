@@ -27,60 +27,6 @@ namespace AprendeMasWeb.Controllers.WEB
             return View(); // Devuelve la vista de inicio de sesión
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> IniciarSesion(string email, string password)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return View();
-
-
-        //    var result = await _signInManager.PasswordSignInAsync(email, password, false, lockoutOnFailure: false);
-
-        //    if (result.Succeeded)
-        //    {
-        //        var user = await _userManager.FindByEmailAsync(email);
-        //        if (user != null)
-        //        {
-        //            //Buscar al docente en la base de datos
-        //            var docente = await _context.tbDocentes.FirstOrDefaultAsync(d => d.UserId == user.Id);
-
-        //            if (docente != null)
-        //            {
-        //                List<Claim> claims = new List<Claim>()
-        //                {
-        //                    new Claim("DocenteId",docente.DocenteId.ToString()) //Aqui se guarda el DocenteId en claim para ser utilizado en diferentes controllers
-        //                };
-
-        //                //Crear un claimsidentity con los claims
-        //                var claimsIdentity = new ClaimsIdentity(claims, "login");
-        //                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-        //                //signIn el usuario con los claims adicionales
-        //                await _signInManager.SignInAsync(user, isPersistent: false);
-
-        //                //Agregar los claims al usuario autenticado
-        //                HttpContext.User = claimsPrincipal;
-        //            }
-
-        //            var roles = await _userManager.GetRolesAsync(user);
-        //            if (roles.Contains("Alumno"))
-        //            {
-        //                return RedirectToAction("Index", "Alumno"); // Redirige a la vista del alumno
-        //            }
-        //            else if (roles.Contains("Docente"))
-        //            {
-        //                return RedirectToAction("Index", "Docente"); // Redirige a la vista del docente
-        //            }
-        //        }
-        //    }
-
-        //    ModelState.AddModelError(string.Empty, "Correo o contraseña incorrectos.");
-        //    return View();
-        //}
-
-
-
-
         // Acción HTTP POST para procesar el inicio de sesión
         [HttpPost]
         public async Task<IActionResult> IniciarSesion(string email, string password)
@@ -88,12 +34,6 @@ namespace AprendeMasWeb.Controllers.WEB
             if (!ModelState.IsValid) // Verifica si el modelo es válido (evita datos incorrectos o vacíos)
                 return View();
 
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-                ModelState.AddModelError(string.Empty, "Correo o contraseña incorrectos.");
-                return View();
-            }
             var user = await _userManager.FindByEmailAsync(email); // Busca el usuario en la base de datos por su email
             if (user == null)
             {
@@ -101,32 +41,14 @@ namespace AprendeMasWeb.Controllers.WEB
                 return View();
             }
 
-            var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
-            if (result.Succeeded)
             var result = await _signInManager.CheckPasswordSignInAsync(user, password, false); // Verifica la contraseña
             if (result.Succeeded) // Si la contraseña es correcta
             {
-                var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.Id) // Guarda el ID del usuario en los claims
-        };
-
-                // Verificar si es docente
-                var docente = await _context.tbDocentes.FirstOrDefaultAsync(d => d.UserId == user.Id);
-                if (docente != null)
                 var claims = new List<Claim> // Lista de claims para almacenar información del usuario
                 {
-                    claims.Add(new Claim("DocenteId", docente.DocenteId.ToString()));
-                }
                     new Claim(ClaimTypes.NameIdentifier, user.Id) // Guarda el ID del usuario como claim
                 };
 
-                // Verificar si es alumno
-                var alumno = await _context.tbAlumnos.FirstOrDefaultAsync(a => a.UserId == user.Id);
-                if (alumno != null)
-                {
-                    claims.Add(new Claim("AlumnoId", alumno.AlumnoId.ToString()));
-                }
                 // Verifica si el usuario es un docente
                 var docente = await _context.tbDocentes.FirstOrDefaultAsync(d => d.UserId == user.Id);
                 if (docente != null)
@@ -134,9 +56,6 @@ namespace AprendeMasWeb.Controllers.WEB
                     claims.Add(new Claim("DocenteId", docente.DocenteId.ToString())); // Agrega el ID del docente como claim
                 }
 
-                // Crear identidad de claims
-                var claimsIdentity = new ClaimsIdentity(claims, "login");
-                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                 // Verifica si el usuario es un alumno
                 var alumno = await _context.tbAlumnos.FirstOrDefaultAsync(a => a.UserId == user.Id);
                 if (alumno != null)
@@ -144,17 +63,10 @@ namespace AprendeMasWeb.Controllers.WEB
                     claims.Add(new Claim("AlumnoId", alumno.AlumnoId.ToString())); // Agrega el ID del alumno como claim
                 }
 
-                // Iniciar sesión con los claims
-                await _signInManager.SignInWithClaimsAsync(user, isPersistent: false, claims);
                 // Crea una identidad basada en los claims
                 var claimsIdentity = new ClaimsIdentity(claims, "login");
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-                // Redirigir según el rol
-                var roles = await _userManager.GetRolesAsync(user);
-                if (roles.Contains("Alumno"))
-                {
-                    return RedirectToAction("Index", "Alumno");
                 // Inicia sesión con los claims asignados
                 await _signInManager.SignInWithClaimsAsync(user, isPersistent: false, claims);
 
@@ -166,13 +78,6 @@ namespace AprendeMasWeb.Controllers.WEB
                 }
                 else if (roles.Contains("Docente"))
                 {
-                    return RedirectToAction("Index", "Docente");
-                }else if (roles.Contains("Administrador"))
-                {
-                    return RedirectToAction("Index","Administrador");
-                }
-                else if (roles.Contains("Docente"))
-                {
                     return RedirectToAction("Index", "Docente"); // Redirige a la vista de docentes
                 }
             }
@@ -180,35 +85,6 @@ namespace AprendeMasWeb.Controllers.WEB
             ModelState.AddModelError(string.Empty, "Correo o contraseña incorrectos."); // Mensaje de error si la autenticación falla
             return View(); // Retorna a la vista de inicio de sesión
         }
-
-
-        [HttpGet]
-        public IActionResult ObtenerDocenteId()
-        {
-            var docenteId = User.FindFirstValue("DocenteId");
-            if (string.IsNullOrEmpty(docenteId))
-            {
-                return Json(new { error = "No se encontro el DocenteId" });
-            }
-            return Json(new { docenteId });
-        }
-
-        //Verificador de claims guardados desde url o postman>con cookies
-        [HttpGet]
-        public IActionResult VerificarClaims()
-        {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized("El usuario no está autenticado.");
-            }
-
-            var claims = HttpContext.User.Claims
-                .Select(c => new { c.Type, c.Value })
-                .ToList();
-
-            return Ok(claims);
-        }
-
 
         // Acción HTTP GET para obtener el ID del docente autenticado
         [HttpGet]
@@ -222,20 +98,20 @@ namespace AprendeMasWeb.Controllers.WEB
             return Json(new { docenteId }); // Devuelve el ID del docente en formato JSON
         }
 
-		[HttpGet]
-		public IActionResult ObtenerAlumnoId()
-		{
-			var alumnoId = User.FindFirstValue("AlumnoId"); // Busca el claim con el ID del alumno
-			if (string.IsNullOrEmpty(alumnoId))
-			{
-				return Json(new { error = "No se encontró el AlumnoId" }); // Devuelve un error si no encuentra el claim
-			}
-			return Json(new { alumnoId }); // Devuelve el ID del alumno en formato JSON
-		}
+        [HttpGet]
+        public IActionResult ObtenerAlumnoId()
+        {
+            var alumnoId = User.FindFirstValue("AlumnoId"); // Busca el claim con el ID del alumno
+            if (string.IsNullOrEmpty(alumnoId))
+            {
+                return Json(new { error = "No se encontró el AlumnoId" }); // Devuelve un error si no encuentra el claim
+            }
+            return Json(new { alumnoId }); // Devuelve el ID del alumno en formato JSON
+        }
 
 
-		// Acción HTTP GET para verificar los claims almacenados en el usuario autenticado
-		[HttpGet]
+        // Acción HTTP GET para verificar los claims almacenados en el usuario autenticado
+        [HttpGet]
         public IActionResult VerificarClaims()
         {
             if (!User.Identity.IsAuthenticated) // Verifica si el usuario está autenticado
