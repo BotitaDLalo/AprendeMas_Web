@@ -22,19 +22,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Muestra una segunda alerta con cuenta regresiva antes de cerrar sesión
                 Swal.fire({
                     title: "Se está cerrando sesión.", // Mensaje de cierre de sesión
-                    html: "Por seguridad, serás enviado al inicio de sesión en: <b></b>.", // Mensaje con contador de tiempo
+                    html: "Por seguridad, serás enviado al inicio de sesión", // Mensaje sin contador de tiempo
                     timer: 5000, // Tiempo en milisegundos antes de cerrar sesión (5s)
                     timerProgressBar: true, // Muestra una barra de progreso en la alerta
                     allowOutsideClick: false, // Evita que se cierre al hacer clic fuera de la alerta
                     didOpen: () => {
                         Swal.showLoading(); // Muestra un indicador de carga
-                        const timer = Swal.getPopup().querySelector("b"); // Encuentra el elemento donde se mostrará el tiempo restante
-                        timerInterval = setInterval(() => {
-                            timer.textContent = `${Math.floor(Swal.getTimerLeft() / 1000)} segundos`; // Actualiza el contador en segundos
-                        }, 100);
                     },
                     willClose: () => {
-                        clearInterval(timerInterval); // Detiene el contador cuando la alerta se cierra
                         cerrarSesion(); // Llama a la función para cerrar sesión
                     }
                 }).then((result) => {
@@ -42,6 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         console.log("Cerrando sesión."); // Mensaje en la consola cuando se cierra la sesión automáticamente
                     }
                 });
+
             }
         });
     });

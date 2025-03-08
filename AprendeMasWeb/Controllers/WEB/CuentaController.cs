@@ -19,7 +19,7 @@ namespace AprendeMasWeb.Controllers.WEB
             _userManager = userManager;
             _context = context; // Asigna el contexto de base de datos
         }
-
+            
         // Acción HTTP GET para mostrar la vista de inicio de sesión
         [HttpGet]
         public IActionResult IniciarSesion()

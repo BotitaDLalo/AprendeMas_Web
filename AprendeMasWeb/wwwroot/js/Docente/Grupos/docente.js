@@ -10,19 +10,30 @@ async function obtenerDocenteId() {
         if (data.docenteId) {
             docenteIdGlobal = data.docenteId; // Guardamos el docenteId en la variable global
             localStorage.setItem("docenteId", docenteIdGlobal); // Guardamos el docenteId en el almacenamiento local
-            Swal.fire({
+
+            // Alerta con diseño de Toast
+            const Toast = Swal.mixin({
+                toast: true,
                 position: "top-end",
-                icon: "success",
-                title: "Todo correcto.",
-                position: "center",
                 showConfirmButton: false,
-                timer: 2000
-            });// Mostramos aviso que se inicio sesion correctamente
-        } 
+                timer: 1500,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: "success",
+                title: "Todo correcto."
+            });
+
+        }
     } catch (error) {
-        AlertaCierreSesion(); //si existe un error fuera de la aplicacion cierra la sesión
+        AlertaCierreSesion(); // Si existe un error, cierra la sesión
     }
 }
+
 
 function alertaDeErroresGenerales(error) {
     // Mensaje de error por defecto
@@ -44,8 +55,8 @@ function alertaDeErroresGenerales(error) {
         title: "Oops...",
         text: mensajeError,
         position: "center",
-        allowOutsideClick: false, // Evita que se cierre con un clic afuera
-        footer: `<a href="${enlaceCorreo}" target="_blank">Si el problema persiste, contáctanos.</a>`
+        allowOutsideClick: false//, // Evita que se cierre con un clic afuera
+        //footer: `<a href="${enlaceCorreo}" target="_blank">Si el problema persiste, contáctanos.</a>`
     });
 }
 
@@ -54,7 +65,7 @@ function AlertaCierreSesion() { //funcion que activa la alerta y posteriormente 
     let timerInterval;
     Swal.fire({
         title: "Parece que se perdió la conexión con tu sesión.",
-        html: "La cerraremos por seguridad y podrás volver a iniciar sesión en: <br> <b></b>.",
+        html: "La cerraremos por seguridad y podrás volver a iniciar sesión en <b></b>.",
         timer: 5000,
         timerProgressBar: true,
         position: "center",
@@ -100,8 +111,8 @@ async function cerrarSesion() {
                 title: "Oops...",
                 text: "No se pudo cerrar sesión.",
                 position: "center",
-                allowOutsideClick: false, // Evita que la alerta se cierre al hacer clic fuera de ella
-                footer: '<a href="mailto:soporte@tuempresa.com?subject=Problema%20con%20cierre%20de%20sesión&body=Hola,%20tengo%20un%20problema%20al%20cerrar%20sesión.%20Por%20favor,%20ayuda." target="_blank">Si el problema persiste, contáctanos.</a>'
+                allowOutsideClick: false//,// Evita que la alerta se cierre al hacer clic fuera de ella
+               // footer: '<a href="mailto:soporte@tuempresa.com?subject=Problema%20con%20cierre%20de%20sesión&body=Hola,%20tengo%20un%20problema%20al%20cerrar%20sesión.%20Por%20favor,%20ayuda." target="_blank">Si el problema persiste, contáctanos.</a>'
             });
         }
     } catch (error) {
@@ -662,10 +673,10 @@ async function inicializar() {
     }
 }
 //Funcionalidades de los iconos de las cards de grupos
-function handleCardClick(id) {
-    console.log("Card clickeada, puedes agregar funcionalidad aquí. ID:", id);
+//function handleCardClick(id) {
+//    console.log("Card clickeada, puedes agregar funcionalidad aquí. ID:", id);
     // Aquí puedes agregar la funcionalidad al dar clic en la card
-}
+//}
 
 //Prioriza la ejecucion al cargar index
 // Llamar a la función inicializadora cuando se cargue la página
