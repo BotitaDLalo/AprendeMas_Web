@@ -1,7 +1,13 @@
-﻿<div class="alumnos-container">
+﻿@section Scripts {
+    <!--Incluye el archivo de JavaScript para manejar las funcionalidades específicas de los docentes-->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/Docente/Grupos/materia.js"></script>
+}
+
+<div class="alumnos-container">
     <!-- Botón para agregar alumnos -->
     <div class="add-alumno-container">
-        <button class="add-alumno-btn" onclick="toggleAgregarAlumnos()">Agregar Alumnos</button>
+        <button class="add-alumno-btn" onclick="invitarAlumno()">Agregar Alumnos</button>
         <div class="dropdown-agregar" id="dropdownAgregar">
             <button onclick="invitarAlumno()">Invitar Alumno</button>
         </div>

@@ -153,6 +153,31 @@ namespace AprendeMasWeb.Controllers.WEB
             return Ok(new { mensaje = "Grupo eliminado correctamente." });
         }
 
+        [HttpDelete("EliminarGrupoConMaterias/{grupoId}")]
+        public async Task<IActionResult> EliminarGrupoConMaterias(int grupoId)
+        {
+            //Buscar el grupo en la base de datos
+            var grupo = await _context.tbGrupos.FindAsync(grupoId);
+            if(grupo == null)
+            {
+                return NotFound(new { mensaje = "El grupo no existe" });
+            }
+
+            //buscar las relaciones en materias y grupo y eliminar
+            var relaciones = _context.tbGruposMaterias.Where(mg => mg.GrupoId == grupoId);
+            _context.tbGruposMaterias.RemoveRange(relaciones);
+
+            //Buscar las materias asociadas a este grupo y eliminarlas
+            var materias = _context.tbMaterias.Where(m => relaciones.Any(r => r.MateriaId == m.MateriaId));
+            _context.tbMaterias.RemoveRange(materias);
+
+            //Eliminar el grupo 
+            _context.tbGrupos.Remove(grupo);
+
+            await _context.SaveChangesAsync();
+            return Ok(new { mensaje = "Grupo y sus materias eliminados correctamente" });
+        }
+
     }
 }
 

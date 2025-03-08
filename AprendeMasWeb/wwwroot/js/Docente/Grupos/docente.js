@@ -613,53 +613,36 @@ function editarGrupo(id) {
 }
 
 async function eliminarGrupo(grupoId) {
-    try {
-        // Confirmación antes de eliminar el grupo
-        const confirmacion = await Swal.fire({
-            title: "¿Estás seguro?",
-            text: "Esta acción eliminará el grupo y su relación con materias.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Sí, eliminar",
-            cancelButtonText: "Cancelar"
-        });
-
-        if (!confirmacion.isConfirmed) {
-            return; // Si el usuario cancela, no hacer nada
-        }
-
-        // Petición para eliminar el grupo
-        const response = await fetch(`/api/GruposApi/EliminarGrupo/${grupoId}`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
+    Swal.fire({
+        title: "¿Qué deseas eliminar?",
+        text: "Elige si deseas eliminar solo el grupo o también las materias que contiene.",
+        icon: "warning",
+        showCancelButton: true,
+        showDenyButton: true,
+        confirmButtonText: "Eliminar solo grupo",
+        denyButtonText: "Eliminar grupo y materias",
+        cancelButtonText: "Cancelar"
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            // Llamar al controlador que elimina solo el grupo
+            const response = await fetch(`/api/GruposApi/EliminarGrupo/${grupoId}`, { method: "DELETE" });
+            if (response.ok) {
+                Swal.fire("Eliminado", "El grupo ha sido eliminado.", "success");
+                inicializar();
+            } else {
+                Swal.fire("Error", "No se pudo eliminar el grupo.", "error");
             }
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            Swal.fire({
-                icon: "success",
-                title: "Eliminado",
-                text: data.mensaje
-            });
-
-            // Aquí puedes actualizar la vista para reflejar la eliminación
-            inicializar(); // Llamar a una función que recargue los grupos, si tienes una
-        } else {
-            throw new Error(data.mensaje || "No se pudo eliminar el grupo.");
+        } else if (result.isDenied) {
+            // Llamar al nuevo controlador que elimina grupo y materias
+            const response = await fetch(`/api/GruposApi/EliminarGrupoConMaterias/${grupoId}`, { method: "DELETE" });
+            if (response.ok) {
+                Swal.fire("Eliminado", "El grupo y sus materias han sido eliminados.", "success");
+                inicializar();
+            } else {
+                Swal.fire("Error", "No se pudo eliminar el grupo y sus materias.", "error");
+            }
         }
-    } catch (error) {
-        Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "Hubo un problema al eliminar el grupo.",
-            footer: `<a href="mailto:soporte@tuempresa.com?subject=Error%20al%20eliminar%20grupo&body=Ocurrió%20un%20error:%20${encodeURIComponent(error.message)}">Contactar soporte</a>`
-        });
-    }
+    });
 }
 
 
