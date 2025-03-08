@@ -53,24 +53,58 @@ namespace AprendeMasWeb.Controllers.WEB
         [HttpGet("BuscarAlumnosPorCorreo")]
         public async Task<IActionResult> BuscarAlumnosPorCorreo(string correo)
         {
-            if(string.IsNullOrWhiteSpace(correo))
+            if (string.IsNullOrWhiteSpace(correo))
             {
-                return BadRequest("El correo no puede estar vacio.");
+                return BadRequest("El correo no puede estar vacío.");
             }
 
-            //Buscar los usuarios en aspnetusers que coincidan con el correo ingresado
-            var usuarios = await _context.Users //aspnetusers
-                .Where(u => u.Email.Contains(correo)) //filtrar por correo
-                .Select(u => new { u.Id, u.Email }) //Obtener solo id y email
+            // Buscar los usuarios en aspnetusers que coincidan con el correo ingresado
+            var usuarios = await _context.Users
+                .Where(u => u.Email.Contains(correo))
+                .Select(u => new { u.Id, u.Email })
                 .ToListAsync();
 
+            // Buscar alumnos registrados que coincidan con los usuarios encontrados
             var alumnosConCorreo = await _context.tbAlumnos
-                .Where(a => usuarios.Select(u => u.Id).Contains(a.UserId)) //Solo alumnos registrados
-                .Include(a => a.IdentityUser) //Cargar datos de aspNetUsers
-                .Select(a => new { a.IdentityUser.Email }) //Solo el correo
+                .Where(a => usuarios.Select(u => u.Id).Contains(a.UserId))
+                .Select(a => new
+                {
+                    Email = a.IdentityUser.Email // Asegurar que el campo se llame "Email"
+                })
                 .ToListAsync();
 
             return Ok(alumnosConCorreo);
         }
+
+        /*
+        [HttpGet("BuscarAlumnosPorCorreo")]
+        public async Task<IActionResult> BuscarAlumnosPorCorreo(string correo)
+        {
+            if (string.IsNullOrWhiteSpace(correo))
+            {
+                return BadRequest("El correo no puede estar vacío.");
+            }
+
+            // Buscar los usuarios en AspNetUsers que coincidan con el correo ingresado
+            var usuarios = await _context.Users
+                .Where(u => u.Email.Contains(correo))
+                .Select(u => new { u.Id, u.Email })
+                .ToListAsync();
+
+            // Buscar alumnos registrados que coincidan con los usuarios encontrados
+            var alumnosConCorreo = await _context.tbAlumnos
+                .Where(a => usuarios.Select(u => u.Id).Contains(a.UserId))
+                .Select(a => new
+                {
+                    a.Nombre,
+                    a.ApellidoPaterno,
+                    a.ApellidoMaterno,
+                    a.IdentityUser.Email
+                })
+                .ToListAsync();
+
+            return Ok(alumnosConCorreo);
+        }*/
+
     }
 }

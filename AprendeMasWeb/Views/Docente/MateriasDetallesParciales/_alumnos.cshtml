@@ -2,39 +2,22 @@
     <!--Incluye el archivo de JavaScript para manejar las funcionalidades específicas de los docentes-->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="~/js/Docente/Grupos/materia.js"></script>
+    <script src="~/js/Docente/Grupos/busquedaAlumnoCorreo.js"></script>
 }
 
-<div class="alumnos-container">
-    <!-- Botón para agregar alumnos -->
-    <div class="add-alumno-container">
-        <button class="add-alumno-btn" onclick="invitarAlumno()">Agregar Alumnos</button>
-        <div class="dropdown-agregar" id="dropdownAgregar">
-            <button onclick="invitarAlumno()">Invitar Alumno</button>
-        </div>
+
+<div class="container mt-3">
+    <label for="buscarAlumno" class="form-label">Buscar alumno por correo:</label>
+    
+    <div class="input-group">
+        <input type="text" id="buscarAlumno" class="form-control" placeholder="Ingrese el correo del alumno..." autocomplete="off">
+        <button id="btnAgregarAlumno" class="btn btn-primary" onclick="agregarAlumno()">Agregar Alumno</button>
     </div>
 
-    <!-- Lista de alumnos -->
-    <div class="lista-alumnos">
-        <h3>Lista de Alumnos</h3>
-        <ul>
-            <li class="alumno-item">
-                <span>Juan Pérez</span>
-                <div class="acciones">
-                    <button onclick="editarAlumno(1)">Editar</button>
-                    <button onclick="eliminarAlumno(1)">Eliminar</button>
-                </div>
-            </li>
-            <li class="alumno-item">
-                <span>Maria García</span>
-                <div class="acciones">
-                    <button onclick="editarAlumno(2)">Editar</button>
-                    <button onclick="eliminarAlumno(2)">Eliminar</button>
-                </div>
-            </li>
-            <!-- Más alumnos de ejemplo -->
-        </ul>
-    </div>
+    <ul id="sugerenciasAlumnos" class="list-group mt-2"></ul>
 </div>
+
+
 
 <script>
     function toggleAgregarAlumnos() {

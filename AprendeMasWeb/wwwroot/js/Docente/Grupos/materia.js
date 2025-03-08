@@ -69,7 +69,3 @@ function cambiarSeccion(seccion) {
     document.querySelector(`[onclick="cambiarSeccion('${seccion}')"]`).classList.add("active");
 }
 
-
-function invitarAlumno() {
-    alert("se dio clic en boton de agregar");
-}
