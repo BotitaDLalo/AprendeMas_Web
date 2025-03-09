@@ -11,38 +11,59 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="~/js/Docente/Grupos/materia.js"></script>
     <!-- Incluye un archivo CSS específico para los estilos de las materias. -->
+    <link rel="stylesheet" href="~/css/Docente/seccionAlumnoEnMateria.css" />
     <link rel="stylesheet" href="~/css/Docente/materias.css" />
 }
-
 <!-- Contenedor principal de la sección de materia -->
 <div class="materia-container">
-    <!-- Cabecera de la materia, con un fondo de color personalizado -->
+    <!-- Cabecera de la materia -->
     <div class="materia-header" id="materiaHeader" style="background-color: #d63384;">
-        <!-- Título de la materia, cuyo nombre se mostrará dinámicamente -->
-        <h1> <span id="materiaNombre"></span> </h1>
-
-        <!-- Información adicional sobre la materia, como el código de clase y un icono de configuración -->
+        <h1><span id="materiaNombre"></span></h1>
         <div class="materia-info">
             <span>Código de clase: <strong id="codigoAcceso">...</strong></span>
             <i class="fas fa-cog"></i> <!-- Icono de configuración -->
         </div>
     </div>
 
-    <!-- Barra de navegación para cambiar entre secciones de la materia -->
+    <!-- Barra de navegación -->
     <nav class="materia-nav">
-        <!-- Botón para mostrar la sección de avisos -->
         <button class="tab-button active" onclick="cambiarSeccion('avisos')">Avisos</button>
-        <!-- Botón para mostrar la sección de actividades -->
         <button class="tab-button" onclick="cambiarSeccion('actividades')">Actividades</button>
-        <!-- Botón para mostrar la sección de alumnos -->
         <button class="tab-button" onclick="cambiarSeccion('alumnos')">Alumnos</button>
-        <!-- Botón para mostrar la sección de calificaciones -->
         <button class="tab-button" onclick="cambiarSeccion('calificaciones')">Calificaciones</button>
     </nav>
 
-    <!-- Contenedor principal para mostrar el contenido de la materia, que cambia según la sección seleccionada -->
-    <div class="materia-content" id="contenidoMateria">
-        <!-- Mensaje predeterminado que se muestra antes de que se seleccione una opción -->
-        <p>Selecciona una opción para ver su contenido.</p>
+    <!-- Contenedor de secciones -->
+    <div class="materia-content">
+        <div id="seccion-avisos" class="seccion">
+            <h2>Avisos</h2>
+            <p>Contenido de avisos...</p>
+        </div>
+        <div id="seccion-actividades" class="seccion" style="display: none;">
+            <h2>Actividades</h2>
+            <p>Contenido de actividades...</p>
+        </div>
+        <!-- Contenedor de gestión de alumnos -->
+        <div id="seccion-alumnos" class="seccion" style="display: none;">
+
+            <div class="container mt-3">
+                <label for="buscarAlumno" class="form-label">Buscar alumno por correo:</label>
+
+                <div class="input-group" style="display: flex; align-items: center; position: relative;">
+                    <input type="text" id="buscarAlumno" class="form-control" placeholder="Ingrese el correo del alumno..." autocomplete="off" style="flex: 1;">
+                    <button id="btnAgregarAlumno" class="btn btn-primary">Agregar Alumno</button>
+                </div>
+
+                <!-- Lista de sugerencias -->
+                <ul id="sugerenciasAlumnos" class="list-group mt-2" style="position: absolute; width: 100%; z-index: 1000;"></ul>
+            </div>
+
+        </div>
+
+        <!--contenedor que gestiona las calificaciones-->
+        <div id="seccion-calificaciones" class="seccion" style="display: none;">
+            <h2>Calificaciones</h2>
+            <p>Notas de los estudiantes...</p>
+        </div>
     </div>
 </div>
