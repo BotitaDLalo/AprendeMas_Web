@@ -131,5 +131,29 @@ namespace AprendeMasWeb.Controllers.WEB
             return Ok(new { mensaje = "Alumno asignado a la materia exitosamente." });
         }
 
+        // Método para obtener la lista de alumnos que están dentro de la materia
+        [HttpGet("ObtenerAlumnosPorMateria/{materiaId}")]
+        public async Task<IActionResult> ObtenerAlumnosPorMateria(int materiaId)
+        {
+            var alumnos = await _context.tbAlumnosMaterias
+                .Where(am => am.MateriaId == materiaId)
+                .Join(_context.tbAlumnos,
+                    am => am.AlumnoId,
+                    a => a.AlumnoId,
+                    (am, a) => new
+                    {
+                        am.AlumnoMateriaId, // Se agrega el AlumnoMateriaId
+                        a.AlumnoId,
+                        a.Nombre,
+                        a.ApellidoPaterno,
+                        a.ApellidoMaterno
+                    })
+                .ToListAsync();
+            return Ok(alumnos);
+        }
+
+
+
+
     }
 }
