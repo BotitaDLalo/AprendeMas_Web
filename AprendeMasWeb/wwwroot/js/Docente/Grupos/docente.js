@@ -1,6 +1,6 @@
 //usar el claim como variable global dentro del inicio de sesion.
 let docenteIdGlobal = null; //Variable global para almacenar el docenteId
-
+let materiaIdGlobal = null;
 //Funcion que busca el claim del docenteId y usarlo en este archivo
 async function obtenerDocenteId() {
     try {
@@ -406,6 +406,8 @@ async function cargarMateriasSinGrupo() {
 
 // Función para redirigir a la vista Materias dentro del controlador Docente
 function irAMateria(materiaId) {
+    //guardar el id de la materia para acceder a la materia
+    localStorage.setItem("materiaId", materiaId);
     window.location.href = `/Docente/MateriasDetalles?materiaId=${materiaId}`; // Redirige a la página de detalles de la materia
 }
 

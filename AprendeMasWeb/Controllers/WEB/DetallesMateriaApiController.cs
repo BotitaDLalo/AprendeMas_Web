@@ -1,5 +1,6 @@
 ﻿// Se importa el espacio de nombres para acceder a la base de datos y los controladores
 using AprendeMasWeb.Data;
+using AprendeMasWeb.Models.DBModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -49,35 +50,6 @@ namespace AprendeMasWeb.Controllers.WEB
             // Si se encuentran los detalles, devuelve un resultado exitoso con los detalles de la materia
             return Ok(materiaDetalles);
         }
-        /*
-        [HttpGet("BuscarAlumnosPorCorreo")]
-        public async Task<IActionResult> BuscarAlumnosPorCorreo(string correo)
-        {
-            if (string.IsNullOrWhiteSpace(correo))
-            {
-                return BadRequest("El correo no puede estar vacío.");
-            }
-
-            // Buscar los usuarios en aspnetusers que coincidan con el correo ingresado
-            var usuarios = await _context.Users
-                .Where(u => u.Email.Contains(correo))
-                .Select(u => new { u.Id, u.Email })
-                .ToListAsync();
-
-            // Buscar alumnos registrados que coincidan con los usuarios encontrados
-            var alumnosConCorreo = await _context.tbAlumnos
-                .Where(a => usuarios.Select(u => u.Id).Contains(a.UserId))
-                .Select(a => new
-                {
-                    a.IdentityUser.Email,          // Correo electrónico
-                    a.Nombre,                      // Nombre
-                    a.ApellidoPaterno,             // Apellido Paterno
-                    a.ApellidoMaterno              // Apellido Materno
-                })
-                .ToListAsync();
-
-            return Ok(alumnosConCorreo);
-        }*/
 
         [HttpGet("BuscarAlumnosPorCorreo")]
         public async Task<IActionResult> BuscarAlumnosPorCorreo(string query)
@@ -111,7 +83,53 @@ namespace AprendeMasWeb.Controllers.WEB
             return Ok(alumnosConCorreo);
         }
 
+        //controlador para unir materia con alumno
 
+        // Método para buscar el alumno por correo y asignarlo a la materia si no está asignado
+        [HttpPost("AsignarAlumnoMateria")]
+        public async Task<IActionResult> AsignarAlumnoMateria([FromQuery] string correo, [FromQuery] int materiaId)
+        {
+            if (string.IsNullOrWhiteSpace(correo))
+            {
+                return BadRequest("El correo no puede estar vacío.");
+            }
+
+            // Buscar el alumno por correo
+            var alumno = await _context.tbAlumnos
+                .Where(a => a.IdentityUser.Email == correo)
+                .Select(a => new
+                {
+                    a.AlumnoId
+                })
+                .FirstOrDefaultAsync();
+
+            if (alumno == null)
+            {
+                return NotFound(new { mensaje = "Alumno no encontrado con el correo proporcionado." });
+            }
+
+            // Verificar si ya existe la relación en la tabla alumnosMaterias
+            var relacionExistente = await _context.tbAlumnosMaterias
+                .Where(am => am.AlumnoId == alumno.AlumnoId && am.MateriaId == materiaId)
+                .FirstOrDefaultAsync();
+
+            if (relacionExistente != null)
+            {
+                return BadRequest(new { mensaje = "El alumno ya está asignado a esta materia." });
+            }
+
+            // Si no existe la relación, agregarla a la tabla alumnosMaterias
+            var nuevaRelacion = new AlumnosMaterias
+            {
+                AlumnoId = alumno.AlumnoId,
+                MateriaId = materiaId
+            };
+
+            await _context.tbAlumnosMaterias.AddAsync(nuevaRelacion);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = "Alumno asignado a la materia exitosamente." });
+        }
 
     }
 }
