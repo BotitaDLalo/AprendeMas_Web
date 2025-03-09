@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Error al obtener los datos de la materia:", error)
             );
     }
-
+    /*
     // 🔹 Funcionalidad de búsqueda de alumnos en tiempo real
     const inputBuscar = document.getElementById("buscarAlumno");
     const listaSugerencias = document.getElementById("sugerenciasAlumnos");
@@ -74,7 +74,62 @@ document.addEventListener("DOMContentLoaded", function () {
                 alumnos.forEach(alumno => {
                     const li = document.createElement("li");
                     li.classList.add("list-group-item", "list-group-item-action");
-                    li.textContent = alumno.email;
+
+                    // Mostrar el nombre completo y el correo
+                    li.textContent = `${alumno.nombre} ${alumno.apellidoPaterno} ${alumno.apellidoMaterno} - ${alumno.email}`;
+
+                    li.addEventListener("click", function () {
+                        inputBuscar.value = alumno.email; // Rellenar input con el correo seleccionado
+                        listaSugerencias.innerHTML = ""; // Limpiar sugerencias
+                    });
+                    listaSugerencias.appendChild(li);
+                });
+
+            } catch (error) {
+                console.error("Error al buscar alumnos:", error);
+            }
+        });
+
+        // Ocultar la lista de sugerencias si el usuario hace clic fuera
+        document.addEventListener("click", function (event) {
+            if (!inputBuscar.contains(event.target) && !listaSugerencias.contains(event.target)) {
+                listaSugerencias.innerHTML = "";
+            }
+        });
+    }*/
+
+    // 🔹 Funcionalidad de búsqueda de alumnos en tiempo real
+    const inputBuscar = document.getElementById("buscarAlumno");
+    const listaSugerencias = document.getElementById("sugerenciasAlumnos");
+
+    if (inputBuscar) { // Verificar si el input existe en la página antes de ejecutar el código
+        inputBuscar.addEventListener("input", async function () {
+            const query = inputBuscar.value.trim();
+            if (query.length < 3) {
+                listaSugerencias.innerHTML = ""; // Limpiar la lista si el texto es muy corto
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/DetallesMateriaApi/BuscarAlumnosPorCorreo?query=${query}`);
+                if (!response.ok) throw new Error("Error al buscar alumnos");
+
+                const alumnos = await response.json();
+                listaSugerencias.innerHTML = ""; // Limpiar sugerencias anteriores
+
+                if (alumnos.length === 0) {
+                    listaSugerencias.innerHTML = `<li class="list-group-item text-muted">No se encontraron resultados</li>`;
+                    return;
+                }
+
+                // Agregar las sugerencias a la lista
+                alumnos.forEach(alumno => {
+                    const li = document.createElement("li");
+                    li.classList.add("list-group-item", "list-group-item-action");
+
+                    // Mostrar el nombre completo y el correo
+                    li.textContent = `${alumno.nombre} ${alumno.apellidoPaterno} ${alumno.apellidoMaterno} - ${alumno.email}`;
+
                     li.addEventListener("click", function () {
                         inputBuscar.value = alumno.email; // Rellenar input con el correo seleccionado
                         listaSugerencias.innerHTML = ""; // Limpiar sugerencias
@@ -94,6 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+
 });
 
 // Función para cambiar la sección mostrada en la interfaz
