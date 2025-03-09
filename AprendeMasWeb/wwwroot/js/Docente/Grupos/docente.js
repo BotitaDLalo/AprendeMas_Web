@@ -1,4 +1,3 @@
-//usar el claim como variable global dentro del inicio de sesion.
 let docenteIdGlobal = null; //Variable global para almacenar el docenteId
 let materiaIdGlobal = null;
 //Funcion que busca el claim del docenteId y usarlo en este archivo
@@ -674,11 +673,6 @@ async function inicializar() {
         AlertaCierreSesion();
     }
 }
-//Funcionalidades de los iconos de las cards de grupos
-//function handleCardClick(id) {
-//    console.log("Card clickeada, puedes agregar funcionalidad aquí. ID:", id);
-    // Aquí puedes agregar la funcionalidad al dar clic en la card
-//}
 
 //Prioriza la ejecucion al cargar index
 // Llamar a la función inicializadora cuando se cargue la página
