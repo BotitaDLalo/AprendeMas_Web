@@ -1,0 +1,98 @@
+﻿@Html.AntiForgeryToken()
+@{
+	// Se establece que esta vista no usará un diseño de Layout predefinido
+	Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- Favicon para la pestaña del navegador -->
+	<link rel="icon" href="~/Iconos/LOGO VERTICAL-26.svg" type="image/x-icon" />
+
+	<!-- Fuentes de Google utilizadas en la página -->
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+	<!-- Archivo CSS para estilos personalizados -->
+	<link href="~/css/InicioSesion/InicioSesion.css" rel="stylesheet" />
+	@* <link href="~/css/InicioSesion/Registro.css" rel="stylesheet" /> *@
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+	<!-- Título de la página -->
+	<title>Registrar</title>
+</head>
+<body>
+	<div class="logo">
+		<img src="@Url.Content("~/Iconos/iconizer-LOGO HORIZONTAL-AzulF.svg")" alt="Logo" class="logo-image">
+	</div>
+	<div class="signin-box">
+
+		<div class="login-header">
+			<header>Registrar</header>
+			@* <p>We are happy to have you back!</p> *@
+		</div>
+		<form class="form-signin" method="post">
+			<div class="input-box">
+				<input name="ApellidoPaterno" type="text" class="input-field" id="email" autocomplete="off" required>
+				<label for="apellidoPaterno">Apellido Paterno</label>
+			</div>
+			<div class="input-box">
+				<input name="ApellidoMaterno" type="text" class="input-field" id="apellidoPaterno" autocomplete="off" required>
+				<label for="apellidoMaterno">Apellido Materno</label>
+			</div>
+			<div class="input-box">
+				<input name="Nombre" type="text" class="input-field" id="nombre" autocomplete="off" required>
+				<label for="nombres">Nombres</label>
+			</div>
+			<div class="input-box">
+				<input name="Clave" type="password" class="input-field" id="password" autocomplete="off" required>
+				<label for="password">Contraseña</label>
+			</div>
+			<select name="TipoUsuario" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" style="font-size: 1em;
+        color: #555;">
+				<option selected>Elige tu rol</option>
+				<option value="Docente">Docente</option>
+				<option value="Alumno">Alumno</option>
+			</select>
+			<div class="input-box">
+				<input asp-controller="Usuarios" asp-action="VerificarCodigo" type="submit" class="input-submit" value="Registrarse">
+			</div>
+		</form>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			$('.form-signin').on("submit",function(e){
+				e.preventDefault();
+				$.ajax({
+				url: "/Usuarios/Registrar",
+				type: "POST",
+				headers:{
+					'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+				},
+				data: $(this).serialize(),
+				success: function (response) {
+
+				if (response.estaAutorizado === "Autorizado") {
+					var redirectUrl = '@Url.Action("IniciarSesion", "Cuenta")';
+					window.location.href = redirectUrl;
+				} else if(response.estaAutorizado == "Pendiente") {
+					var redirectUrl = '@Url.Action("VerificarCodigo", "Usuarios")';
+					window.location.href = redirectUrl;
+				}
+
+				},
+				error: function (xhr) {
+
+					var problemDetails = xhr.responseJSON;
+					var errorMessage = problemDetails.errorMessage;
+
+					alert('HUBO UN ERROR: '+errorMessage);
+				}
+				});
+			});
+		});
+	</script>
+</body>
+
+</html>

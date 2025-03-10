@@ -1,0 +1,107 @@
+﻿@Html.AntiForgeryToken()
+@{
+	// Se establece que esta vista no usará un diseño de Layout predefinido
+	Layout = null;
+	var email = ViewBag.Email;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- Favicon para la pestaña del navegador -->
+	<link rel="icon" href="~/Iconos/LOGO VERTICAL-26.svg" type="image/x-icon" />
+
+	<!-- Fuentes de Google utilizadas en la página -->
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+	<!-- Archivo CSS para estilos personalizados -->
+	@* <link href="~/css/InicioSesion/Inicio.css" rel="stylesheet" /> *@
+	<link href="~/css/InicioSesion/InicioSesion.css" rel="stylesheet" />
+
+	<!-- Título de la página -->
+	<title>Verificar Código</title>
+</head>
+<body>
+	<div class="logo">
+		<img src="@Url.Content("~/Iconos/iconizer-LOGO HORIZONTAL-AzulF.svg")" alt="Logo" class="logo-image">
+	</div>
+	<div class="verify-box">
+		<div class="login-header">
+			<header>Verificar Código</header>
+			@* <p>We are happy to have you back!</p> *@
+		</div>
+		<div id="userInfo" data-email="@ViewBag.Email"></div>
+		<form class="verificarCodigo-form">
+			<div class="input-box-code">
+				<label for="email"></label>
+				<input type="number" class="input-field" id="code1" name="code1" autocomplete="off" required>
+				<input type="number" class="input-field" id="code2" name="code2" autocomplete="off" required>
+				<input type="number" class="input-field" id="code3" name="code3" autocomplete="off" required>
+				<input type="number" class="input-field" id="code4" name="code4" autocomplete="off" required>
+				<input type="number" class="input-field" id="code5" name="code5" autocomplete="off" required>
+			</div>
+			<div class="input-box">
+				<input type="submit" class="input-submit" value="Verificar">
+			</div>
+		</form>
+	</div>
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script>
+				$(document).ready(function(){
+					var email = $('#userInfo').data('email');
+
+					$('input[type="number"]').on('input', function() {
+					  var value = $(this).val();
+					  if (value.length > 1) {
+						$(this).val(value.slice(0, 1));
+					  }
+					  $(this).val($(this).val().replace(/[^0-9]/g, ''));
+
+					  if ($(this).val().length === 1) {
+						var nextInput = $(this).next('input[type="number"]');
+						if (nextInput.length) {
+							nextInput.focus();
+						}
+					}
+					});
+
+			$('.verificarCodigo-form').on("submit",function(e){
+				e.preventDefault();
+				var code1 = $('#code1').val();
+				var code2 = $('#code2').val();
+				var code3 = $('#code3').val();
+				var code4 = $('#code4').val();
+				var code5 = $('#code5').val();
+
+				var fullCode = code1 + code2 + code3 + code4 + code5;
+
+
+				$.ajax({
+				url: "/Cuenta/ValidarCodigoAutorizacionDocente",
+				type: "POST",
+				headers:{
+					'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+				},
+				contentType: 'application/json',
+				data: JSON.stringify({
+					Email: email,
+					CodigoValidar: fullCode
+				}
+				),
+				success: function (response) {
+					if (response.redirectUrl) {
+						window.location.href = response.redirectUrl;
+					} else {
+						alert('SE VERIFICO');
+					}
+				},
+				error: function (xhr) {
+					alert('HUBO UN ERROR');
+				}
+				});
+			});
+		});
+	</script>
+</body>
+
+</html>

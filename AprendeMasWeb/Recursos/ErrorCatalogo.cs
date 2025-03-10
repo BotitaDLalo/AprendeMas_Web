@@ -15,14 +15,16 @@ namespace AprendeMasWeb.Recursos
             tokenInvalido = 1003,
             codigoAutorizacionInvalido = 1004,
             codigoAutorizacionExpirado = 1005,
-            nombreUsuarioUsado = 1006
+            nombreUsuarioUsado = 1006,
+            emailNoValido = 1007
         }
         private static readonly Dictionary<ErrorCodigos, string> DiccionarioErrores = new()
         {
             {ErrorCodigos.CredencialesInvalidas,"Correo o contraseña son incorrectos." },
             {ErrorCodigos.CorreoUsuarioExistente,"Este correo ya está asociado a otra cuenta." },
             {ErrorCodigos.tokenInvalido,"Token de autenticacion invalido." },
-            {ErrorCodigos.nombreUsuarioUsado,"Nombre de usuario ya esta en uso." }
+            {ErrorCodigos.nombreUsuarioUsado,"Nombre de usuario ya esta en uso." },
+            {ErrorCodigos.emailNoValido,"El correo ya no es valido."}
         };
 
 

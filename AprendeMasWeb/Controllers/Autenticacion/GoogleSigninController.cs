@@ -14,6 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Configuration;
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 namespace AprendeMasWeb.Controllers.Autenticacion
 {
@@ -49,7 +50,6 @@ namespace AprendeMasWeb.Controllers.Autenticacion
                 if (user != null)
                 {
                     var rol = await _userManager.GetRolesAsync(user);
-                    int idUsuario = 0;
                     var identityUserId = await _userManager.GetUserIdAsync(user);
                     var rolUsuario = rol.FirstOrDefault();
 
@@ -70,6 +70,7 @@ namespace AprendeMasWeb.Controllers.Autenticacion
                         {
                             null => new AutenticacionRespuesta
                             {
+                                Id = docente.DocenteId,
                                 Correo = Email,
                                 Token = Token,
                                 EstaAutorizado = EstatusAutorizacion.PENDIENTE,
@@ -81,7 +82,7 @@ namespace AprendeMasWeb.Controllers.Autenticacion
                             },
                             true => new AutenticacionRespuesta
                             {
-                                Id = idUsuario,
+                                Id = docente.DocenteId,
                                 UserName = userName,
                                 Correo = Email,
                                 Rol = rolUsuario,
@@ -96,11 +97,12 @@ namespace AprendeMasWeb.Controllers.Autenticacion
                     }
                     else if (rolUsuario == "Alumno")
                     {
-                        idUsuario = _context.tbAlumnos.Where(a => a.UserId == identityUserId).Select(a => a.AlumnoId).FirstOrDefault();
+                        var alumno = await _context.tbAlumnos.Where(a => a.UserId == identityUserId).FirstOrDefaultAsync();
+                        if (alumno == null) return BadRequest();
 
                         return Ok(new AutenticacionRespuesta
                         {
-                            Id = idUsuario,
+                            Id = alumno.AlumnoId,
                             UserName = userName,
                             Correo = Email,
                             Rol = rolUsuario,

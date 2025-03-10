@@ -1,4 +1,6 @@
 using AprendeMasWeb.Data; // Agrega la referencia al contexto de datos de la aplicación
+using AprendeMasWeb.Models;
+using AprendeMasWeb.Recursos;
 using Microsoft.AspNetCore.Identity; // Librería para la gestión de identidad y autenticación
 using Microsoft.AspNetCore.Mvc; // Librería para los controladores en ASP.NET Core MVC
 using Microsoft.EntityFrameworkCore; // Permite realizar consultas asíncronas en la base de datos
@@ -53,7 +55,23 @@ namespace AprendeMasWeb.Controllers.WEB
                 var docente = await _context.tbDocentes.FirstOrDefaultAsync(d => d.UserId == user.Id);
                 if (docente != null)
                 {
-                    claims.Add(new Claim("DocenteId", docente.DocenteId.ToString())); // Agrega el ID del docente como claim
+                    if (docente.estaAutorizado == null)
+                    {
+                        HttpContext.Session.SetString(Recursos.SessionKeys.Email, email);
+                        return RedirectToAction("VerificarCodigo", "Usuarios");
+                    }
+                    else
+                    {
+                        if (!docente.estaAutorizado.Value)
+                        {
+                            return View();
+                        }
+                        else
+                        {
+                            claims.Add(new Claim("DocenteId", docente.DocenteId.ToString()));
+                        }
+                    }
+
                 }
 
                 // Verifica si el usuario es un alumno
@@ -74,17 +92,93 @@ namespace AprendeMasWeb.Controllers.WEB
                 var roles = await _userManager.GetRolesAsync(user);
                 if (roles.Contains("Alumno"))
                 {
-                    return RedirectToAction("Index", "Alumno"); // Redirige a la vista de alumnos
+                    return RedirectToAction("Index", "Alumno");
                 }
                 else if (roles.Contains("Docente"))
                 {
-                    return RedirectToAction("Index", "Docente"); // Redirige a la vista de docentes
+                    return RedirectToAction("Index", "Docente");
+                }
+                else if (roles.Contains("Administrador"))
+                {
+                    return RedirectToAction("Index", "Administrador");
                 }
             }
 
             ModelState.AddModelError(string.Empty, "Correo o contraseña incorrectos."); // Mensaje de error si la autenticación falla
             return View(); // Retorna a la vista de inicio de sesión
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ValidarCodigoAutorizacionDocente([FromBody] ValidarCodigoDocente datos)
+        {
+            try
+            {
+                string email = datos.Email;
+                string codigoValidar = datos.CodigoValidar;
+
+                var emailEncontrado = await _userManager.FindByEmailAsync(email);
+                if (emailEncontrado == null)
+                {
+                    return BadRequest(new
+                    {
+                        ErrorCode = ErrorCatalogo.ErrorCodigos.CredencialesInvalidas,
+                        ErrorMessage = ErrorCatalogo.GetMensajeError(ErrorCatalogo.ErrorCodigos.CredencialesInvalidas)
+                    });
+                }
+
+                //Obteniendo rol del usuario
+                var rol = await _userManager.GetRolesAsync(emailEncontrado);
+                var rolUsuario = rol.FirstOrDefault() ?? throw new Exception("El usuario no posee un rol asignado");
+
+                var identityUserId = emailEncontrado.Id;
+
+                var docente = _context.tbDocentes.Where(a => a.UserId == identityUserId).FirstOrDefault();
+                if (docente != null)
+                {
+                    int idUsuario = docente.DocenteId;
+
+                    if (codigoValidar != docente.CodigoAutorizacion)
+                    {
+                        return BadRequest(new { ErrorCode = ErrorCatalogo.ErrorCodigos.codigoAutorizacionInvalido });
+                    }
+
+                    if (docente.FechaExpiracionCodigo < DateTime.Now)
+                    {
+                        return BadRequest(new { ErrorCode = ErrorCatalogo.ErrorCodigos.codigoAutorizacionExpirado });
+                    }
+
+                    docente.FechaExpiracionCodigo = null;
+                    docente.CodigoAutorizacion = null;
+                    docente.estaAutorizado = true;
+                    _context.SaveChanges();
+
+                    var claims = new List<Claim> // Lista de claims para almacenar información del usuario
+                {
+                    new Claim(ClaimTypes.NameIdentifier, identityUserId) // Guarda el ID del usuario como claim
+                };
+                    claims.Add(new Claim("DocenteId", docente.DocenteId.ToString()));
+
+                    // Crea una identidad basada en los claims
+                    var claimsIdentity = new ClaimsIdentity(claims, "login");
+                    var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+                    // Inicia sesión con los claims asignados
+                    await _signInManager.SignInWithClaimsAsync(emailEncontrado, isPersistent: false, claims);
+
+                    var redirectUrl = Url.Action("Index", "Docente");
+                    return Ok(new { redirectUrl = redirectUrl });
+                }
+
+                return BadRequest(new { mensaje = "El docente no existe." });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { e.Message });
+            }
+        }
+
+
 
         // Acción HTTP GET para obtener el ID del docente autenticado
         [HttpGet]

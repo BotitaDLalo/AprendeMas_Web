@@ -2,7 +2,10 @@
 using AprendeMasWeb.Models.DBModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using AprendeMasWeb.Recursos;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.HttpResults;
+using AprendeMasWeb.Models;
 
 namespace AprendeMasWeb.Controllers.WEB
 {
@@ -19,17 +22,53 @@ namespace AprendeMasWeb.Controllers.WEB
             _context = context;
         }
 
-        [HttpGet]
-        public IActionResult Registrar()
+
+        public IActionResult RegistrarUsuario(string email)
+        {
+                ViewBag.Email = email;
+                return View();
+        }
+
+        public IActionResult ValidarCorreo()
         {
             return View();
         }
 
+        public IActionResult RestablecerContraseña()
+        {
+            return View();
+        }
+
+        public IActionResult VerificarCodigo()
+        {
+            var email = HttpContext.Session.GetString(Recursos.SessionKeys.Email);
+            ViewBag.Email = email;
+            return View();
+        }
+
         [HttpPost]
-        public async Task<IActionResult> Registrar(string nombre, string apellidoPaterno, string apellidoMaterno, string email, string password, string role)
+        public async Task<IActionResult> Registrar(UsuarioRegistro usuario)
         {
             if (!ModelState.IsValid)
                 return View();
+
+            var email = HttpContext.Session.GetString(Recursos.SessionKeys.Email);
+
+
+            if(email==null)
+            {
+                var codigoError = ErrorCatalogo.ErrorCodigos.emailNoValido;
+                var problemDetails = new ProblemDetails();
+                problemDetails.Extensions["errorMessage"] = ErrorCatalogo.GetMensajeError(codigoError);
+                return BadRequest(problemDetails);
+            }
+                
+            var nombre = usuario.Nombre;
+            var apellidoPaterno = usuario.ApellidoPaterno;
+            var apellidoMaterno = usuario.ApellidoMaterno;
+            var password = usuario.Clave;
+            var role = usuario.TipoUsuario;
+
 
             // Crear IdentityUser
             var identityUser = new IdentityUser
@@ -54,32 +93,50 @@ namespace AprendeMasWeb.Controllers.WEB
             await _userManager.AddToRoleAsync(identityUser, role);
 
             // Crear registro en la tabla correspondiente
-            if (role == "Alumno")
+            if (role == Recursos.Roles.ALUMNO)
             {
-                var alumno = new Alumnos
+                Alumnos alumnos = new()
                 {
-                    Nombre = nombre,
                     ApellidoPaterno = apellidoPaterno,
                     ApellidoMaterno = apellidoMaterno,
-                    UserId = identityUser.Id
-                };
-                _context.tbAlumnos.Add(alumno);
-            }
-            else if (role == "Docente")
-            {
-                var docente = new Docentes
-                {
                     Nombre = nombre,
+                    UserId = identityUser.Id,
+                };
+                await _context.tbAlumnos.AddAsync(alumnos);
+
+                await _context.SaveChangesAsync();
+                return Ok(new AutenticacionRespuesta
+                {
+                    EstaAutorizado = EstatusAutorizacion.AUTORIZADO
+                });
+            }
+            else if (role == Recursos.Roles.DOCENTE)
+            {
+
+                DateTime fechaExpiracionCodigo = DateTime.UtcNow.AddMinutes(59);
+                string codigo = RecursosGenerales.GenerarCodigoAleatorio();
+                Docentes docentes = new()
+                {
                     ApellidoPaterno = apellidoPaterno,
                     ApellidoMaterno = apellidoMaterno,
-                    UserId = identityUser.Id
+                    Nombre = nombre,
+                    UserId = identityUser.Id,
+                    CodigoAutorizacion = codigo,
+                    FechaExpiracionCodigo = fechaExpiracionCodigo,
                 };
-                _context.tbDocentes.Add(docente);
+                _context.tbDocentes.Add(docentes);
+
+                await _context.SaveChangesAsync();
+                return Ok(new AutenticacionRespuesta
+                {
+                    EstaAutorizado = EstatusAutorizacion.PENDIENTE
+                });
             }
 
-            await _context.SaveChangesAsync();
 
-            return RedirectToAction("IniciarSesion", "Cuenta");
+            //return RedirectToAction("IniciarSesion", "Cuenta");
+
+            return BadRequest();
         }
     }
 }

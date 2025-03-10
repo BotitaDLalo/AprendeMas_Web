@@ -1,0 +1,44 @@
+﻿@{
+	// Se establece que esta vista no usará un diseño de Layout predefinido
+	Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- Favicon para la pestaña del navegador -->
+	<link rel="icon" href="~/Iconos/LOGO VERTICAL-26.svg" type="image/x-icon" />
+
+	<!-- Fuentes de Google utilizadas en la página -->
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+	<!-- Archivo CSS para estilos personalizados -->
+	<link href="~/css/Iniciosesion/InicioSesion.css" rel="stylesheet" />
+	@* <link href="~/css/InicioSesion/Registro.css" rel="stylesheet" /> *@
+
+	<!-- Título de la página -->
+	<title>Registrar</title>
+</head>
+<body>
+	<div class="logo">
+		<img src="@Url.Content("~/Iconos/iconizer-LOGO HORIZONTAL-AzulF.svg")" alt="Logo" class="logo-image">
+	</div>
+	<div class="restablecer-box">
+
+		<div class="login-header">
+			<header>Recuperar contraseña</header>
+			@* <p>We are happy to have you back!</p> *@
+		</div>
+		<form asp-action="" method="post">
+			<div class="input-box">
+				<input type="text" class="input-field" id="email" autocomplete="off" required>
+				<label for="email">Correo electronico</label>
+			</div>
+			<div class="input-box">
+				<input type="submit" class="input-submit" value="Enviar">
+			</div>
+		</form>
+	</div>
+</body>
+
+</html>

@@ -12,7 +12,6 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pag
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.HttpResults;
 using AprendeMasWeb.Recursos;
-using AprendeMasWeb.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace AprendeMasWeb.Controllers.Autenticacion
@@ -76,7 +75,8 @@ namespace AprendeMasWeb.Controllers.Autenticacion
             {
                 if (ModelState.IsValid)
                 {
-                    var nombreUsuarioEncontrado = await _userManager.FindByNameAsync(modelo.NombreUsuario);
+                    var nombreUsuario = modelo.NombreUsuario;
+                    var nombreUsuarioEncontrado = await _userManager.FindByNameAsync(nombreUsuario!);
 
                     if (nombreUsuarioEncontrado != null)
                     {
@@ -420,7 +420,7 @@ namespace AprendeMasWeb.Controllers.Autenticacion
         }
 
         [HttpPost("VerificarEmailUsuario")]
-        public async Task<IActionResult> VerificarEmailUsuario(string email)
+        public async Task<IActionResult> VerificarEmailUsuario([FromBody]string email)
         {
             try
             {
@@ -428,6 +428,7 @@ namespace AprendeMasWeb.Controllers.Autenticacion
 
                 if (emailEsValido == null)
                 {
+                    HttpContext.Session.SetString(Recursos.SessionKeys.Email, email);
                     return Ok();
                 }
                 var codigoError = ErrorCatalogo.ErrorCodigos.CorreoUsuarioExistente;

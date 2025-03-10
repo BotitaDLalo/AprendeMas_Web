@@ -27,6 +27,14 @@ FirebaseApp.Create(new AppOptions()
     Credential = GoogleCredential.FromFile(firebaseCredentialPath),
 });
 
+// Agregar el servicio de sesiones
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(20); // Tiempo de expiración de la sesión
+    options.Cookie.HttpOnly = true; // La cookie de sesión solo es accesible desde el servidor
+    options.Cookie.IsEssential = true; // Marcar la cookie como esencial
+});
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -75,6 +83,8 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 
 var app = builder.Build();
 
+// Usar el middleware de sesiones
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -82,6 +92,8 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.UseSession();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

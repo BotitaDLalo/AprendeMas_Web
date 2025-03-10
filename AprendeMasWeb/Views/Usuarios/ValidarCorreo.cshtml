@@ -1,0 +1,64 @@
+﻿@Html.AntiForgeryToken()
+@{
+	Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="icon" href="~/Iconos/LOGO VERTICAL-26.svg" type="image/x-icon" />
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+	<link href="~/css/InicioSesion/InicioSesion.css" rel="stylesheet" />
+	<title>Validar correo</title>
+</head>
+<body>
+	<div class="logo">
+		<img src="@Url.Content("~/Iconos/iconizer-LOGO HORIZONTAL-AzulF.svg")" alt="Logo" class="logo-image">
+	</div>
+	<div class="verify-box">
+		<div class="login-header">
+			<header>Validar correo</header>
+		</div>
+		<form id="verificarForm">
+			<div class="input-box">
+				<input name="email" type="text" class="input-field" id="email" autocomplete="off" required>
+				<label for="email">Correo electrónico</label>
+			</div>
+			<div class="input-box">
+				<input type="submit" class="input-submit" value="Verificar">
+			</div>
+		</form>
+	</div>
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script>
+		$(document).ready(function() {
+			// Cuando se haga clic en el botón
+			$('#verificarForm').on('submit', function(e) {
+				e.preventDefault();
+				var email = $('#email').val();
+				$.ajax({
+				url:'/api/Login/VerificarEmailUsuario',
+				type:'POST',
+				headers:{
+					'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+				},
+				data:JSON.stringify(email),
+				contentType: 'application/json',
+				success: function(response){
+
+					var redirectUrl = '@Url.Action("RegistrarUsuario", "Usuarios", new { email = "__email__" })'.replace("__email__", encodeURIComponent(email));
+					window.location.href = redirectUrl;
+				},
+				error: function(xhr,status,error){
+							var problemDetails = xhr.responseJSON;
+							var errorMessage = problemDetails.errorMessage;
+					
+					alert('HUBO UN ERROR: '+errorMessage);
+				}
+			});
+
+			});
+		});
+	</script>
+</body>
+</html>

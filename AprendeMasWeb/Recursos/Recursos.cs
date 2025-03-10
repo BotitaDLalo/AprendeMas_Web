@@ -25,6 +25,10 @@
         public static bool NO_REQUERIDO => false;   
     }
 
+    public static class SessionKeys
+    {
+        public static string Email => "Email";
+    }
 
     public class RecursosGenerales
     {

@@ -15,15 +15,14 @@ body {
     background-color: #f1f2f4;
     display: flex;
     align-items: center;
-    height: 700px;
     flex-direction: column;
-    overflow-y: hidden;
+/*    overflow-y: hidden;*/
 }
 
 .login-box {
     position: relative;
     width: 470px;
-    height: 580px;
+    height: 620px;
     padding: 10px 30px;
     background: #FFF;
     border: 1px solid #ddd;
