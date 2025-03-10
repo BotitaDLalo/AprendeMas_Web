@@ -131,7 +131,6 @@ async function guardarMateriaSinGrupo() {
             position: "top-end",
             icon: "question",
             title: "Ingrese nombre de la materia.",
-            position: "center",
             showConfirmButton: false,
             timer: 2500
         });// Mostramos una alerta si el nombre está vacío
@@ -155,7 +154,6 @@ async function guardarMateriaSinGrupo() {
             position: "top-end",
             icon: "success",
             title: "Materia registrada correctamente.",
-            position: "center",
             showConfirmButton: false,
             timer: 2000
         });
@@ -168,7 +166,6 @@ async function guardarMateriaSinGrupo() {
             icon: "error",
             title: "Error al registrar materia.",
             showConfirmButton: false,
-            position: "center",
             timer: 2000
         }); // Mostramos una alerta si hubo un error al guardar
     }
@@ -186,7 +183,6 @@ async function guardarGrupo() { // Lógica para guardar el grupo
             position: "top-end",
             icon: "question",
             title: "Ingrese nombre del grupo.",
-            position: "center",
             showConfirmButton: false,
             timer: 2500
         });// Mostramos una alerta si el nombre está vacío
@@ -220,7 +216,6 @@ async function guardarGrupo() { // Lógica para guardar el grupo
             position: "top-end",
             icon: "success",
             title: "Grupo registrado correctamente.",
-            position: "center",
             showConfirmButton: false,
             timer: 2000
         });
@@ -234,7 +229,6 @@ async function guardarGrupo() { // Lógica para guardar el grupo
             position: "top-end",
             icon: "error",
             title: "Error al registrar grupo.",
-            position: "center",
             showConfirmButton: false,
             timer: 2000
         }); // Mostramos una alerta si hubo un error al guardar
@@ -259,7 +253,6 @@ async function asociarMateriasAGrupo(grupoId, materias) {
             icon: "error",
             title: "Error al asociar materias con grupo.",
             showConfirmButton: false,
-            position: "center",
             timer: 2000
         }); // Mostramos una alerta si hubo un error al guardar
     }
@@ -360,7 +353,6 @@ async function cargarMateriasSinGrupo() {
             title: "Error al cargar materias sin grupo asignado.", // Título de la alerta
             html: "Se reintentará automáticamente en: <b></b>.", // Mensaje con temporizador dinámico
             timer: 4000, // Tiempo en milisegundos antes de que la alerta se cierre automáticamente
-            position: "center",
             timerProgressBar: true, // Muestra una barra de progreso indicando el tiempo restante
             allowOutsideClick: false, // Evita que el usuario cierre la alerta haciendo clic fuera de ella
             showCancelButton: true, // Muestra un botón de cancelar
@@ -461,7 +453,6 @@ async function cargarGrupos() { // Lógica para actualizar la lista de grupos en
             timer: 4000, // Tiempo en milisegundos antes de que la alerta se cierre automáticamente
             timerProgressBar: true, // Muestra una barra de progreso indicando el tiempo restante
             allowOutsideClick: false, // Evita que el usuario cierre la alerta haciendo clic fuera de ella
-            position: "center",
             showCancelButton: true, // Muestra un botón de cancelar dentro de la alerta
             cancelButtonText: "Cerrar sesión", // Texto que aparecerá en el botón de cancelar
 
@@ -613,7 +604,6 @@ async function handleCardClick(grupoId) {
                 icon: "error",
                 title: "Error al obtener las materias del grupo.",
                 showConfirmButton: false,
-                position: "center",
                 timer: 2000
             }); // Mostramos una alerta si hubo un error al mostrar las materias del grupo
         }

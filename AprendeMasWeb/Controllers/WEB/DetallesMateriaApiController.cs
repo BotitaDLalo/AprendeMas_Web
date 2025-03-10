@@ -178,7 +178,5 @@ namespace AprendeMasWeb.Controllers.WEB
                 return StatusCode(500, new { mensaje = "Error al eliminar al alumno.", error = ex.Message });
             }
         }
-
-
     }
 }

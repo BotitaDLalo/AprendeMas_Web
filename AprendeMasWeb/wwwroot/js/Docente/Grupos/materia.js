@@ -36,7 +36,13 @@ document.addEventListener("DOMContentLoaded", function () {
         if (event.target.id === "btnAsignarAlumno") {
             const correo = document.getElementById("buscarAlumno").value.trim();
             if (!correo) {
-                alert("Por favor, ingresa un correo válido.");
+                Swal.fire({
+                    position: "top-end",
+                    icon: "question",
+                    title: "Ingrese un correo valido.",
+                    showConfirmButton: false,
+                    timer: 2500
+                });
                 return;
             }
 
@@ -48,15 +54,30 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await response.json();
 
                 if (!response.ok) {
-                    alert(data.mensaje || "Error al asignar alumno.");
+                    Swal.fire({
+                        title: "Error",
+                        text: data.mensaje || "Error al asignar alumno.",
+                        icon: "error",
+                        confirmButtonColor: "#d33",
+                    });
                     return;
                 }
 
-                alert("Alumno asignado correctamente.");
+                Swal.fire({
+                    position: "top-end",
+                    title: "Asignado",
+                    text: "Alumno asignado correctamente.",
+                    icon: "success",
+                    timer: 2500
+                });
                 cargarAlumnosAsignados(materiaIdGlobal);
             } catch (error) {
-                console.error("Error en la asignación:", error);
-                alert("Hubo un error, inténtalo de nuevo.");
+                Swal.fire({
+                    title: "Error",
+                    text: "Hubo un problema al asignar al alumno. Inténtalo de nuevo.",
+                    icon: "error",
+                    confirmButtonColor: "#d33",
+                });
             }
         }
     });
@@ -150,81 +171,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
-
-//------------------
-/*
-async function cargarAlumnosAsignados(materiaIdGlobal) {
-    try {
-        // Hacer la petición al servidor
-        const response = await fetch(`/api/DetallesMateriaApi/ObtenerAlumnosPorMateria/${materiaIdGlobal}`);
-
-        if (!response.ok) {
-            throw new Error("No se pudieron cargar los alumnos.");
-        }
-
-        // Convertir la respuesta a JSON
-        const alumnos = await response.json();
-
-        // Seleccionar el contenedor donde se mostrará la lista
-        const contenedor = document.getElementById("listaAlumnosAsignados");
-        contenedor.innerHTML = ""; // Limpiar contenido anterior
-
-        //Verificar si hay alumnos
-        if (alumnos.length === 0) {
-            contenedor.innerHTML = `<p class="text-muted">No hay alumnos asignados a esta materia.</p>`;
-            return;
-        }
-
-        // Crear la lista de alumnos
-        alumnos.forEach(alumno => {
-            //  Crear el div del alumno
-            const divAlumno = document.createElement("div");
-            divAlumno.classList.add("d-flex", "justify-content-between", "align-items-center", "p-2", "mb-2");
-            divAlumno.style.background = "#f8f9fa"; // Color de fondo
-            divAlumno.style.borderRadius = "8px"; // Bordes redondeados
-
-            //  Agregar el nombre del alumno
-            const spanNombre = document.createElement("span");
-            spanNombre.textContent = `${alumno.nombre} ${alumno.apellidoPaterno} ${alumno.apellidoMaterno}`;
-            divAlumno.appendChild(spanNombre);
-
-            //  Contenedor de botones
-            const divBotones = document.createElement("div");
-
-            //  Botón Editar
-            const btnEditar = document.createElement("button");
-            btnEditar.textContent = "Editar";
-            btnEditar.classList.add("btn", "btn-primary", "btn-sm", "me-2");
-            btnEditar.addEventListener("click", function () {
-                alert(`Editar alumno: ${alumno.nombre}`);
-                // Aquí puedes abrir un modal o hacer lo que necesites para editar
-            });
-
-            // Botón Eliminar
-            const btnEliminar = document.createElement("button");
-            btnEliminar.textContent = "Eliminar";
-            btnEliminar.classList.add("btn", "btn-danger", "btn-sm");
-            btnEliminar.addEventListener("click", async function () {
-                if (confirm(`¿Seguro que deseas eliminar a ${alumno.Nombre} de esta materia?`)) {
-                    await eliminarAlumnoDeMateria(alumno.AlumnoId, materiaIdGlobal);
-                    cargarAlumnosAsignados(materiaIdGlobal); // Recargar lista tras eliminar
-                }
-            });
-
-            // Agregar botones al div
-            divBotones.appendChild(btnEditar);
-            divBotones.appendChild(btnEliminar);
-            divAlumno.appendChild(divBotones);
-
-            // Agregar alumno a la lista
-            contenedor.appendChild(divAlumno);
-        });
-
-    } catch (error) {
-        console.error("Error al cargar alumnos:", error);
-    }
-}*/
-//----------
 
 
 async function cargarAlumnosAsignados(materiaIdGlobal) {
@@ -327,7 +273,18 @@ function cambiarSeccion(seccion) {
 
 async function eliminardelgrupo(alumnoMateriaId) {
     try {
-        if (!confirm("¿Seguro que deseas eliminar a este alumno del grupo?")) return;
+        const confirmacion = await Swal.fire({
+            title: "¿Estás seguro?",
+            text: "Esta acción eliminará al alumno del grupo.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar"
+        });
+
+        if (!confirmacion.isConfirmed) return;
 
         const response = await fetch(`/api/DetallesMateriaApi/EliminarAlumnoDeMateria/${alumnoMateriaId}`, {
             method: "DELETE",
@@ -337,10 +294,25 @@ async function eliminardelgrupo(alumnoMateriaId) {
             throw new Error("No se pudo eliminar al alumno del grupo.");
         }
 
-        alert("Alumno eliminado correctamente.");
+        Swal.fire({
+            position: "top-end",
+            title: "Eliminado",
+            text: "El alumno ha sido eliminado del grupo correctamente.",
+            icon: "success",
+            timer: 2500
+        });
+
         cargarAlumnosAsignados(materiaIdGlobal); // Recargar la lista
 
     } catch (error) {
+        Swal.fire({
+            position: "top-end",
+            title: "Error",
+            text: "Hubo un problema al eliminar al alumno.",
+            icon: "error",
+            timer: 2500
+        });
+
         console.error("Error al eliminar alumno:", error);
     }
 }
