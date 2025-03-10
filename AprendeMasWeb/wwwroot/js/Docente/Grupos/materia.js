@@ -151,49 +151,158 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// Define la función fuera del eventListener
+//------------------
+/*
 async function cargarAlumnosAsignados(materiaIdGlobal) {
     try {
+        // Hacer la petición al servidor
         const response = await fetch(`/api/DetallesMateriaApi/ObtenerAlumnosPorMateria/${materiaIdGlobal}`);
+
         if (!response.ok) {
             throw new Error("No se pudieron cargar los alumnos.");
         }
-        const alumnos = await response.json();
-        const contenedor = document.getElementById("listaAlumnosAsignados");
-        contenedor.innerHTML = "";
 
+        // Convertir la respuesta a JSON
+        const alumnos = await response.json();
+
+        // Seleccionar el contenedor donde se mostrará la lista
+        const contenedor = document.getElementById("listaAlumnosAsignados");
+        contenedor.innerHTML = ""; // Limpiar contenido anterior
+
+        //Verificar si hay alumnos
         if (alumnos.length === 0) {
             contenedor.innerHTML = `<p class="text-muted">No hay alumnos asignados a esta materia.</p>`;
             return;
         }
 
-        const ul = document.createElement("ul");
-        ul.classList.add("list-group");
-
+        // Crear la lista de alumnos
         alumnos.forEach(alumno => {
-            const li = document.createElement("li");
-            li.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
-            li.textContent = `${alumno.nombre} ${alumno.apellidoPaterno} ${alumno.apellidoMaterno}`;
+            //  Crear el div del alumno
+            const divAlumno = document.createElement("div");
+            divAlumno.classList.add("d-flex", "justify-content-between", "align-items-center", "p-2", "mb-2");
+            divAlumno.style.background = "#f8f9fa"; // Color de fondo
+            divAlumno.style.borderRadius = "8px"; // Bordes redondeados
 
+            //  Agregar el nombre del alumno
+            const spanNombre = document.createElement("span");
+            spanNombre.textContent = `${alumno.nombre} ${alumno.apellidoPaterno} ${alumno.apellidoMaterno}`;
+            divAlumno.appendChild(spanNombre);
+
+            //  Contenedor de botones
+            const divBotones = document.createElement("div");
+
+            //  Botón Editar
+            const btnEditar = document.createElement("button");
+            btnEditar.textContent = "Editar";
+            btnEditar.classList.add("btn", "btn-primary", "btn-sm", "me-2");
+            btnEditar.addEventListener("click", function () {
+                alert(`Editar alumno: ${alumno.nombre}`);
+                // Aquí puedes abrir un modal o hacer lo que necesites para editar
+            });
+
+            // Botón Eliminar
             const btnEliminar = document.createElement("button");
-            btnEliminar.classList.add("btn", "btn-danger", "btn-sm");
             btnEliminar.textContent = "Eliminar";
+            btnEliminar.classList.add("btn", "btn-danger", "btn-sm");
             btnEliminar.addEventListener("click", async function () {
-                if (confirm(`¿Seguro que deseas eliminar a ${alumno.nombre} de esta materia?`)) {
-                    await eliminarAlumnoDeMateria(alumno.email, materiaIdGlobal);
-                    cargarAlumnosAsignados(materiaIdGlobal);  // Recargar la lista después de eliminar
+                if (confirm(`¿Seguro que deseas eliminar a ${alumno.Nombre} de esta materia?`)) {
+                    await eliminarAlumnoDeMateria(alumno.AlumnoId, materiaIdGlobal);
+                    cargarAlumnosAsignados(materiaIdGlobal); // Recargar lista tras eliminar
                 }
             });
 
-            li.appendChild(btnEliminar);
-            ul.appendChild(li);
+            // Agregar botones al div
+            divBotones.appendChild(btnEditar);
+            divBotones.appendChild(btnEliminar);
+            divAlumno.appendChild(divBotones);
+
+            // Agregar alumno a la lista
+            contenedor.appendChild(divAlumno);
         });
 
-        contenedor.appendChild(ul);
+    } catch (error) {
+        console.error("Error al cargar alumnos:", error);
+    }
+}*/
+//----------
+
+
+async function cargarAlumnosAsignados(materiaIdGlobal) {
+    try {
+        // Hacer la petición al servidor
+        const response = await fetch(`/api/DetallesMateriaApi/ObtenerAlumnosPorMateria/${materiaIdGlobal}`);
+
+        if (!response.ok) {
+            throw new Error("No se pudieron cargar los alumnos.");
+        }
+
+        // Convertir la respuesta a JSON
+        const alumnos = await response.json();
+
+        // Seleccionar el contenedor donde se mostrará la lista
+        const contenedor = document.getElementById("listaAlumnosAsignados");
+        contenedor.innerHTML = ""; // Limpiar contenido anterior
+
+        // Verificar si hay alumnos
+        if (alumnos.length === 0) {
+            contenedor.innerHTML = `<p class="text-muted">No hay alumnos asignados a esta materia.</p>`;
+            return;
+        }
+
+        // Crear la lista de alumnos
+        alumnos.forEach(alumno => {
+            //  Crear el div del alumno
+            const divAlumno = document.createElement("div");
+            divAlumno.classList.add("d-flex", "justify-content-between", "align-items-center", "p-2", "mb-2");
+            divAlumno.style.background = "#f8f9fa"; // Color de fondo
+            divAlumno.style.borderRadius = "8px"; // Bordes redondeados
+
+            //  Agregar el nombre del alumno
+            const spanNombre = document.createElement("span");
+            spanNombre.textContent = `${alumno.nombre} ${alumno.apellidoPaterno} ${alumno.apellidoMaterno}`;
+            divAlumno.appendChild(spanNombre);
+
+            //  Contenedor de botón
+            const divBotones = document.createElement("div");
+
+            //  Botón "Eliminar del grupo" dentro de un menú desplegable
+            const dropdown = document.createElement("div");
+            dropdown.classList.add("dropdown");
+
+            const btnDropdown = document.createElement("button");
+            btnDropdown.classList.add("btn", "btn-danger", "btn-sm", "dropdown-toggle");
+            btnDropdown.textContent = "Opciones";
+            btnDropdown.setAttribute("data-bs-toggle", "dropdown");
+
+            const dropdownMenu = document.createElement("ul");
+            dropdownMenu.classList.add("dropdown-menu");
+
+            const eliminarItem = document.createElement("li");
+            const eliminarLink = document.createElement("a");
+            eliminarLink.classList.add("dropdown-item");
+            eliminarLink.href = "#";
+            eliminarLink.textContent = "Eliminar del grupo";
+            eliminarLink.onclick = function () {
+                eliminardelgrupo(alumno.alumnoMateriaId);
+            };
+
+            eliminarItem.appendChild(eliminarLink);
+            dropdownMenu.appendChild(eliminarItem);
+            dropdown.appendChild(btnDropdown);
+            dropdown.appendChild(dropdownMenu);
+
+            divBotones.appendChild(dropdown);
+            divAlumno.appendChild(divBotones);
+
+            // Agregar alumno a la lista
+            contenedor.appendChild(divAlumno);
+        });
+
     } catch (error) {
         console.error("Error al cargar alumnos:", error);
     }
 }
+
 
 // Escuchar el evento de clic en #contenedor-dinamico
 document.getElementById("contenedor-dinamico").addEventListener("click", async function (event) {
@@ -213,4 +322,25 @@ function cambiarSeccion(seccion) {
     }
     document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
     document.querySelector(`button[onclick="cambiarSeccion('${seccion}')"]`).classList.add('active');
+}
+
+
+async function eliminardelgrupo(alumnoMateriaId) {
+    try {
+        if (!confirm("¿Seguro que deseas eliminar a este alumno del grupo?")) return;
+
+        const response = await fetch(`/api/DetallesMateriaApi/EliminarAlumnoDeMateria/${alumnoMateriaId}`, {
+            method: "DELETE",
+        });
+
+        if (!response.ok) {
+            throw new Error("No se pudo eliminar al alumno del grupo.");
+        }
+
+        alert("Alumno eliminado correctamente.");
+        cargarAlumnosAsignados(materiaIdGlobal); // Recargar la lista
+
+    } catch (error) {
+        console.error("Error al eliminar alumno:", error);
+    }
 }

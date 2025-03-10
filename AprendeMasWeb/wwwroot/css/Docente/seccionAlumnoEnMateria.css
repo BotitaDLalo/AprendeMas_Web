@@ -72,3 +72,49 @@
     background-color: #007bff;
     color: white;
 }
+
+
+/*Esto lo utiliza para mostrar la lista de alumnos------------------*/
+/* Estilo general para la lista de alumnos */
+.lista-alumnos {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.alumno-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+}
+
+.fila-uno {
+    background-color: #f9f9f9; /* Gris claro */
+}
+
+.fila-dos {
+    background-color: #ffffff; /* Blanco */
+}
+
+/* Estilo para los botones de acción */
+.acciones {
+    display: flex;
+    gap: 10px;
+}
+
+    .acciones button {
+        padding: 5px 10px;
+        font-size: 12px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        .acciones button:hover {
+            background-color: #0056b3;
+        }

@@ -152,7 +152,32 @@ namespace AprendeMasWeb.Controllers.WEB
             return Ok(alumnos);
         }
 
+        [HttpDelete("EliminarAlumnoDeMateria/{idEnlace}")]
+        public async Task<IActionResult> EliminarAlumnoDeMateria(int idEnlace)
+        {
+            try
+            {
+                //Buscar el registro en la base de datos
+                var alumnoMateria = await _context.tbAlumnosMaterias
+                    .FirstOrDefaultAsync(am => am.AlumnoMateriaId == idEnlace);
 
+                //Si no se encuentra se retorna un error
+                if(alumnoMateria == null)
+                {
+                    return NotFound(new { mensaje = "No se encontro el alumno en la materia" });
+                }
+
+                //Eliminar el registro de la base de datos
+                _context.tbAlumnosMaterias.Remove(alumnoMateria);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { mensaje = "Alumno eliminado de la materia correctamente." });
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al eliminar al alumno.", error = ex.Message });
+            }
+        }
 
 
     }
