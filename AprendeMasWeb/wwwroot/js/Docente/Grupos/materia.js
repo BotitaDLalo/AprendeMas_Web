@@ -1,11 +1,11 @@
-
+// Obtener el ID del docente almacenado en localStorage
+docenteIdGlobal = localStorage.getItem("docenteId");
+materiaIdGlobal = localStorage.getItem("materiaId");
 
 // Esperar a que el DOM esté completamente cargado antes de ejecutar el código
 document.addEventListener("DOMContentLoaded", function () {
 
-    // Obtener el ID del docente almacenado en localStorage
-    docenteIdGlobal = localStorage.getItem("docenteId");
-    materiaIdGlobal = localStorage.getItem("materiaId");
+    
     // Verificar si se tienen ambos IDs antes de hacer la petición
     if (materiaIdGlobal && docenteIdGlobal) {
         fetch(`/api/DetallesMateriaApi/ObtenerDetallesMateria/${materiaIdGlobal}/${docenteIdGlobal}`)
@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 alumnos.forEach((alumno, index) => {
                     const li = document.createElement("li");
                     li.classList.add("list-group-item", "list-group-item-action");
-                    li.textContent = `${alumno.email}<br>${alumno.nombre} ${alumno.apellidoPaterno} ${alumno.apellidoMaterno}`;
+                    li.textContent = `${alumno.nombre} ${alumno.apellidoPaterno} ${alumno.apellidoMaterno} - ${alumno.email}`;
 
                     li.addEventListener("click", function () {
                         inputBuscar.value = alumno.email;
