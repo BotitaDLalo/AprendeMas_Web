@@ -167,7 +167,7 @@
 /* Contenedor principal */
 .materia-container {
     width: 100%;
-    max-width: 1400px;
+    max-width: 100%;
     background: white;
     border-radius: 10px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -221,12 +221,22 @@
         font-weight: bold;
     }
 
-/* Contenido dinámico */
+/* Contenido dinámico 
 .materia-content {
     padding: 20px;
     min-height: 150px;
     text-align: center;
+}*/
+.materia-content {
+    padding: 20px;
+    width:100%;
+    min-height: auto; /* Dejar que crezca dinámicamente */
+    text-align: left; /* Alinear el contenido a la izquierda */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
+
 
 /* Estilos de la card */
 .materia-card-unique {

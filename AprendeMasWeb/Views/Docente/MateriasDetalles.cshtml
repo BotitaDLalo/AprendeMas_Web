@@ -8,6 +8,7 @@
 
 <link rel="stylesheet" href="~/css/Docente/seccionAlumnoEnMateria.css" />
 <link rel="stylesheet" href="~/css/Docente/materias.css" />
+<link rel="stylesheet" href="~/css/Docente/avisosSeccion.css" />
 
 <!-- Contenedor principal de la sección de materia -->
 <div class="materia-container">
@@ -31,17 +32,34 @@
     <!-- Contenedor de secciones -->
     <div id="contenedor-dinamico" class="materia-content">
 
-
-        <!--Contenedor que gestiona los avisos-->
+        <!-- Contenedor que gestiona los avisos -->
         <div id="seccion-avisos" class="seccion">
-            <h2>Avisos</h2>
-            <div id="avisoParaPublicar">
-                <!--Aqui estara mi vista donde escribire lo que quieor publicar-->
+            <!-- Sección para escribir un nuevo aviso -->
+            <div id="avisoParaPublicar" class="aviso-card">
+                <div class="aviso-header">
+                    <img src="icono-docente.svg" alt="Docente" class="icono-docente">
+                    <div>
+                        <strong>Tu Nombre</strong>
+                        <p id="fechaPublicacion"></p>
+                    </div>
+                </div>
+
+                <input type="text" id="tituloAviso" placeholder="Título del aviso" class="input-aviso">
+                <textarea id="descripcionAviso" placeholder="Escribe la descripción..." class="input-aviso"></textarea>
+
+                <div class="aviso-footer">
+                    <button id="btnAgregarLink" class="btn-aviso">Agregar Link</button>
+                    <button id="btnPublicarAviso" class="btn-publicar">Publicar</button>
+                </div>
             </div>
+
+            <!-- Lista de avisos que se cargarán desde el backend -->
             <div id="listaDeAvisos">
-                <!--Aqui estara mi lista de avisos que cargare desde back con funciones.-->
+                <!-- Aquí estarán los avisos cargados desde backend -->
             </div>
         </div>
+
+
 
         <!--Contenedor que gestiona las actividades-->
         <div id="seccion-actividades" class="seccion" style="display: none;">
@@ -77,7 +95,6 @@
         </div>
     </div>
 </div>
-
 
 @section Scripts {
     <!--Incluye un archivo JavaScript específico para manejar las funcionalidades relacionadas con los grupos de materias.-->

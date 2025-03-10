@@ -1,0 +1,82 @@
+﻿/* Asegurar que la sección de avisos use todo el ancho */
+.seccion {
+    width: 100%;
+    max-width: 800px; /* Puedes ajustar esto si lo necesitas */
+    margin: auto;
+}
+
+/* Hacer que el aviso ocupe todo el ancho del contenedor */
+.aviso-card {
+    width: 100%;
+    background: white;
+    border: 2px solid #007bff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Encabezado del aviso (icono + nombre + fecha) */
+.aviso-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.icono-docente {
+    width: 50px;
+    height: 50px;
+    background: #eee;
+    border-radius: 50%;
+    padding: 5px;
+}
+
+/* Inputs de título y descripción */
+.input-aviso {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    resize: none;
+    margin-bottom: 10px;
+}
+
+/* Espaciado en la descripción */
+textarea.input-aviso {
+    min-height: 80px;
+}
+
+/* Pie del aviso con botones */
+.aviso-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* Botones */
+.btn-aviso, .btn-publicar {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.btn-aviso {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-publicar {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-aviso:hover {
+    background-color: #5a6268;
+}
+
+.btn-publicar:hover {
+    background-color: #0056b3;
+}
