@@ -405,7 +405,7 @@ async function cargarMateriasSinGrupo() {
 
 // Función para redirigir a la vista Materias dentro del controlador Docente
 function irAMateria(materiaId) {
-    //guardar el id de la materia para acceder a la materia
+    //guardar el id de la materia para acceder a la materia en la que se entro y usarla en otro script
     localStorage.setItem("materiaId", materiaId);
     window.location.href = `/Docente/MateriasDetalles?materiaId=${materiaId}`; // Redirige a la página de detalles de la materia
 }
