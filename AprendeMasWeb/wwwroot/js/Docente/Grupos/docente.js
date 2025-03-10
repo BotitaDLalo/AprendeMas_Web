@@ -1,5 +1,29 @@
 let docenteIdGlobal = null; //Variable global para almacenar el docenteId
-//Funcion que busca el claim del docenteId y usarlo en este archivo
+let materiasPorCrear = []; // Lista de materias a crear
+
+// Agregar una nueva materia al formulario
+function agregarMateria() {
+    const materiasContainer = document.getElementById("listaMaterias");
+
+    const materiaDiv = document.createElement("div");
+    materiaDiv.classList.add("materia-item");
+
+    materiaDiv.innerHTML = `
+        <input type="text" placeholder="Nombre de la Materia" class="nombreMateria">
+        <input type="text" placeholder="Descripción" class="descripcionMateria">
+        <button type="button" onclick="removerDeLista(this)">❌</button>
+    `;
+
+    materiasContainer.appendChild(materiaDiv);
+}
+
+// Remover materia del formulario antes de enviarla
+function removerDeLista(button) {
+    button.parentElement.remove();
+}
+
+
+
 async function obtenerDocenteId() {
     try {
         // Hacemos una solicitud para obtener el docenteId desde el servidor
@@ -169,46 +193,74 @@ async function guardarMateriaSinGrupo() {
         }); // Mostramos una alerta si hubo un error al guardar
     }
 }
+async function guardarGrupo() {
+    const nombre = document.getElementById("nombreGrupo").value;
+    const descripcion = document.getElementById("descripcionGrupo").value;
+    const color = "#2196F3";
+    const checkboxes = document.querySelectorAll(".materia-checkbox:checked");
 
-//Guarda el grupo con o sin materias enlazadas --------------
-async function guardarGrupo() { // Lógica para guardar el grupo
-    const nombre = document.getElementById("nombreGrupo").value; // Obtenemos el nombre del grupo
-    const descripcion = document.getElementById("descripcionGrupo").value; // Obtenemos la descripción del grupo
-    const color = "#2196F3"; // Asignamos un color predeterminado para el grupo
-    const checkboxes = document.querySelectorAll(".materia-checkbox:checked"); // Obtenemos todos los checkboxes seleccionados
-
-    if (nombre.trim() === '') { // Verificamos que el nombre del grupo no esté vacío
+    if (nombre.trim() === '') {
         Swal.fire({
             position: "top-end",
             icon: "question",
             title: "Ingrese nombre del grupo.",
             showConfirmButton: false,
             timer: 2500
-        });// Mostramos una alerta si el nombre está vacío
+        });
         return;
     }
 
-    // Obtenemos los IDs de las materias seleccionadas para asociarlas al grupo
-    const materiasSeleccionadas = Array.from(checkboxes).map(cb => cb.value); // Creamos un array con los valores (IDs) de las materias seleccionadas
+    // Obtener IDs de materias seleccionadas en los checkboxes
+    const materiasSeleccionadas = Array.from(checkboxes).map(cb => cb.value);
 
-    // Enviamos una solicitud POST al servidor para guardar el grupo
+    // Obtener materias creadas en los inputs
+    const materiasNuevas = [];
+    document.querySelectorAll(".materia-item").forEach(materiaDiv => {
+        const nombreMateria = materiaDiv.querySelector(".nombreMateria").value.trim();
+        const descripcionMateria = materiaDiv.querySelector(".descripcionMateria").value.trim();
+        if (nombreMateria) {
+            materiasNuevas.push({ NombreMateria: nombreMateria, Descripcion: descripcionMateria });
+        }
+    });
+
+    // Crear el grupo en la base de datos
     const response = await fetch('/api/GruposApi/CrearGrupo', {
-        method: 'POST', // Indicamos que la solicitud será de tipo POST
-        headers: { 'Content-Type': 'application/json' }, // Especificamos que el cuerpo de la solicitud será JSON
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            NombreGrupo: nombre, // Enviamos el nombre del grupo
-            Descripcion: descripcion, // Enviamos la descripción del grupo
-            CodigoColor: color, // Enviamos el color del grupo
-            DocenteId: docenteIdGlobal // Enviamos el docenteId
+            NombreGrupo: nombre,
+            Descripcion: descripcion,
+            CodigoColor: color,
+            DocenteId: docenteIdGlobal
         })
     });
 
-    if (response.ok) { // Verificamos si la respuesta es exitosa
-        const grupoCreado = await response.json(); // Obtenemos el grupo creado junto con su ID
+    if (response.ok) {
+        const grupoCreado = await response.json();
+        const grupoId = grupoCreado.grupoId;
 
-        // Si se han seleccionado materias, las asociamos al grupo recién creado
+        // Guardar materias nuevas directamente asociadas al grupo
+        for (const materia of materiasNuevas) {
+            const responseMateria = await fetch('/api/MateriasApi/CrearMateria', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    NombreMateria: materia.NombreMateria,
+                    Descripcion: materia.Descripcion,
+                    CodigoColor: color, // Enviamos el color de la materia
+                    DocenteId: docenteIdGlobal
+                })
+            });
+
+            if (responseMateria.ok) {
+                const materiaCreada = await responseMateria.json();
+                materiasSeleccionadas.push(materiaCreada.materiaId);
+            }
+        }
+
+        // Asociar materias seleccionadas al grupo
         if (materiasSeleccionadas.length > 0) {
-            await asociarMateriasAGrupo(grupoCreado.grupoId, materiasSeleccionadas); // Llamamos a la función para asociar las materias al grupo
+            await asociarMateriasAGrupo(grupoId, materiasSeleccionadas);
         }
 
         Swal.fire({
@@ -218,11 +270,10 @@ async function guardarGrupo() { // Lógica para guardar el grupo
             showConfirmButton: false,
             timer: 2000
         });
-        ;// Mostramos una alerta de éxito
-        document.getElementById("gruposForm").reset(); // Limpiamos el formulario
-        cargarGrupos(); // Recargamos la lista de grupos
-        cargarMateriasSinGrupo(); //Recargamos el listado de materias sin grupo
-        cargarMaterias(); //Recarga las materias disponibles para enlazar
+        document.getElementById("gruposForm").reset();
+        cargarGrupos();
+        cargarMateriasSinGrupo();
+        cargarMaterias();
     } else {
         Swal.fire({
             position: "top-end",
@@ -230,33 +281,29 @@ async function guardarGrupo() { // Lógica para guardar el grupo
             title: "Error al registrar grupo.",
             showConfirmButton: false,
             timer: 2000
-        }); // Mostramos una alerta si hubo un error al guardar
+        });
     }
 }
 
+
 // Función para asociar materias al grupo
 async function asociarMateriasAGrupo(grupoId, materias) {
-    // Enviamos una solicitud POST para asociar las materias al grupo
     const response = await fetch('/api/GruposApi/AsociarMaterias', {
-        method: 'POST', // Indicamos que la solicitud será de tipo POST
-        headers: { 'Content-Type': 'application/json' }, // Especificamos que el cuerpo de la solicitud será JSON
-        body: JSON.stringify({
-            GrupoId: grupoId, // Enviamos el ID del grupo
-            MateriaIds: materias // Enviamos los IDs de las materias seleccionadas
-        })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ GrupoId: grupoId, MateriaIds: materias })
     });
 
-    if (!response.ok) { // Si la respuesta no es exitosa, mostramos una alerta de error
+    if (!response.ok) {
         Swal.fire({
             position: "top-end",
             icon: "error",
             title: "Error al asociar materias con grupo.",
             showConfirmButton: false,
             timer: 2000
-        }); // Mostramos una alerta si hubo un error al guardar
+        });
     }
 }
-
 // Función para cargar las materias disponibles en el modal 
 async function cargarMaterias() {
     try {
@@ -545,6 +592,84 @@ async function eliminarMateria(MateriaId) {
     }
 }
 //Funcionalidades de los iconos de las cards de grupos
+
+//esta funcion oculta la materias de los demas
+
+// Función para cargar materias de un grupo cuando se hace clic en la card del grupo
+async function handleCardClick(grupoId) {
+    localStorage.setItem("grupoIdSeleccionado", grupoId);
+
+    // Ocultar todas las materias de otros grupos
+    document.querySelectorAll("[id^='materiasContainer-']").forEach(container => {
+        if (container.id !== `materiasContainer-${grupoId}`) {
+            container.style.display = "none";
+            container.innerHTML = "";
+        }
+    });
+
+    const materiasContainer = document.getElementById(`materiasContainer-${grupoId}`);
+
+    if (materiasContainer.style.display === "block") {
+        // Si las materias están visibles, ocultarlas
+        materiasContainer.style.display = "none";
+        materiasContainer.innerHTML = "";
+    } else {
+        // Si están ocultas, obtener las materias y mostrarlas
+        const response = await fetch(`/api/GruposApi/ObtenerMateriasPorGrupo/${grupoId}`);
+        if (response.ok) {
+            const materias = await response.json();
+            if (materias.length === 0) {
+                materiasContainer.innerHTML = "<p>Aún no hay materias registradas para este grupo.</p>";
+            } else {
+                materiasContainer.innerHTML = `
+                    <div class="container-cards">
+                        ${materias.map(materia => `
+                            <div class="card card-custom" style="border-radius: 10px;">
+                                <div class="card-header-custom" style="background-color: ${materia.codigoColor || '#000'};">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-dark">${materia.nombreMateria}</span>
+                                        <div class="dropdown">
+                                            <button class="btn btn-link p-0 text-dark" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item" href="#" onclick="editarMateria(${materia.materiaId})">Editar</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="eliminarMateria(${materia.materiaId})">Eliminar</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="desactivarMateria(${materia.materiaId})">Desactivar</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body card-body-custom" style="background-color: #e0e0e0">
+                                    <p class="card-text">${materia.descripcion || "Sin descripción"}</p>
+                                </div>
+                                <div class="card-footer card-footer-custom">
+                                    <button class="btn btn-sm btn-primary" onclick="irAMateria(${materia.materiaId})">Ver Materia</button>
+                                    <div class="icon-container">
+                                        <img class="icon-action" src="https://cdn-icons-png.flaticon.com/512/1828/1828817.png" alt="Ver Actividades" title="Ver Actividades" onclick="verActividades(${materia.materiaId})">
+                                        <img class="icon-action" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Ver Integrantes" title="Ver Integrantes" onclick="verIntegrantes(${materia.materiaId})">
+                                        <img class="icon-action" src="https://cdn-icons-png.flaticon.com/512/535/535285.png" alt="Destacar" title="Destacar Materia" onclick="destacarMateria(${materia.materiaId})">
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            materiasContainer.style.display = "block";
+        } else {
+            Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: "Error al obtener las materias del grupo.",
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+    }
+}
+
+/*
 // Función para cargar materias de un grupo cuando se hace clic en la card del grupo
 async function handleCardClick(grupoId) {
     localStorage.setItem("grupoIdSeleccionado", grupoId);
@@ -608,7 +733,7 @@ async function handleCardClick(grupoId) {
             }); // Mostramos una alerta si hubo un error al mostrar las materias del grupo
         }
     }
-}
+}*/
 
 function editarGrupo(id) {
     alert("Editar grupo " + id); // Muestra una alerta indicando que el grupo será editado

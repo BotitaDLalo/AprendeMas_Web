@@ -35,6 +35,19 @@
                         <textarea class="form-control" id="descripcionGrupo" rows="3" placeholder="Ingrese una descripción"></textarea>
                         <!-- Campo de texto de área (textarea) para ingresar una descripción del grupo. -->
                     </div>
+
+                    <!--Crear materias directamente al crear grupo-->
+                    <div id="materiasContainer" class="mb-3">
+                        <label class="form-label">Crear materias para este grupo</label>
+                        <div class="mt-2">
+                            <button type="button" class="btn btn-primary" onclick="agregarMateria()">+ Crear Materia</button>
+                        </div>
+                        <div id="listaMaterias">
+                            <!--Aquí se irán agregando las materias creadas al momento, posteriormente se envía petición para guardarlos-->
+                        </div>
+                    </div>
+
+                    <!--Crear un enlace con materias ya creadas pero sin grupo asignado-->
                     <div class="mb-3">
                         <!-- Contenedor para la selección de materias, con margen inferior. -->
                         <label class="form-label">Selecciona las Materias Disponibles</label>
@@ -44,10 +57,6 @@
                         </div>
                     </div>
                 </form>
-                <!--<div id="listaGrupos">
-                        <!-- Aquí se renderiza la lista de grupos
-                </div>-->
-                <!-- Esta sección está comentada, posiblemente se usará para mostrar una lista de grupos ya existentes. -->
             </div>
             <div class="modal-footer">
                 <!-- Pie de modal con botones de acción. -->
