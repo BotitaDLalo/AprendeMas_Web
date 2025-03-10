@@ -1,5 +1,4 @@
 let docenteIdGlobal = null; //Variable global para almacenar el docenteId
-let materiaIdGlobal = null;
 //Funcion que busca el claim del docenteId y usarlo en este archivo
 async function obtenerDocenteId() {
     try {
@@ -396,10 +395,10 @@ async function cargarMateriasSinGrupo() {
 
 
 // Función para redirigir a la vista Materias dentro del controlador Docente
-function irAMateria(materiaId) {
+function irAMateria(materiaIdSeleccionada) {
     //guardar el id de la materia para acceder a la materia en la que se entro y usarla en otro script
-    localStorage.setItem("materiaId", materiaId);
-    window.location.href = `/Docente/MateriasDetalles?materiaId=${materiaId}`; // Redirige a la página de detalles de la materia
+    localStorage.setItem("materiaIdSeleccionada", materiaIdSeleccionada);
+    window.location.href = `/Docente/MateriasDetalles?materiaId=${materiaIdSeleccionada}`; // Redirige a la página de detalles de la materia
 }
 
 
@@ -548,6 +547,7 @@ async function eliminarMateria(MateriaId) {
 //Funcionalidades de los iconos de las cards de grupos
 // Función para cargar materias de un grupo cuando se hace clic en la card del grupo
 async function handleCardClick(grupoId) {
+    localStorage.setItem("grupoIdSeleccionado", grupoId);
     const materiasContainer = document.getElementById(`materiasContainer-${grupoId}`);
 
     if (materiasContainer.style.display === "block") {

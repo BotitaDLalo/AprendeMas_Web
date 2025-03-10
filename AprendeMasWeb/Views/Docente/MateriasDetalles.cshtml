@@ -30,10 +30,20 @@
 
     <!-- Contenedor de secciones -->
     <div id="contenedor-dinamico" class="materia-content">
+
+
+        <!--Contenedor que gestiona los avisos-->
         <div id="seccion-avisos" class="seccion">
             <h2>Avisos</h2>
-            <p>Contenido de avisos...</p>
+            <div id="avisoParaPublicar">
+                <!--Aqui estara mi vista donde escribire lo que quieor publicar-->
+            </div>
+            <div id="listaDeAvisos">
+                <!--Aqui estara mi lista de avisos que cargare desde back con funciones.-->
+            </div>
         </div>
+
+        <!--Contenedor que gestiona las actividades-->
         <div id="seccion-actividades" class="seccion" style="display: none;">
             <h2>Actividades</h2>
             <p>Contenido de actividades...</p>
@@ -55,8 +65,10 @@
             <div id="listaAlumnosAsignados" class="mt-3">
                 <!--Aqui se alojara la lista de alumnos desde el backend-->
             </div>
-
         </div>
+
+
+
 
         <!--contenedor que gestiona las calificaciones-->
         <div id="seccion-calificaciones" class="seccion" style="display: none;">

@@ -1,7 +1,7 @@
 // Obtener el ID del docente almacenado en localStorage
 docenteIdGlobal = localStorage.getItem("docenteId");
-materiaIdGlobal = localStorage.getItem("materiaId");
-
+materiaIdGlobal = localStorage.getItem("materiaIdSeleccionada");
+grupoIdGlobal = localStorage.getItem("grupoIdSeleccionado");
 // Esperar a que el DOM esté completamente cargado antes de ejecutar el código
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
                     return;
                 }
-
+                document.getElementById("buscarAlumno").value = "";
                 Swal.fire({
                     position: "top-end",
                     title: "Asignado",
