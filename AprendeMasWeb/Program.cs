@@ -16,16 +16,24 @@ var jwtKey = builder.Configuration["jwt:SecretKey"];
 var jwt = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey ?? throw new ArgumentNullException(jwtKey, "Token no configurado")));
 
 //// Configura Firebase
-var firebaseCredentialPath = builder.Configuration["Firebase:CredentialPath"];
-if (string.IsNullOrEmpty(firebaseCredentialPath))
-{
-    throw new InvalidOperationException("La ruta del archivo de credenciales de Firebase no está configurada.");
-}
+//var firebaseCredentialPath = builder.Configuration["Firebase:CredentialPath"];
+//if (string.IsNullOrEmpty(firebaseCredentialPath))
+//{
+//    throw new InvalidOperationException("La ruta del archivo de credenciales de Firebase no está configurada.");
+//}
 
-FirebaseApp.Create(new AppOptions()
-{
-    Credential = GoogleCredential.FromFile(firebaseCredentialPath),
-});
+//FirebaseApp.Create(new AppOptions()
+//{
+//    Credential = GoogleCredential.FromFile(firebaseCredentialPath),
+//});
+
+builder.Services.AddAuthentication()
+	.AddGoogle(googleOptions =>
+	{
+		googleOptions.ClientId = "1036601032338-grtcli283ijj9988up3hp9rbhs9qlolg.apps.googleusercontent.com";
+		googleOptions.ClientSecret = "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";
+		googleOptions.CallbackPath = "/signin-google";
+	});
 
 
 // Add services to the container.

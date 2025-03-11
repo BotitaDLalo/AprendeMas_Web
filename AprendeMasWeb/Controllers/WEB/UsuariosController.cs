@@ -19,13 +19,15 @@ namespace AprendeMasWeb.Controllers.WEB
             _context = context;
         }
 
-        [HttpGet]
-        public IActionResult Registrar()
-        {
-            return View();
-        }
+		[HttpGet]
+		public IActionResult Registrar()
+		{
+			ViewBag.GoogleEmail = TempData["GoogleEmail"] as string;
+			return View();
+		}
 
-        [HttpPost]
+
+		[HttpPost]
         public async Task<IActionResult> Registrar(string nombre, string apellidoPaterno, string apellidoMaterno, string email, string password, string role)
         {
             if (!ModelState.IsValid)

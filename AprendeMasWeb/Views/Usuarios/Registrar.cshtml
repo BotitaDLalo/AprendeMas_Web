@@ -52,10 +52,17 @@
 					<label for="apellidoMaterno">Apellido Materno</label>
 				</div>
 
-				<div class="form-group floating-label">
+				@* <div class="form-group floating-label">
 					<input type="email" name="email" class="form-control mb-3" placeholder="" required />
 					<label for="email">Correo Electrónico</label>
+				</div> *@
+
+				<div class="form-group floating-label">
+					<input type="email" name="email" class="form-control mb-3" placeholder="" required
+						   value="@ViewBag.GoogleEmail" @(ViewBag.GoogleEmail != null ? "readonly" : "") />
+					<label for="email">Correo Electrónico</label>
 				</div>
+
 
 				<div class="form-group floating-label" style="position: relative;">
 					<input type="password"
@@ -91,14 +98,20 @@
 				</div>
 
 			
-
 				<div class="form-group">
+					<a asp-controller="GoogleAuth" asp-action="SignInWithGoogle" class="btn btn-google">
+						<img src="https://img.icons8.com/ios11/512/7950F2/google-logo.png" alt="Google logo" class="google-icon" />
+						Registrar con Google
+					</a>
+				</div>
+
+			@* 	<div class="form-group">
 
 					<a asp-controller="Login" asp-action="Login" class="btn btn-google">
 						<img src="https://img.icons8.com/ios11/512/7950F2/google-logo.png" alt="Google logo" class="google-icon" />
 						Registrar con Google
 					</a>
-				</div>
+				</div> *@
 
 
 			</form>
