@@ -63,7 +63,8 @@ namespace AprendeMasWeb.Controllers.WEB
             return Ok(materiasSinGrupo);
         }
 
-        // Controlador para eliminar una materia por su id
+
+        // Controlador para eliminar una materia por su ID
         [HttpDelete("EliminarMateria/{id}")]
         public async Task<IActionResult> EliminarMateria(int id)
         {
@@ -75,11 +76,16 @@ namespace AprendeMasWeb.Controllers.WEB
             }
 
             // Buscar relaciones en la tabla GruposYMaterias
-            var relaciones = _context.tbGruposMaterias.Where(gm => gm.MateriaId == id);
-
+            var relacionesGrupos = _context.tbGruposMaterias.Where(gm => gm.MateriaId == id);
             // Eliminar todas las relaciones de la materia con grupos
-            _context.tbGruposMaterias.RemoveRange(relaciones);
-            await _context.SaveChangesAsync(); // Guardamos cambios para eliminar las relaciones
+            _context.tbGruposMaterias.RemoveRange(relacionesGrupos);
+
+            // Buscar relaciones en la tabla AlumnosMaterias
+            var relacionesAlumnos = _context.tbAlumnosMaterias.Where(am => am.MateriaId == id);
+            // Eliminar todas las relaciones de la materia con alumnos
+            _context.tbAlumnosMaterias.RemoveRange(relacionesAlumnos);
+
+            await _context.SaveChangesAsync(); // Guardamos cambios para eliminar relaciones
 
             // Ahora eliminamos la materia
             _context.tbMaterias.Remove(materia);
@@ -87,5 +93,6 @@ namespace AprendeMasWeb.Controllers.WEB
 
             return Ok(new { mensaje = "Materia eliminada correctamente." });
         }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿// Se importa el espacio de nombres para acceder a la base de datos y los controladores
 using AprendeMasWeb.Data;
+using AprendeMasWeb.Models.DBModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -51,26 +52,131 @@ namespace AprendeMasWeb.Controllers.WEB
         }
 
         [HttpGet("BuscarAlumnosPorCorreo")]
-        public async Task<IActionResult> BuscarAlumnosPorCorreo(string correo)
+        public async Task<IActionResult> BuscarAlumnosPorCorreo(string query)
         {
-            if(string.IsNullOrWhiteSpace(correo))
+            if (string.IsNullOrWhiteSpace(query))
             {
-                return BadRequest("El correo no puede estar vacio.");
+                return BadRequest("El criterio de búsqueda no puede estar vacío.");
             }
 
-            //Buscar los usuarios en aspnetusers que coincidan con el correo ingresado
-            var usuarios = await _context.Users //aspnetusers
-                .Where(u => u.Email.Contains(correo)) //filtrar por correo
-                .Select(u => new { u.Id, u.Email }) //Obtener solo id y email
+            // Buscar usuarios que coincidan con el correo ingresado o cualquier parte de nombre o apellido
+            var usuarios = await _context.Users
+                .Where(u => u.Email.Contains(query)) // Buscar por correo
+                .Select(u => new { u.Id, u.Email })
                 .ToListAsync();
 
+            // Buscar alumnos registrados que coincidan con el correo o nombre completo (nombre, apellidos)
             var alumnosConCorreo = await _context.tbAlumnos
-                .Where(a => usuarios.Select(u => u.Id).Contains(a.UserId)) //Solo alumnos registrados
-                .Include(a => a.IdentityUser) //Cargar datos de aspNetUsers
-                .Select(a => new { a.IdentityUser.Email }) //Solo el correo
+                .Where(a => a.Nombre.Contains(query) || // Buscar por nombre
+                            a.ApellidoPaterno.Contains(query) || // Buscar por apellido paterno
+                            a.ApellidoMaterno.Contains(query) || // Buscar por apellido materno
+                            usuarios.Select(u => u.Id).Contains(a.UserId)) // Buscar por correo
+                .Select(a => new
+                {
+                    a.IdentityUser.Email,
+                    a.Nombre,
+                    a.ApellidoPaterno,
+                    a.ApellidoMaterno
+                })
                 .ToListAsync();
 
             return Ok(alumnosConCorreo);
+        }
+
+        //controlador para unir materia con alumno
+
+        // Método para buscar el alumno por correo y asignarlo a la materia si no está asignado
+        [HttpPost("AsignarAlumnoMateria")]
+        public async Task<IActionResult> AsignarAlumnoMateria([FromQuery] string correo, [FromQuery] int materiaId)
+        {
+            if (string.IsNullOrWhiteSpace(correo))
+            {
+                return BadRequest("El correo no puede estar vacío.");
+            }
+
+            // Buscar el alumno por correo
+            var alumno = await _context.tbAlumnos
+                .Where(a => a.IdentityUser.Email == correo)
+                .Select(a => new
+                {
+                    a.AlumnoId
+                })
+                .FirstOrDefaultAsync();
+
+            if (alumno == null)
+            {
+                return NotFound(new { mensaje = "Alumno no encontrado con el correo proporcionado." });
+            }
+
+            // Verificar si ya existe la relación en la tabla alumnosMaterias
+            var relacionExistente = await _context.tbAlumnosMaterias
+                .Where(am => am.AlumnoId == alumno.AlumnoId && am.MateriaId == materiaId)
+                .FirstOrDefaultAsync();
+
+            if (relacionExistente != null)
+            {
+                return BadRequest(new { mensaje = "El alumno ya está asignado a esta materia." });
+            }
+
+            // Si no existe la relación, agregarla a la tabla alumnosMaterias
+            var nuevaRelacion = new AlumnosMaterias
+            {
+                AlumnoId = alumno.AlumnoId,
+                MateriaId = materiaId
+            };
+
+            await _context.tbAlumnosMaterias.AddAsync(nuevaRelacion);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = "Alumno asignado a la materia exitosamente." });
+        }
+
+        // Método para obtener la lista de alumnos que están dentro de la materia
+        [HttpGet("ObtenerAlumnosPorMateria/{materiaId}")]
+        public async Task<IActionResult> ObtenerAlumnosPorMateria(int materiaId)
+        {
+            var alumnos = await _context.tbAlumnosMaterias
+                .Where(am => am.MateriaId == materiaId)
+                .Join(_context.tbAlumnos,
+                    am => am.AlumnoId,
+                    a => a.AlumnoId,
+                    (am, a) => new
+                    {
+                        am.AlumnoMateriaId, // Se agrega el AlumnoMateriaId
+                        a.AlumnoId,
+                        a.Nombre,
+                        a.ApellidoPaterno,
+                        a.ApellidoMaterno
+                    })
+                .ToListAsync();
+            return Ok(alumnos);
+        }
+
+        [HttpDelete("EliminarAlumnoDeMateria/{idEnlace}")]
+        public async Task<IActionResult> EliminarAlumnoDeMateria(int idEnlace)
+        {
+            try
+            {
+                //Buscar el registro en la base de datos
+                var alumnoMateria = await _context.tbAlumnosMaterias
+                    .FirstOrDefaultAsync(am => am.AlumnoMateriaId == idEnlace);
+
+                //Si no se encuentra se retorna un error
+                if(alumnoMateria == null)
+                {
+                    return NotFound(new { mensaje = "No se encontro el alumno en la materia" });
+                }
+
+                //Eliminar el registro de la base de datos
+                _context.tbAlumnosMaterias.Remove(alumnoMateria);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { mensaje = "Alumno eliminado de la materia correctamente." });
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al eliminar al alumno.", error = ex.Message });
+            }
         }
     }
 }

@@ -156,27 +156,37 @@ namespace AprendeMasWeb.Controllers.WEB
         [HttpDelete("EliminarGrupoConMaterias/{grupoId}")]
         public async Task<IActionResult> EliminarGrupoConMaterias(int grupoId)
         {
-            //Buscar el grupo en la base de datos
+            // Buscar el grupo en la base de datos
             var grupo = await _context.tbGrupos.FindAsync(grupoId);
-            if(grupo == null)
+            if (grupo == null)
             {
                 return NotFound(new { mensaje = "El grupo no existe" });
             }
 
-            //buscar las relaciones en materias y grupo y eliminar
-            var relaciones = _context.tbGruposMaterias.Where(mg => mg.GrupoId == grupoId);
-            _context.tbGruposMaterias.RemoveRange(relaciones);
+            // Buscar las relaciones en GruposMaterias
+            var relacionesGruposMaterias = _context.tbGruposMaterias.Where(mg => mg.GrupoId == grupoId);
 
-            //Buscar las materias asociadas a este grupo y eliminarlas
-            var materias = _context.tbMaterias.Where(m => relaciones.Any(r => r.MateriaId == m.MateriaId));
+            // Obtener los IDs de las materias asociadas al grupo
+            var materiasIds = relacionesGruposMaterias.Select(r => r.MateriaId).ToList();
+
+            // Buscar y eliminar las relaciones en AlumnosMaterias
+            var relacionesAlumnosMaterias = _context.tbAlumnosMaterias.Where(am => materiasIds.Contains(am.MateriaId));
+            _context.tbAlumnosMaterias.RemoveRange(relacionesAlumnosMaterias);
+
+            // Eliminar todas las relaciones de la materia con grupos
+            _context.tbGruposMaterias.RemoveRange(relacionesGruposMaterias);
+
+            // Buscar las materias asociadas a este grupo y eliminarlas
+            var materias = _context.tbMaterias.Where(m => materiasIds.Contains(m.MateriaId));
             _context.tbMaterias.RemoveRange(materias);
 
-            //Eliminar el grupo 
+            // Eliminar el grupo 
             _context.tbGrupos.Remove(grupo);
 
             await _context.SaveChangesAsync();
             return Ok(new { mensaje = "Grupo y sus materias eliminados correctamente" });
         }
+
 
     }
 }

@@ -1,0 +1,120 @@
+﻿/* 🔹 Estilizar el input de búsqueda */
+#buscarAlumno {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #d1d1d1;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: 0.3s ease-in-out;
+    outline: none;
+}
+
+    /* 🔹 Efecto cuando el usuario enfoca el input */
+    #buscarAlumno:focus {
+        border-color: #007bff;
+        box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.5);
+    }
+
+/* 🔹 Botón para agregar alumno */
+#btnAgregarAlumno {
+    background-color: #007bff;
+    border: none;
+    padding: 10px 15px;
+    color: white;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+
+    /* 🔹 Efecto hover en el botón */
+    #btnAgregarAlumno:hover {
+        background-color: #0056b3;
+    }
+
+/* 🔹 Estilos para la lista de sugerencias */
+#sugerenciasAlumnos {
+    position: absolute;
+    width: 90%;
+    max-width: 400px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-top: 5px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    z-index: 1000;
+}
+
+    /* 🔹 Cada elemento de la lista */
+    #sugerenciasAlumnos .list-group-item {
+        padding: 10px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s ease-in-out;
+    }
+
+        /* 🔹 Efecto al pasar el mouse */
+        #sugerenciasAlumnos .list-group-item:hover {
+            background: #007bff;
+            color: white;
+        }
+
+    /* 🔹 Si no hay resultados */
+    #sugerenciasAlumnos .text-muted {
+        text-align: center;
+        font-style: italic;
+        color: #888;
+    }
+
+
+.list-group-item.active {
+    background-color: #007bff;
+    color: white;
+}
+
+
+/*Esto lo utiliza para mostrar la lista de alumnos------------------*/
+/* Estilo general para la lista de alumnos */
+.lista-alumnos {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.alumno-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+}
+
+.fila-uno {
+    background-color: #f9f9f9; /* Gris claro */
+}
+
+.fila-dos {
+    background-color: #ffffff; /* Blanco */
+}
+
+/* Estilo para los botones de acción */
+.acciones {
+    display: flex;
+    gap: 10px;
+}
+
+    .acciones button {
+        padding: 5px 10px;
+        font-size: 12px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        .acciones button:hover {
+            background-color: #0056b3;
+        }

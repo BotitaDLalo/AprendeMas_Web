@@ -22,19 +22,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Muestra una segunda alerta con cuenta regresiva antes de cerrar sesión
                 Swal.fire({
                     title: "Se está cerrando sesión.", // Mensaje de cierre de sesión
-                    html: "Por seguridad, serás enviado al inicio de sesión en: <b></b>.", // Mensaje con contador de tiempo
+                    html: "Por seguridad, serás enviado al inicio de sesión", // Mensaje sin contador de tiempo
                     timer: 5000, // Tiempo en milisegundos antes de cerrar sesión (5s)
                     timerProgressBar: true, // Muestra una barra de progreso en la alerta
                     allowOutsideClick: false, // Evita que se cierre al hacer clic fuera de la alerta
                     didOpen: () => {
                         Swal.showLoading(); // Muestra un indicador de carga
-                        const timer = Swal.getPopup().querySelector("b"); // Encuentra el elemento donde se mostrará el tiempo restante
-                        timerInterval = setInterval(() => {
-                            timer.textContent = `${Math.floor(Swal.getTimerLeft() / 1000)} segundos`; // Actualiza el contador en segundos
-                        }, 100);
                     },
                     willClose: () => {
-                        clearInterval(timerInterval); // Detiene el contador cuando la alerta se cierra
                         cerrarSesion(); // Llama a la función para cerrar sesión
                     }
                 }).then((result) => {
@@ -42,7 +37,40 @@ document.addEventListener("DOMContentLoaded", function () {
                         console.log("Cerrando sesión."); // Mensaje en la consola cuando se cierra la sesión automáticamente
                     }
                 });
+
             }
         });
     });
 });
+
+// 🔹 Función para cerrar sesión
+async function cerrarSesion() {
+    try {
+        // Realiza una solicitud POST al endpoint de cierre de sesión
+        const response = await fetch('/Cuenta/CerrarSesion', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded', // Especifica el tipo de contenido
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value // Obtiene el token de verificación CSRF
+            }
+        });
+
+        if (response.ok) {
+            console.log("Sesión cerrada correctamente."); // Mensaje en consola indicando que la sesión se cerró con éxito
+            window.location.href = "/Cuenta/IniciarSesion"; // Redirige al usuario a la página de inicio de sesión
+        } else {
+            // En caso de error en la respuesta del servidor, muestra un mensaje de alerta con SweetAlert2
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "No se pudo cerrar sesión.",
+                position: "center",
+                allowOutsideClick: false//,// Evita que la alerta se cierre al hacer clic fuera de ella
+                // footer: '<a href="mailto:soporte@tuempresa.com?subject=Problema%20con%20cierre%20de%20sesión&body=Hola,%20tengo%20un%20problema%20al%20cerrar%20sesión.%20Por%20favor,%20ayuda." target="_blank">Si el problema persiste, contáctanos.</a>'
+            });
+        }
+    } catch (error) {
+        // Captura cualquier error inesperado (por ejemplo, problemas de conexión) y muestra una alerta
+        alertaDeErroresGenerales(error);
+    }
+}

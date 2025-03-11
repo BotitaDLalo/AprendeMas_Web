@@ -177,15 +177,18 @@ namespace AprendeMasWeb.Migrations
                     b.Property<int>("AlumnoId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("AlumnosAlumnoId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("FCMToken");
 
-                    b.HasIndex("AlumnoId");
+                    b.HasIndex("AlumnosAlumnoId");
 
-                    b.ToTable("tbAlumnosTokens");
+                    b.ToTable("AlumnosTokens");
                 });
 
             modelBuilder.Entity("AprendeMasWeb.Models.DBModels.Avisos", b =>
@@ -303,12 +306,6 @@ namespace AprendeMasWeb.Migrations
 
                     b.Property<int>("AlumnoActividadId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Archivo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Enlace")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Respuesta")
                         .HasColumnType("nvarchar(max)");
@@ -526,6 +523,29 @@ namespace AprendeMasWeb.Migrations
                     b.HasKey("TipoActividadId");
 
                     b.ToTable("cTiposActividades");
+                });
+
+            modelBuilder.Entity("AprendeMasWeb.Models.DBModels.tbUsuariosFcmTokens", b =>
+                {
+                    b.Property<int>("TokenId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TokenId"));
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("TokenId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("tbUsuariosFcmTokens");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -807,13 +827,9 @@ namespace AprendeMasWeb.Migrations
 
             modelBuilder.Entity("AprendeMasWeb.Models.DBModels.AlumnosTokens", b =>
                 {
-                    b.HasOne("AprendeMasWeb.Models.DBModels.Alumnos", "Alumnos")
+                    b.HasOne("AprendeMasWeb.Models.DBModels.Alumnos", null)
                         .WithMany("AlumnosTokens")
-                        .HasForeignKey("AlumnoId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Alumnos");
+                        .HasForeignKey("AlumnosAlumnoId");
                 });
 
             modelBuilder.Entity("AprendeMasWeb.Models.DBModels.Avisos", b =>
@@ -965,6 +981,17 @@ namespace AprendeMasWeb.Migrations
                     b.Navigation("Actividades");
 
                     b.Navigation("Materias");
+                });
+
+            modelBuilder.Entity("AprendeMasWeb.Models.DBModels.tbUsuariosFcmTokens", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("IdentityUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

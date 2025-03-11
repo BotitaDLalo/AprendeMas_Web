@@ -1,7 +1,29 @@
-//usar el claim como variable global dentro del inicio de sesion.
 let docenteIdGlobal = null; //Variable global para almacenar el docenteId
+let materiasPorCrear = []; // Lista de materias a crear
 
-//Funcion que busca el claim del docenteId y usarlo en este archivo
+// Agregar una nueva materia al formulario
+function agregarMateria() {
+    const materiasContainer = document.getElementById("listaMaterias");
+
+    const materiaDiv = document.createElement("div");
+    materiaDiv.classList.add("materia-item");
+
+    materiaDiv.innerHTML = `
+        <input type="text" placeholder="Nombre de la Materia" class="nombreMateria">
+        <input type="text" placeholder="Descripción" class="descripcionMateria">
+        <button type="button" onclick="removerDeLista(this)">❌</button>
+    `;
+
+    materiasContainer.appendChild(materiaDiv);
+}
+
+// Remover materia del formulario antes de enviarla
+function removerDeLista(button) {
+    button.parentElement.remove();
+}
+
+
+
 async function obtenerDocenteId() {
     try {
         // Hacemos una solicitud para obtener el docenteId desde el servidor
@@ -10,19 +32,30 @@ async function obtenerDocenteId() {
         if (data.docenteId) {
             docenteIdGlobal = data.docenteId; // Guardamos el docenteId en la variable global
             localStorage.setItem("docenteId", docenteIdGlobal); // Guardamos el docenteId en el almacenamiento local
-            Swal.fire({
+
+            // Alerta con diseño de Toast
+            const Toast = Swal.mixin({
+                toast: true,
                 position: "top-end",
-                icon: "success",
-                title: "Todo correcto.",
-                position: "center",
                 showConfirmButton: false,
-                timer: 2000
-            });// Mostramos aviso que se inicio sesion correctamente
-        } 
+                timer: 1500,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: "success",
+                title: "Todo correcto."
+            });
+
+        }
     } catch (error) {
-        AlertaCierreSesion(); //si existe un error fuera de la aplicacion cierra la sesión
+        AlertaCierreSesion(); // Si existe un error, cierra la sesión
     }
 }
+
 
 function alertaDeErroresGenerales(error) {
     // Mensaje de error por defecto
@@ -44,8 +77,8 @@ function alertaDeErroresGenerales(error) {
         title: "Oops...",
         text: mensajeError,
         position: "center",
-        allowOutsideClick: false, // Evita que se cierre con un clic afuera
-        footer: `<a href="${enlaceCorreo}" target="_blank">Si el problema persiste, contáctanos.</a>`
+        allowOutsideClick: false//, // Evita que se cierre con un clic afuera
+        //footer: `<a href="${enlaceCorreo}" target="_blank">Si el problema persiste, contáctanos.</a>`
     });
 }
 
@@ -54,7 +87,7 @@ function AlertaCierreSesion() { //funcion que activa la alerta y posteriormente 
     let timerInterval;
     Swal.fire({
         title: "Parece que se perdió la conexión con tu sesión.",
-        html: "La cerraremos por seguridad y podrás volver a iniciar sesión en: <br> <b></b>.",
+        html: "La cerraremos por seguridad y podrás volver a iniciar sesión en <b></b>.",
         timer: 5000,
         timerProgressBar: true,
         position: "center",
@@ -100,8 +133,8 @@ async function cerrarSesion() {
                 title: "Oops...",
                 text: "No se pudo cerrar sesión.",
                 position: "center",
-                allowOutsideClick: false, // Evita que la alerta se cierre al hacer clic fuera de ella
-                footer: '<a href="mailto:soporte@tuempresa.com?subject=Problema%20con%20cierre%20de%20sesión&body=Hola,%20tengo%20un%20problema%20al%20cerrar%20sesión.%20Por%20favor,%20ayuda." target="_blank">Si el problema persiste, contáctanos.</a>'
+                allowOutsideClick: false//,// Evita que la alerta se cierre al hacer clic fuera de ella
+               // footer: '<a href="mailto:soporte@tuempresa.com?subject=Problema%20con%20cierre%20de%20sesión&body=Hola,%20tengo%20un%20problema%20al%20cerrar%20sesión.%20Por%20favor,%20ayuda." target="_blank">Si el problema persiste, contáctanos.</a>'
             });
         }
     } catch (error) {
@@ -121,7 +154,6 @@ async function guardarMateriaSinGrupo() {
             position: "top-end",
             icon: "question",
             title: "Ingrese nombre de la materia.",
-            position: "center",
             showConfirmButton: false,
             timer: 2500
         });// Mostramos una alerta si el nombre está vacío
@@ -145,7 +177,6 @@ async function guardarMateriaSinGrupo() {
             position: "top-end",
             icon: "success",
             title: "Materia registrada correctamente.",
-            position: "center",
             showConfirmButton: false,
             timer: 2000
         });
@@ -158,103 +189,121 @@ async function guardarMateriaSinGrupo() {
             icon: "error",
             title: "Error al registrar materia.",
             showConfirmButton: false,
-            position: "center",
             timer: 2000
         }); // Mostramos una alerta si hubo un error al guardar
     }
 }
+async function guardarGrupo() {
+    const nombre = document.getElementById("nombreGrupo").value;
+    const descripcion = document.getElementById("descripcionGrupo").value;
+    const color = "#2196F3";
+    const checkboxes = document.querySelectorAll(".materia-checkbox:checked");
 
-//Guarda el grupo con o sin materias enlazadas --------------
-async function guardarGrupo() { // Lógica para guardar el grupo
-    const nombre = document.getElementById("nombreGrupo").value; // Obtenemos el nombre del grupo
-    const descripcion = document.getElementById("descripcionGrupo").value; // Obtenemos la descripción del grupo
-    const color = "#2196F3"; // Asignamos un color predeterminado para el grupo
-    const checkboxes = document.querySelectorAll(".materia-checkbox:checked"); // Obtenemos todos los checkboxes seleccionados
-
-    if (nombre.trim() === '') { // Verificamos que el nombre del grupo no esté vacío
+    if (nombre.trim() === '') {
         Swal.fire({
             position: "top-end",
             icon: "question",
             title: "Ingrese nombre del grupo.",
-            position: "center",
             showConfirmButton: false,
             timer: 2500
-        });// Mostramos una alerta si el nombre está vacío
+        });
         return;
     }
 
-    // Obtenemos los IDs de las materias seleccionadas para asociarlas al grupo
-    const materiasSeleccionadas = Array.from(checkboxes).map(cb => cb.value); // Creamos un array con los valores (IDs) de las materias seleccionadas
+    // Obtener IDs de materias seleccionadas en los checkboxes
+    const materiasSeleccionadas = Array.from(checkboxes).map(cb => cb.value);
 
-    // Enviamos una solicitud POST al servidor para guardar el grupo
+    // Obtener materias creadas en los inputs
+    const materiasNuevas = [];
+    document.querySelectorAll(".materia-item").forEach(materiaDiv => {
+        const nombreMateria = materiaDiv.querySelector(".nombreMateria").value.trim();
+        const descripcionMateria = materiaDiv.querySelector(".descripcionMateria").value.trim();
+        if (nombreMateria) {
+            materiasNuevas.push({ NombreMateria: nombreMateria, Descripcion: descripcionMateria });
+        }
+    });
+
+    // Crear el grupo en la base de datos
     const response = await fetch('/api/GruposApi/CrearGrupo', {
-        method: 'POST', // Indicamos que la solicitud será de tipo POST
-        headers: { 'Content-Type': 'application/json' }, // Especificamos que el cuerpo de la solicitud será JSON
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            NombreGrupo: nombre, // Enviamos el nombre del grupo
-            Descripcion: descripcion, // Enviamos la descripción del grupo
-            CodigoColor: color, // Enviamos el color del grupo
-            DocenteId: docenteIdGlobal // Enviamos el docenteId
+            NombreGrupo: nombre,
+            Descripcion: descripcion,
+            CodigoColor: color,
+            DocenteId: docenteIdGlobal
         })
     });
 
-    if (response.ok) { // Verificamos si la respuesta es exitosa
-        const grupoCreado = await response.json(); // Obtenemos el grupo creado junto con su ID
+    if (response.ok) {
+        const grupoCreado = await response.json();
+        const grupoId = grupoCreado.grupoId;
 
-        // Si se han seleccionado materias, las asociamos al grupo recién creado
+        // Guardar materias nuevas directamente asociadas al grupo
+        for (const materia of materiasNuevas) {
+            const responseMateria = await fetch('/api/MateriasApi/CrearMateria', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    NombreMateria: materia.NombreMateria,
+                    Descripcion: materia.Descripcion,
+                    CodigoColor: color, // Enviamos el color de la materia
+                    DocenteId: docenteIdGlobal
+                })
+            });
+
+            if (responseMateria.ok) {
+                const materiaCreada = await responseMateria.json();
+                materiasSeleccionadas.push(materiaCreada.materiaId);
+            }
+        }
+
+        // Asociar materias seleccionadas al grupo
         if (materiasSeleccionadas.length > 0) {
-            await asociarMateriasAGrupo(grupoCreado.grupoId, materiasSeleccionadas); // Llamamos a la función para asociar las materias al grupo
+            await asociarMateriasAGrupo(grupoId, materiasSeleccionadas);
         }
 
         Swal.fire({
             position: "top-end",
             icon: "success",
             title: "Grupo registrado correctamente.",
-            position: "center",
             showConfirmButton: false,
             timer: 2000
         });
-        ;// Mostramos una alerta de éxito
-        document.getElementById("gruposForm").reset(); // Limpiamos el formulario
-        cargarGrupos(); // Recargamos la lista de grupos
-        cargarMateriasSinGrupo(); //Recargamos el listado de materias sin grupo
-        cargarMaterias(); //Recarga las materias disponibles para enlazar
+        document.getElementById("gruposForm").reset();
+        cargarGrupos();
+        cargarMateriasSinGrupo();
+        cargarMaterias();
     } else {
         Swal.fire({
             position: "top-end",
             icon: "error",
             title: "Error al registrar grupo.",
-            position: "center",
             showConfirmButton: false,
             timer: 2000
-        }); // Mostramos una alerta si hubo un error al guardar
+        });
     }
 }
 
+
 // Función para asociar materias al grupo
 async function asociarMateriasAGrupo(grupoId, materias) {
-    // Enviamos una solicitud POST para asociar las materias al grupo
     const response = await fetch('/api/GruposApi/AsociarMaterias', {
-        method: 'POST', // Indicamos que la solicitud será de tipo POST
-        headers: { 'Content-Type': 'application/json' }, // Especificamos que el cuerpo de la solicitud será JSON
-        body: JSON.stringify({
-            GrupoId: grupoId, // Enviamos el ID del grupo
-            MateriaIds: materias // Enviamos los IDs de las materias seleccionadas
-        })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ GrupoId: grupoId, MateriaIds: materias })
     });
 
-    if (!response.ok) { // Si la respuesta no es exitosa, mostramos una alerta de error
+    if (!response.ok) {
         Swal.fire({
             position: "top-end",
             icon: "error",
             title: "Error al asociar materias con grupo.",
             showConfirmButton: false,
-            position: "center",
             timer: 2000
-        }); // Mostramos una alerta si hubo un error al guardar
+        });
     }
 }
-
 // Función para cargar las materias disponibles en el modal 
 async function cargarMaterias() {
     try {
@@ -350,7 +399,6 @@ async function cargarMateriasSinGrupo() {
             title: "Error al cargar materias sin grupo asignado.", // Título de la alerta
             html: "Se reintentará automáticamente en: <b></b>.", // Mensaje con temporizador dinámico
             timer: 4000, // Tiempo en milisegundos antes de que la alerta se cierre automáticamente
-            position: "center",
             timerProgressBar: true, // Muestra una barra de progreso indicando el tiempo restante
             allowOutsideClick: false, // Evita que el usuario cierre la alerta haciendo clic fuera de ella
             showCancelButton: true, // Muestra un botón de cancelar
@@ -394,8 +442,10 @@ async function cargarMateriasSinGrupo() {
 
 
 // Función para redirigir a la vista Materias dentro del controlador Docente
-function irAMateria(materiaId) {
-    window.location.href = `/Docente/MateriasDetalles?materiaId=${materiaId}`; // Redirige a la página de detalles de la materia
+function irAMateria(materiaIdSeleccionada) {
+    //guardar el id de la materia para acceder a la materia en la que se entro y usarla en otro script
+    localStorage.setItem("materiaIdSeleccionada", materiaIdSeleccionada);
+    window.location.href = `/Docente/MateriasDetalles?materiaId=${materiaIdSeleccionada}`; // Redirige a la página de detalles de la materia
 }
 
 
@@ -449,7 +499,6 @@ async function cargarGrupos() { // Lógica para actualizar la lista de grupos en
             timer: 4000, // Tiempo en milisegundos antes de que la alerta se cierre automáticamente
             timerProgressBar: true, // Muestra una barra de progreso indicando el tiempo restante
             allowOutsideClick: false, // Evita que el usuario cierre la alerta haciendo clic fuera de ella
-            position: "center",
             showCancelButton: true, // Muestra un botón de cancelar dentro de la alerta
             cancelButtonText: "Cerrar sesión", // Texto que aparecerá en el botón de cancelar
 
@@ -531,20 +580,51 @@ async function eliminarMateria(MateriaId) {
             const resultado = await response.json();
 
             if (response.ok) {
-                Swal.fire("Eliminado", resultado.mensaje, "success");
+                await Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: resultado.mensaje || "Eliminado.",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
                 // Se ejecuta funcion inicializar para actualizar vista completa
                 inicializar();
             } else {
-                Swal.fire("Error", resultado.mensaje || "No se pudo eliminar la materia", "error");
+                await Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: resultado.mensaje || "No se pudo eliminar el grupo y sus materias.",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
             }
         } catch (error) {
-            Swal.fire("Error", "Hubo un problema al eliminar la materia", "error");
+            await Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: "Ocurrio un problema al eliminar la materia.",
+                showConfirmButton: false,
+                timer: 2000
+            });
         }
     }
 }
 //Funcionalidades de los iconos de las cards de grupos
+
+//esta funcion oculta la materias de los demas
+
 // Función para cargar materias de un grupo cuando se hace clic en la card del grupo
 async function handleCardClick(grupoId) {
+    localStorage.setItem("grupoIdSeleccionado", grupoId);
+
+    // Ocultar todas las materias de otros grupos
+    document.querySelectorAll("[id^='materiasContainer-']").forEach(container => {
+        if (container.id !== `materiasContainer-${grupoId}`) {
+            container.style.display = "none";
+            container.innerHTML = "";
+        }
+    });
+
     const materiasContainer = document.getElementById(`materiasContainer-${grupoId}`);
 
     if (materiasContainer.style.display === "block") {
@@ -557,7 +637,7 @@ async function handleCardClick(grupoId) {
         if (response.ok) {
             const materias = await response.json();
             if (materias.length === 0) {
-                materiasContainer.innerHTML = "<p>Aun no hay materias registradas para este grupo.</p>";
+                materiasContainer.innerHTML = "<p>Aún no hay materias registradas para este grupo.</p>";
             } else {
                 materiasContainer.innerHTML = `
                     <div class="container-cards">
@@ -601,9 +681,8 @@ async function handleCardClick(grupoId) {
                 icon: "error",
                 title: "Error al obtener las materias del grupo.",
                 showConfirmButton: false,
-                position: "center",
                 timer: 2000
-            }); // Mostramos una alerta si hubo un error al mostrar las materias del grupo
+            });
         }
     }
 }
@@ -627,19 +706,43 @@ async function eliminarGrupo(grupoId) {
             // Llamar al controlador que elimina solo el grupo
             const response = await fetch(`/api/GruposApi/EliminarGrupo/${grupoId}`, { method: "DELETE" });
             if (response.ok) {
-                Swal.fire("Eliminado", "El grupo ha sido eliminado.", "success");
+                await Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "El grupo ha sido eliminado.",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
                 inicializar();
             } else {
-                Swal.fire("Error", "No se pudo eliminar el grupo.", "error");
+                await Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: "No se pudo eliminar el grupo.",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
             }
         } else if (result.isDenied) {
             // Llamar al nuevo controlador que elimina grupo y materias
             const response = await fetch(`/api/GruposApi/EliminarGrupoConMaterias/${grupoId}`, { method: "DELETE" });
             if (response.ok) {
-                Swal.fire("Eliminado", "El grupo y sus materias han sido eliminados.", "success");
+                await Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "El grupo y sus materias han sido eliminados.",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
                 inicializar();
             } else {
-                Swal.fire("Error", "No se pudo eliminar el grupo y sus materias.", "error");
+                await Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: "No se pudo eliminar el grupo y sus materias.",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
             }
         }
     });
@@ -661,11 +764,6 @@ async function inicializar() {
         AlertaCierreSesion();
     }
 }
-//Funcionalidades de los iconos de las cards de grupos
-function handleCardClick(id) {
-    console.log("Card clickeada, puedes agregar funcionalidad aquí. ID:", id);
-    // Aquí puedes agregar la funcionalidad al dar clic en la card
-}
 
 //Prioriza la ejecucion al cargar index
 // Llamar a la función inicializadora cuando se cargue la página
@@ -674,3 +772,5 @@ document.addEventListener("DOMContentLoaded", () => {
     // ✅ Se ejecuta SOLO cuando se abre el modal
     document.getElementById("gruposModal").addEventListener("shown.bs.modal", cargarMaterias);
 });
+
+

@@ -1,10 +1,10 @@
 ﻿/* Footer personalizado */
 .custom-footer {
-    background-color: #f6f6f6;
+    background-color: #f8f9fa;
     padding: 20px 0;
-    border-top: 1px solid #ddd;
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 .footer-container {
@@ -12,13 +12,13 @@
     justify-content: space-between;
     align-items: center;
     max-width: 1200px;
-    width: 100%;
+    width: 90%;
     padding: 0 20px;
 }
 
 /* Imagen desplazada a la izquierda */
 .footer-left .footer-logo {
-    height: 160px;
+    height: 100px; /* Ajusta el tamaño del logo */
 }
 
 /* Iconos de contacto en el centro */
@@ -46,7 +46,7 @@
     margin-top: 10px;
     font-size: 14px;
     font-weight: bold;
-    color: black;
+    color: #6c757d;
 }
 
 /* Enlace de privacidad a la derecha */
@@ -57,7 +57,7 @@
 .privacy-link {
     color: #007bff;
     text-decoration: none;
-    font-size: 18px;
+    font-size: 14px;
     transition: color 0.3s;
 }
 
