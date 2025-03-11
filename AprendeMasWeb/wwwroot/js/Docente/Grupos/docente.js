@@ -580,14 +580,32 @@ async function eliminarMateria(MateriaId) {
             const resultado = await response.json();
 
             if (response.ok) {
-                Swal.fire("Eliminado", resultado.mensaje, "success");
+                await Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: resultado.mensaje || "Eliminado.",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
                 // Se ejecuta funcion inicializar para actualizar vista completa
                 inicializar();
             } else {
-                Swal.fire("Error", resultado.mensaje || "No se pudo eliminar la materia", "error");
+                await Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: resultado.mensaje || "No se pudo eliminar el grupo y sus materias.",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
             }
         } catch (error) {
-            Swal.fire("Error", "Hubo un problema al eliminar la materia", "error");
+            await Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: "Ocurrio un problema al eliminar la materia.",
+                showConfirmButton: false,
+                timer: 2000
+            });
         }
     }
 }
@@ -669,72 +687,6 @@ async function handleCardClick(grupoId) {
     }
 }
 
-/*
-// Función para cargar materias de un grupo cuando se hace clic en la card del grupo
-async function handleCardClick(grupoId) {
-    localStorage.setItem("grupoIdSeleccionado", grupoId);
-    const materiasContainer = document.getElementById(`materiasContainer-${grupoId}`);
-
-    if (materiasContainer.style.display === "block") {
-        // Si las materias están visibles, ocultarlas
-        materiasContainer.style.display = "none";
-        materiasContainer.innerHTML = "";
-    } else {
-        // Si están ocultas, obtener las materias y mostrarlas
-        const response = await fetch(`/api/GruposApi/ObtenerMateriasPorGrupo/${grupoId}`);
-        if (response.ok) {
-            const materias = await response.json();
-            if (materias.length === 0) {
-                materiasContainer.innerHTML = "<p>Aun no hay materias registradas para este grupo.</p>";
-            } else {
-                materiasContainer.innerHTML = `
-                    <div class="container-cards">
-                        ${materias.map(materia => `
-                            <div class="card card-custom" style="border-radius: 10px;">
-                                <div class="card-header-custom" style="background-color: ${materia.codigoColor || '#000'};">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="text-dark">${materia.nombreMateria}</span>
-                                        <div class="dropdown">
-                                            <button class="btn btn-link p-0 text-dark" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class="fas fa-ellipsis-v"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                <li><a class="dropdown-item" href="#" onclick="editarMateria(${materia.materiaId})">Editar</a></li>
-                                                <li><a class="dropdown-item" href="#" onclick="eliminarMateria(${materia.materiaId})">Eliminar</a></li>
-                                                <li><a class="dropdown-item" href="#" onclick="desactivarMateria(${materia.materiaId})">Desactivar</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-body card-body-custom" style="background-color: #e0e0e0">
-                                    <p class="card-text">${materia.descripcion || "Sin descripción"}</p>
-                                </div>
-                                <div class="card-footer card-footer-custom">
-                                    <button class="btn btn-sm btn-primary" onclick="irAMateria(${materia.materiaId})">Ver Materia</button>
-                                    <div class="icon-container">
-                                        <img class="icon-action" src="https://cdn-icons-png.flaticon.com/512/1828/1828817.png" alt="Ver Actividades" title="Ver Actividades" onclick="verActividades(${materia.materiaId})">
-                                        <img class="icon-action" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Ver Integrantes" title="Ver Integrantes" onclick="verIntegrantes(${materia.materiaId})">
-                                        <img class="icon-action" src="https://cdn-icons-png.flaticon.com/512/535/535285.png" alt="Destacar" title="Destacar Materia" onclick="destacarMateria(${materia.materiaId})">
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            }
-            materiasContainer.style.display = "block";
-        } else {
-            Swal.fire({
-                position: "top-end",
-                icon: "error",
-                title: "Error al obtener las materias del grupo.",
-                showConfirmButton: false,
-                timer: 2000
-            }); // Mostramos una alerta si hubo un error al mostrar las materias del grupo
-        }
-    }
-}*/
-
 function editarGrupo(id) {
     alert("Editar grupo " + id); // Muestra una alerta indicando que el grupo será editado
 }
@@ -754,19 +706,43 @@ async function eliminarGrupo(grupoId) {
             // Llamar al controlador que elimina solo el grupo
             const response = await fetch(`/api/GruposApi/EliminarGrupo/${grupoId}`, { method: "DELETE" });
             if (response.ok) {
-                Swal.fire("Eliminado", "El grupo ha sido eliminado.", "success");
+                await Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "El grupo ha sido eliminado.",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
                 inicializar();
             } else {
-                Swal.fire("Error", "No se pudo eliminar el grupo.", "error");
+                await Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: "No se pudo eliminar el grupo.",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
             }
         } else if (result.isDenied) {
             // Llamar al nuevo controlador que elimina grupo y materias
             const response = await fetch(`/api/GruposApi/EliminarGrupoConMaterias/${grupoId}`, { method: "DELETE" });
             if (response.ok) {
-                Swal.fire("Eliminado", "El grupo y sus materias han sido eliminados.", "success");
+                await Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "El grupo y sus materias han sido eliminados.",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
                 inicializar();
             } else {
-                Swal.fire("Error", "No se pudo eliminar el grupo y sus materias.", "error");
+                await Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: "No se pudo eliminar el grupo y sus materias.",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
             }
         }
     });
