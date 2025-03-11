@@ -33,9 +33,16 @@
 
                 <!-- Campo para el correo electrónico con etiqueta flotante -->
                 <div class="form-group floating-label">
-                    <input type="email" name="email" class="form-control mb-3" placeholder="" required />
+                    <input type="email" name="email" class="form-control mb-3" id="emailInput" placeholder="" required value="@Context.Request.Query["email"]" />
                     <label for="email">Correo Electrónico</label>
                 </div>
+
+
+               @*  <!-- Campo para el correo electrónico con etiqueta flotante -->
+                <div class="form-group floating-label">
+                    <input type="email" name="email" class="form-control mb-3" placeholder="" required />
+                    <label for="email">Correo Electrónico</label>
+                </div> *@
 
                 <!-- Campo para la contraseña con etiqueta flotante -->
                 <div class="form-group floating-label" style="position: relative;">
@@ -76,17 +83,29 @@
                 <br>
 
                 <!-- Botón de inicio de sesión con Google -->
-                <div class="form-groups">
+                @* <div class="form-groups">
                     <a asp-controller="Login" asp-action="Login" class="btn btn-google">
                         <img src="https://img.icons8.com/ios11/512/7950F2/google-logo.png" alt="Google logo" class="google-icon" />
                         Inicio de sesión con Google
                     </a>
+                </div> *@
+
+
+                <div class="form-groups">
+                    <a asp-controller="Cuenta" asp-action="IniciarSesionGoogle" class="btn btn-google">
+                        <img src="https://img.icons8.com/ios11/512/7950F2/google-logo.png" alt="Google logo" class="google-icon" />
+                        Inicio de sesión con Google
+                    </a>
                 </div>
+
             </form>
         </div>
     </div>
 
+
+
     <!-- Archivos JavaScript para funcionalidad -->
+    <script src="~/js/InicioSesion/Auto-Focus.js"></script>
     <script src="~/js/InicioSesion/password.js"></script> <!-- Script para manejo de contraseña -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script> <!-- Librería jQuery -->
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script> <!-- Bootstrap JS -->
