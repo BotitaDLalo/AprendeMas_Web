@@ -121,6 +121,107 @@ namespace AprendeMasWeb.Controllers
 
         }
 
+
+        [HttpPatch("ActualizarEvento/{id}")]
+        public async Task<ActionResult> ActualizarEvento(int id, [FromBody] EventosAgenda eventoActualizado)
+        {
+            try
+            {
+                var eventoExistente = await _dataContext.tbEventosAgenda
+                    .Include(e => e.EventosGrupos)
+                    .Include(e => e.EventosMaterias)
+                    .FirstOrDefaultAsync(e => e.EventoId == id);
+
+                if (eventoExistente == null)
+                {
+                    return NotFound(new { Message = "Evento no encontrado." });
+                }
+
+                // Actualizar los campos básicos del evento
+                eventoExistente.Titulo = eventoActualizado.Titulo;
+                eventoExistente.Descripcion = eventoActualizado.Descripcion;
+                eventoExistente.Color = eventoActualizado.Color;
+                eventoExistente.FechaInicio = eventoActualizado.FechaInicio;
+                eventoExistente.FechaFinal = eventoActualizado.FechaFinal;
+
+                // Eliminar relaciones anteriores solo si se enviaron nuevas
+                if ((eventoActualizado.EventosGrupos != null && eventoActualizado.EventosGrupos.Any()) ||
+                    (eventoActualizado.EventosMaterias != null && eventoActualizado.EventosMaterias.Any()))
+                {
+                    _dataContext.tbEventosGrupos.RemoveRange(eventoExistente.EventosGrupos);
+                    _dataContext.tbEventosMaterias.RemoveRange(eventoExistente.EventosMaterias);
+                }
+
+                // Verificar que solo uno de los dos (Grupos o Materias) sea asignado
+                if ((eventoActualizado.EventosGrupos != null && eventoActualizado.EventosGrupos.Any()) &&
+                    (eventoActualizado.EventosMaterias != null && eventoActualizado.EventosMaterias.Any()))
+                {
+                    return BadRequest(new { Message = "El evento no puede estar asignado a un grupo y una materia al mismo tiempo." });
+                }
+
+                // Validar que los grupos existan antes de insertarlos
+                if (eventoActualizado.EventosGrupos != null && eventoActualizado.EventosGrupos.Any())
+                {
+                    var grupoIds = eventoActualizado.EventosGrupos.Select(g => g.GrupoId).ToList();
+                    var gruposExistentes = await _dataContext.tbGrupos
+                        .Where(g => grupoIds.Contains(g.GrupoId))
+                        .Select(g => g.GrupoId)
+                        .ToListAsync();
+
+                    if (gruposExistentes.Count != grupoIds.Count)
+                    {
+                        return BadRequest(new { Message = "Uno o más GrupoId no existen en la base de datos." });
+                    }
+
+                    eventoExistente.EventosGrupos = eventoActualizado.EventosGrupos.Select(grupo => new EventosGrupos
+                    {
+                        FechaId = eventoExistente.EventoId,
+                        GrupoId = grupo.GrupoId
+                    }).ToList();
+                }
+
+                // Validar que las materias existan antes de insertarlas
+                if (eventoActualizado.EventosMaterias != null && eventoActualizado.EventosMaterias.Any())
+                {
+                    var materiaIds = eventoActualizado.EventosMaterias.Select(m => m.MateriaId).ToList();
+                    var materiasExistentes = await _dataContext.tbMaterias
+                        .Where(m => materiaIds.Contains(m.MateriaId))
+                        .Select(m => m.MateriaId)
+                        .ToListAsync();
+
+                    if (materiasExistentes.Count != materiaIds.Count)
+                    {
+                        return BadRequest(new { Message = "Uno o más MateriaId no existen en la base de datos." });
+                    }
+
+                    eventoExistente.EventosMaterias = eventoActualizado.EventosMaterias.Select(materia => new EventosMaterias
+                    {
+                        FechaId = eventoExistente.EventoId,
+                        MateriaId = materia.MateriaId
+                    }).ToList();
+                }
+
+                // Si no hay grupos ni materias, lanzar un error
+                if ((eventoActualizado.EventosGrupos == null || !eventoActualizado.EventosGrupos.Any()) &&
+                    (eventoActualizado.EventosMaterias == null || !eventoActualizado.EventosMaterias.Any()))
+                {
+                    return BadRequest(new { Message = "El evento debe estar asignado a al menos un grupo o materia." });
+                }
+
+                // Guardar cambios en la base de datos
+                await _dataContext.SaveChangesAsync();
+
+                return Ok(new { Message = "Evento actualizado correctamente." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Ocurrió un error al actualizar el evento.", Error = ex.Message, StackTrace = ex.StackTrace });
+            }
+        }
+
+
+
+
         //[HttpPut("ActualizarEventos/{id}")]
         //public async Task<ActionResult<EventosAgenda>> ActualizarEvento(int id, EventosAgenda actEvento)
         //{
@@ -202,8 +303,8 @@ namespace AprendeMasWeb.Controllers
 
 
 
-        [HttpDelete("EliminarEvento/{id}")]
-        public async Task<ActionResult> EliminarEvento(int id)
+        [HttpDelete("EliminarEvento")]
+        public async Task<ActionResult> EliminarEvento([FromQuery] int eventoId, [FromQuery] int docenteId)
         {
             try
             {
@@ -211,7 +312,7 @@ namespace AprendeMasWeb.Controllers
                 var evento = await _dataContext.tbEventosAgenda
                     .Include(e => e.EventosGrupos)
                     .Include(e => e.EventosMaterias)
-                    .FirstOrDefaultAsync(e => e.EventoId == id);
+                    .FirstOrDefaultAsync(e => e.EventoId == eventoId);
 
                 if (evento == null)
                 {
@@ -240,10 +341,10 @@ namespace AprendeMasWeb.Controllers
             }
             catch (Exception ex)
             {
-                // Manejo de errores
                 return StatusCode(500, new { Message = "Ocurrió un error al eliminar el evento.", Error = ex.Message });
             }
         }
+
 
     }
 }
