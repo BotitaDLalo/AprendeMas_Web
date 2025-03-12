@@ -1,6 +1,8 @@
 ﻿// Se importa el espacio de nombres para acceder a la base de datos y los controladores
 using AprendeMasWeb.Data;
+using AprendeMasWeb.Models;
 using AprendeMasWeb.Models.DBModels;
+using Google;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -178,5 +180,131 @@ namespace AprendeMasWeb.Controllers.WEB
                 return StatusCode(500, new { mensaje = "Error al eliminar al alumno.", error = ex.Message });
             }
         }
+
+        //Controlador api que crea actividades
+
+        [HttpPost("CrearActividad")]
+        public async Task<IActionResult> CrearActividad([FromBody] Actividades actividadDto)
+        {
+            if (actividadDto == null)
+            {
+                return BadRequest(new { mensaje = "Datos inválidos." });
+            }
+
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    // Crear nueva actividad
+                    var nuevaActividad = new Actividades
+                    {
+                        NombreActividad = actividadDto.NombreActividad,
+                        Descripcion = actividadDto.Descripcion,
+                        FechaLimite = actividadDto.FechaLimite,
+                        TipoActividadId = actividadDto.TipoActividadId,
+                        Puntaje = actividadDto.Puntaje,
+                        MateriaId = actividadDto.MateriaId
+                    };
+
+                    _context.tbActividades.Add(nuevaActividad);
+                    await _context.SaveChangesAsync(); // Guarda la actividad para obtener su ID
+
+                    // Verificar que la actividad tiene un ID generado
+                    if (nuevaActividad.ActividadId <= 0)
+                    {
+                        throw new Exception("No se pudo obtener el ID de la actividad después de guardarla.");
+                    }
+
+                    // Registrar en la tabla MateriasActividades
+                    var nuevaRelacion = new MateriasActividades
+                    {
+                        MateriaId = actividadDto.MateriaId,  // ID recibido del JSON
+                        ActividadId = nuevaActividad.ActividadId // ID recién generado
+                    };
+
+                    _context.tbMateriasActividades.Add(nuevaRelacion);
+                    await _context.SaveChangesAsync(); // Guarda la relación
+
+                    // Confirmar transacción
+                    await transaction.CommitAsync();
+
+                    return Ok(new { mensaje = "Actividad creada con éxito", actividadId = nuevaActividad.ActividadId });
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(500, new { mensaje = "Error al crear la actividad", error = ex.Message });
+                }
+            }
+        }
+
+        //Controlador que obtiene  todo lo de actividades que pertecenen a esa materia
+        [HttpGet("ObtenerActividadesPorMateria/{materiaId}")]
+        public async Task<IActionResult> ObtenerActividadesPorMateria(int materiaId)
+        {
+            try
+            {
+                var actividades = await _context.tbMateriasActividades
+                .Where(ma => ma.MateriaId == materiaId)
+                .Select(ma => new
+                 {
+                     ma.MateriaActividad,  
+                     ma.Actividades.ActividadId,  
+                     ma.Actividades.NombreActividad,
+                     ma.Actividades.Descripcion,
+                     ma.Actividades.FechaCreacion,
+                     ma.Actividades.FechaLimite,
+                     ma.Actividades.Puntaje
+                })
+                .ToListAsync();
+                if (actividades == null || actividades.Count == 0)
+                {
+                    return NotFound(new { mensaje = "No hay actividades registradas para esta materia." });
+                }
+
+                return Ok(actividades);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al obtener las actividades", error = ex.Message });
+            }
+        }
+
+
+            [HttpDelete("EliminarActividad/{id}")]
+            public async Task<IActionResult> EliminarActividad(int id)
+            {
+                // Buscar el registro en la tabla materiasActividades con el ID recibido
+                var materiaActividad = await _context.tbMateriasActividades
+                    .FirstOrDefaultAsync(ma => ma.MateriaActividad == id);
+
+                if (materiaActividad == null)
+                {
+                    return NotFound("No se encontró el registro en materiasActividades.");
+                }
+
+                // Eliminar el registro de materiasActividades primero
+                _context.tbMateriasActividades.Remove(materiaActividad);
+                await _context.SaveChangesAsync();
+
+                // Obtener el actividadId desde el registro de materiasActividades
+                var actividadId = materiaActividad.ActividadId;
+
+                // Buscar y eliminar el registro en la tabla Actividades
+                var actividad = await _context.tbActividades
+                    .FirstOrDefaultAsync(a => a.ActividadId == actividadId);
+
+                if (actividad == null)
+                {
+                    return NotFound("No se encontró el registro en Actividades.");
+                }
+
+                // Eliminar el registro de Actividades
+                _context.tbActividades.Remove(actividad);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Actividad y registro eliminados correctamente." });
+            }
+
     }
 }

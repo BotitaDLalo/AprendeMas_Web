@@ -153,6 +153,7 @@ namespace AprendeMasWeb.Controllers.WEB
             return Ok(new { mensaje = "Grupo eliminado correctamente." });
         }
 
+        //Elimina grupo con materias
         [HttpDelete("EliminarGrupoConMaterias/{grupoId}")]
         public async Task<IActionResult> EliminarGrupoConMaterias(int grupoId)
         {
@@ -176,16 +177,30 @@ namespace AprendeMasWeb.Controllers.WEB
             // Eliminar todas las relaciones de la materia con grupos
             _context.tbGruposMaterias.RemoveRange(relacionesGruposMaterias);
 
-            // Buscar las materias asociadas a este grupo y eliminarlas
+            // Buscar las materias asociadas a este grupo
             var materias = _context.tbMaterias.Where(m => materiasIds.Contains(m.MateriaId));
+
+            // Eliminar todas las actividades relacionadas con estas materias
+            var relacionesMateriasActividades = _context.tbMateriasActividades.Where(ma => materiasIds.Contains(ma.MateriaId));
+            _context.tbMateriasActividades.RemoveRange(relacionesMateriasActividades);
+
+            // Obtener los IDs de las actividades relacionadas
+            var actividadesIds = relacionesMateriasActividades.Select(ma => ma.ActividadId).ToList();
+
+            // Eliminar las actividades asociadas a estas materias
+            var actividades = _context.tbActividades.Where(a => actividadesIds.Contains(a.ActividadId));
+            _context.tbActividades.RemoveRange(actividades);
+
+            // Eliminar las materias
             _context.tbMaterias.RemoveRange(materias);
 
-            // Eliminar el grupo 
+            // Eliminar el grupo
             _context.tbGrupos.Remove(grupo);
 
             await _context.SaveChangesAsync();
-            return Ok(new { mensaje = "Grupo y sus materias eliminados correctamente" });
+            return Ok(new { mensaje = "Grupo, materias y actividades eliminados correctamente" });
         }
+
 
 
     }

@@ -341,3 +341,61 @@
     .materia-card-link-unique:hover::after {
         background-color: white;
     }
+
+
+    /*Css para actividades
+    */
+/* Estilo del contenedor dropdown */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Estilo del botón principal */
+.btn-crear {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+    .btn-crear:hover {
+        background-color: #0056b3;
+    }
+
+/* Contenedor del menú desplegable */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 150px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    overflow: hidden;
+    z-index: 10;
+}
+
+    /* Estilo de los enlaces dentro del menú */
+    .dropdown-content a {
+        color: black;
+        padding: 10px 15px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        transition: background 0.2s;
+    }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+/* Mostrar el menú cuando el usuario pasa el mouse sobre el botón */
+.dropdown:hover .dropdown-content {
+    display: block;
+}

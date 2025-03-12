@@ -368,7 +368,7 @@ async function cargarMateriasSinGrupo() {
                                         <i class="fas fa-ellipsis-v"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end">
-                                        <li><a class="dropdown-item" href="#" onclick="editarMateria(${materiaSinGrupo.materiaId})">Editar</a></li> <!-- Opción para editar materia -->
+                                        <li><a class="dropdown-item" href="#" onclick="editarMateria(${materiaSinGrupo.materiaId},'${materiaSinGrupo.nombreMateria}','${materiaSinGrupo.descripcion}')">Editar</a></li> <!-- Opción para editar materia -->
                                         <li><a class="dropdown-item" href="#" onclick="eliminarMateria(${materiaSinGrupo.materiaId})">Eliminar</a></li> <!-- Opción para eliminar materia -->
                                         <li><a class="dropdown-item" href="#" onclick="desabilitarMateria(${materiaSinGrupo.materiaId})">Desactivar</a></li> <!-- Opción para desactivar materia -->
                                     </ul>
@@ -553,8 +553,60 @@ function destacarMateria(MateriaId) {
     // Aquí puedes implementar la lógica para destacar la materia
 }
 
-function editarMateria(MateriaId) {
+async function editarMateria(materiaId, nombreActual, descripcionActual) {
+    const { value: formValues } = await Swal.fire({
+        title: "Editar Materia",
+        html: `
+            <div style="display: flex; flex-direction: column; gap: 10px; text-align: left;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <label for="swal-nombre" style="width: 100px;">Materia</label>
+                    <input id="swal-nombre" class="swal2-input"  placeholder="Nombre" value="${nombreActual}">
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <label for="swal-descripcion" style="width: 100px;">Descripción</label>
+                    <input id="swal-descripcion" class="swal2-input" placeholder="Descripción" value="${descripcionActual}">
+                </div>
+            </div>
+        `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: "Guardar",
+        cancelButtonText: "Cancelar",
+        preConfirm: () => {
+            return {
+                nombre: document.getElementById("swal-nombre").value,
+                descripcion: document.getElementById("swal-descripcion").value
+            };
+        }
+    });
 
+    if (formValues) {
+        // Enviar los datos al servidor para actualizar la materia
+        const response = await fetch(`/api/MateriasApi/ActualizarMateria/${materiaId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formValues)
+        });
+
+        if (response.ok) {
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Materia actualizada correctamente",
+                showConfirmButton: false,
+                timer: 2000
+            });
+            cargarMaterias(); // Recargar la lista de materias
+        } else {
+            Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: "Error al actualizar la materia",
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+    }
 }
 
 function desactivarMateria(MateriaId) {
@@ -651,7 +703,7 @@ async function handleCardClick(grupoId) {
                                                 <i class="fas fa-ellipsis-v"></i>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end">
-                                                <li><a class="dropdown-item" href="#" onclick="editarMateria(${materia.materiaId})">Editar</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="editarMateria(${materia.materiaId},'${materia.nombreMateria}','${materia.descripcion}')">Editar</a></li>
                                                 <li><a class="dropdown-item" href="#" onclick="eliminarMateria(${materia.materiaId})">Eliminar</a></li>
                                                 <li><a class="dropdown-item" href="#" onclick="desactivarMateria(${materia.materiaId})">Desactivar</a></li>
                                             </ul>

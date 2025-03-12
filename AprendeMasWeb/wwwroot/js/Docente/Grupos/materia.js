@@ -4,8 +4,6 @@ materiaIdGlobal = localStorage.getItem("materiaIdSeleccionada");
 grupoIdGlobal = localStorage.getItem("grupoIdSeleccionado");
 // Esperar a que el DOM esté completamente cargado antes de ejecutar el código
 document.addEventListener("DOMContentLoaded", function () {
-
-    
     // Verificar si se tienen ambos IDs antes de hacer la petición
     if (materiaIdGlobal && docenteIdGlobal) {
         fetch(`/api/DetallesMateriaApi/ObtenerDetallesMateria/${materiaIdGlobal}/${docenteIdGlobal}`)
@@ -31,6 +29,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Cargar alumnos asignados a la materia
     cargarAlumnosAsignados(materiaIdGlobal);
+    //Cargar actividades a la materia
+    cargarActividadesDeMateria(materiaIdGlobal);
     //delegacion de evento 
     document.addEventListener("click", async function (event) {
         if (event.target.id === "btnAsignarAlumno") {
@@ -82,8 +82,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+
    
-    // 🔹 Funcionalidad de búsqueda de alumnos en tiempo real (sugerencias de correo)
+    // Funcionalidad de búsqueda de alumnos en tiempo real (sugerencias de correo)
     const inputBuscar = document.getElementById("buscarAlumno");
     const listaSugerencias = document.getElementById("sugerenciasAlumnos");
     let indexSugerenciaSeleccionada = -1;
@@ -129,7 +130,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Error al buscar alumnos:", error);
             }
         });
-
+    
         // Navegación con teclas en las sugerencias
         inputBuscar.addEventListener("keydown", function (e) {
             const sugerencias = listaSugerencias.getElementsByTagName("li");
@@ -172,147 +173,344 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+async function cargarActividadesDeMateria(materiaIdGlobal) {
+    const listaActividades = document.getElementById("listaActividadesDeMateria");
+    listaActividades.innerHTML = "<p>Cargando actividades...</p>"; // Mostrar mensaje de carga
 
-async function cargarAlumnosAsignados(materiaIdGlobal) {
     try {
-        // Hacer la petición al servidor
-        const response = await fetch(`/api/DetallesMateriaApi/ObtenerAlumnosPorMateria/${materiaIdGlobal}`);
+        const response = await fetch(`/api/DetallesMateriaApi/ObtenerActividadesPorMateria/${materiaIdGlobal}`);
+        if (!response.ok) throw new Error("No se encontraron actividades.");
+        const actividades = await response.json();
+        renderizarActividades(actividades);
+    } catch (error) {
+        listaActividades.innerHTML = `<p class="mensaje-error">${error.message}</p>`;
+    }
+}
 
-        if (!response.ok) {
-            throw new Error("No se pudieron cargar los alumnos.");
+function renderizarActividades(actividades) {
+    const listaActividades = document.getElementById("listaActividadesDeMateria");
+    listaActividades.innerHTML = ""; // Limpiar el contenedor
+
+    if (actividades.length === 0) {
+        listaActividades.innerHTML = "<p>No hay actividades registradas para esta materia.</p>";
+        return;
+    }
+
+    actividades.forEach(actividad => {
+        const actividadItem = document.createElement("div");
+        actividadItem.classList.add("actividad-item");
+
+        actividadItem.innerHTML = `
+            <div class="actividad-header">
+                <div class="icono">📋</div>
+                <div class="info">
+                    <strong>${actividad.nombreActividad}</strong>
+                    <p class="fecha-publicado">Publicado: ${formatearFecha(actividad.fechaCreacion)}</p>
+                    <p class="puntaje" style="font-weight: bold; color: #d35400;">Puntaje: ${actividad.puntaje}</p>
+                    <p class="actividad-descripcion oculto">${actividad.descripcion}</p>
+                    <p class="ver-completo">Ver completo</p>
+                </div>
+                <div class="fecha-entrega">
+                    <strong>Fecha de entrega:</strong><br>
+                    ${formatearFecha(actividad.fechaLimite)}
+                </div>
+                <div class="botones-container">
+                    <button class="eliminar-btn" data-id="${actividad.materiaActividad}">Eliminar</button>
+                </div>
+            </div>
+        `;
+
+        // Mostrar/ocultar descripción al hacer clic en "Ver completo"
+        const verCompleto = actividadItem.querySelector(".ver-completo");
+        const descripcion = actividadItem.querySelector(".actividad-descripcion");
+        verCompleto.addEventListener("click", () => {
+            descripcion.classList.toggle("oculto");
+        });
+
+        // Agregar eventos a los botones
+        const btnEliminar = actividadItem.querySelector(".eliminar-btn");
+
+        btnEliminar.addEventListener("click", () => eliminarActividad(actividad.materiaActividad));
+
+        listaActividades.appendChild(actividadItem);
+    });
+}
+
+function formatearFecha(fecha) {
+    const dateObj = new Date(fecha);
+    return dateObj.toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" }) +
+        " " + dateObj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+}
+
+
+
+// Funciones para manejar los botones
+
+
+async function eliminarActividad(id) {
+    // Confirmación con SweetAlert
+    const result = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: "¡Esta acción no se puede deshacer!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true
+    });
+
+    if (result.isConfirmed) {
+        // Alerta de confirmación antes de la eliminación
+        Swal.fire(
+            'Eliminado!',
+            `La actividad con ID: ${id} ha sido eliminada.`,
+            'success'
+        );
+
+        try {
+            // Realizar la petición para eliminar la actividad
+            const response = await fetch(`/api/DetallesMateriaApi/EliminarActividad/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.message) {
+                Swal.fire({
+                    title: 'Éxito',
+                    text: data.message,
+                    icon: 'success',
+                    timer: 1500,  // Tiempo en milisegundos (1500ms = 1.5 segundos)
+                    showConfirmButton: false  // Esto es opcional, para que no aparezca el botón de "OK"
+                });
+                location.reload(); // Recargar la página o actualizar la vista pero manda hasta avisos, checar eso
+            } else {
+                Swal.fire(
+                    'Error',
+                    'No se pudo eliminar la actividad. Intenta nuevamente.',
+                    'error'
+                );
+            }
+        } catch (error) {
+            Swal.fire(
+                'Error',
+                'Hubo un error en la solicitud. Intenta nuevamente.',
+                'error'
+            );
+            console.error('Error al eliminar la actividad:', error);
+        }
+    } else {
+        Swal.fire({
+            title: 'Cancelado',
+            text: 'La actividad no fue eliminada.',
+            icon: 'info',
+            timer: 1500,  // El tiempo que se mostrará la alerta (1500ms = 1.5 segundos)
+            showConfirmButton: false  // Esto es opcional, para que no aparezca el botón "OK"
+        });
+
+    }
+}
+
+    //Carga los alumnos a la materia y los muestra en el div
+    async function cargarAlumnosAsignados(materiaIdGlobal) {
+        try {
+            // Hacer la petición al servidor
+            const response = await fetch(`/api/DetallesMateriaApi/ObtenerAlumnosPorMateria/${materiaIdGlobal}`);
+
+            if (!response.ok) {
+                throw new Error("No se pudieron cargar los alumnos.");
+            }
+
+            // Convertir la respuesta a JSON
+            const alumnos = await response.json();
+
+            // Seleccionar el contenedor donde se mostrará la lista
+            const contenedor = document.getElementById("listaAlumnosAsignados");
+            contenedor.innerHTML = ""; // Limpiar contenido anterior
+
+            // Verificar si hay alumnos
+            if (alumnos.length === 0) {
+                contenedor.innerHTML = `<p class="text-muted">No hay alumnos asignados a esta materia.</p>`;
+                return;
+            }
+
+            // Crear la lista de alumnos
+            alumnos.forEach(alumno => {
+                //  Crear el div del alumno
+                const divAlumno = document.createElement("div");
+                divAlumno.classList.add("d-flex", "justify-content-between", "align-items-center", "p-2", "mb-2");
+                divAlumno.style.background = "#f8f9fa"; // Color de fondo
+                divAlumno.style.borderRadius = "8px"; // Bordes redondeados
+
+                //  Agregar el nombre del alumno
+                const spanNombre = document.createElement("span");
+                spanNombre.textContent = `${alumno.nombre} ${alumno.apellidoPaterno} ${alumno.apellidoMaterno}`;
+                divAlumno.appendChild(spanNombre);
+
+                //  Contenedor de botón
+                const divBotones = document.createElement("div");
+
+                //  Botón "Eliminar del grupo" dentro de un menú desplegable
+                const dropdown = document.createElement("div");
+                dropdown.classList.add("dropdown");
+
+                const btnDropdown = document.createElement("button");
+                btnDropdown.classList.add("btn", "btn-danger", "btn-sm", "dropdown-toggle");
+                btnDropdown.textContent = "Opciones";
+                btnDropdown.setAttribute("data-bs-toggle", "dropdown");
+
+                const dropdownMenu = document.createElement("ul");
+                dropdownMenu.classList.add("dropdown-menu");
+
+                const eliminarItem = document.createElement("li");
+                const eliminarLink = document.createElement("a");
+                eliminarLink.classList.add("dropdown-item");
+                eliminarLink.href = "#";
+                eliminarLink.textContent = "Eliminar del grupo";
+                eliminarLink.onclick = function () {
+                    eliminardelgrupo(alumno.alumnoMateriaId);
+                };
+
+                eliminarItem.appendChild(eliminarLink);
+                dropdownMenu.appendChild(eliminarItem);
+                dropdown.appendChild(btnDropdown);
+                dropdown.appendChild(dropdownMenu);
+
+                divBotones.appendChild(dropdown);
+                divAlumno.appendChild(divBotones);
+
+                // Agregar alumno a la lista
+                contenedor.appendChild(divAlumno);
+            });
+
+        } catch (error) {
+            console.error("Error al cargar alumnos:", error);
+        }
+    }
+
+    function cambiarSeccion(seccion) {
+        document.querySelectorAll('.seccion').forEach(div => div.style.display = 'none');
+        const seccionMostrar = document.getElementById(`seccion-${seccion}`);
+        if (seccionMostrar) {
+            seccionMostrar.style.display = 'block';
         }
 
-        // Convertir la respuesta a JSON
-        const alumnos = await response.json();
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`button[onclick="cambiarSeccion('${seccion}')"]`).classList.add('active');
 
-        // Seleccionar el contenedor donde se mostrará la lista
-        const contenedor = document.getElementById("listaAlumnosAsignados");
-        contenedor.innerHTML = ""; // Limpiar contenido anterior
+        // Cargar datos si se seleccionan secciones dinámicas
+        if (seccion === "actividades") {
+            cargarActividadesDeMateria(materiaIdGlobal);
+        }
+        if (seccion === "alumnos") {
+            cargarAlumnosAsignados(materiaIdGlobal);
+        }
+    }
 
-        // Verificar si hay alumnos
-        if (alumnos.length === 0) {
-            contenedor.innerHTML = `<p class="text-muted">No hay alumnos asignados a esta materia.</p>`;
+
+
+    async function eliminardelgrupo(alumnoMateriaId) {
+        try {
+            const confirmacion = await Swal.fire({
+                title: "¿Estás seguro?",
+                text: "Esta acción eliminará al alumno del grupo.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar"
+            });
+
+            if (!confirmacion.isConfirmed) return;
+
+            const response = await fetch(`/api/DetallesMateriaApi/EliminarAlumnoDeMateria/${alumnoMateriaId}`, {
+                method: "DELETE",
+            });
+
+            if (!response.ok) {
+                throw new Error("No se pudo eliminar al alumno del grupo.");
+            }
+
+            Swal.fire({
+                position: "top-end",
+                title: "Eliminado",
+                text: "El alumno ha sido eliminado del grupo correctamente.",
+                icon: "success",
+                timer: 2500
+            });
+
+            cargarAlumnosAsignados(materiaIdGlobal); // Recargar la lista
+
+        } catch (error) {
+            Swal.fire({
+                position: "top-end",
+                title: "Error",
+                text: "Hubo un problema al eliminar al alumno.",
+                icon: "error",
+                timer: 2500
+            });
+
+            console.error("Error al eliminar alumno:", error);
+        }
+    }
+
+    async function registrarActividad() {
+        let nombre = document.getElementById("nombre").value;
+        let descripcion = document.getElementById("descripcion").value;
+        let fechaHoraLimite = document.getElementById("fechaHoraLimite").value;
+        let puntaje = document.getElementById("puntaje").value;
+
+        if (!nombre || !descripcion || !fechaHoraLimite || !puntaje) {
+            Swal.fire({
+                icon: "warning",
+                title: "Campos incompletos",
+                text: "Por favor, completa todos los campos antes de continuar."
+            });
             return;
         }
 
-        // Crear la lista de alumnos
-        alumnos.forEach(alumno => {
-            //  Crear el div del alumno
-            const divAlumno = document.createElement("div");
-            divAlumno.classList.add("d-flex", "justify-content-between", "align-items-center", "p-2", "mb-2");
-            divAlumno.style.background = "#f8f9fa"; // Color de fondo
-            divAlumno.style.borderRadius = "8px"; // Bordes redondeados
+        let actividad = {
+            nombreActividad: nombre,
+            descripcion: descripcion,
+            fechaLimite: fechaHoraLimite,
+            tipoActividadId: 1, // Obtener esto dinámicamente si es necesario
+            puntaje: parseInt(puntaje),
+            materiaId: materiaIdGlobal //dentro de la materia que se encuentra
+        };
 
-            //  Agregar el nombre del alumno
-            const spanNombre = document.createElement("span");
-            spanNombre.textContent = `${alumno.nombre} ${alumno.apellidoPaterno} ${alumno.apellidoMaterno}`;
-            divAlumno.appendChild(spanNombre);
+        try {
+            let response = await fetch("/api/DetallesMateriaApi/CrearActividad", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(actividad)
+            });
 
-            //  Contenedor de botón
-            const divBotones = document.createElement("div");
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
 
-            //  Botón "Eliminar del grupo" dentro de un menú desplegable
-            const dropdown = document.createElement("div");
-            dropdown.classList.add("dropdown");
+            let data = await response.json();
 
-            const btnDropdown = document.createElement("button");
-            btnDropdown.classList.add("btn", "btn-danger", "btn-sm", "dropdown-toggle");
-            btnDropdown.textContent = "Opciones";
-            btnDropdown.setAttribute("data-bs-toggle", "dropdown");
+            Swal.fire({
+                icon: "success",
+                title: "Actividad creada",
+                text: "La actividad ha sido creada exitosamente.",
+                confirmButtonText: "OK"
+            }).then(() => {
+                location.reload(); // Recargar la página o actualizar la vista pero manda hasta avisos, checar eso
+            });
 
-            const dropdownMenu = document.createElement("ul");
-            dropdownMenu.classList.add("dropdown-menu");
-
-            const eliminarItem = document.createElement("li");
-            const eliminarLink = document.createElement("a");
-            eliminarLink.classList.add("dropdown-item");
-            eliminarLink.href = "#";
-            eliminarLink.textContent = "Eliminar del grupo";
-            eliminarLink.onclick = function () {
-                eliminardelgrupo(alumno.alumnoMateriaId);
-            };
-
-            eliminarItem.appendChild(eliminarLink);
-            dropdownMenu.appendChild(eliminarItem);
-            dropdown.appendChild(btnDropdown);
-            dropdown.appendChild(dropdownMenu);
-
-            divBotones.appendChild(dropdown);
-            divAlumno.appendChild(divBotones);
-
-            // Agregar alumno a la lista
-            contenedor.appendChild(divAlumno);
-        });
-
-    } catch (error) {
-        console.error("Error al cargar alumnos:", error);
-    }
-}
-
-
-// Escuchar el evento de clic en #contenedor-dinamico
-document.getElementById("contenedor-dinamico").addEventListener("click", async function (event) {
-    // Verifica si el clic fue en #seccion-alumnos
-    if (event.target.id === "seccion-alumnos") {
-        // Obtener el materiaId, por ejemplo, desde un atributo data-* en #seccion-alumnos
-        cargarAlumnosAsignados(materiaIdGlobal);
-    }
-});
-
-// ✅ Función para cambiar la sección mostrada en la interfaz
-function cambiarSeccion(seccion) {
-    document.querySelectorAll('.seccion').forEach(div => div.style.display = 'none');
-    const seccionMostrar = document.getElementById(`seccion-${seccion}`);
-    if (seccionMostrar) {
-        seccionMostrar.style.display = 'block';
-    }
-    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`button[onclick="cambiarSeccion('${seccion}')"]`).classList.add('active');
-}
-
-
-async function eliminardelgrupo(alumnoMateriaId) {
-    try {
-        const confirmacion = await Swal.fire({
-            title: "¿Estás seguro?",
-            text: "Esta acción eliminará al alumno del grupo.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Sí, eliminar",
-            cancelButtonText: "Cancelar"
-        });
-
-        if (!confirmacion.isConfirmed) return;
-
-        const response = await fetch(`/api/DetallesMateriaApi/EliminarAlumnoDeMateria/${alumnoMateriaId}`, {
-            method: "DELETE",
-        });
-
-        if (!response.ok) {
-            throw new Error("No se pudo eliminar al alumno del grupo.");
+        } catch (error) {
+            console.error("Error:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Error al crear la actividad",
+                text: "Hubo un problema al crear la actividad. Inténtalo de nuevo.",
+                confirmButtonText: "Entendido"
+            });
         }
-
-        Swal.fire({
-            position: "top-end",
-            title: "Eliminado",
-            text: "El alumno ha sido eliminado del grupo correctamente.",
-            icon: "success",
-            timer: 2500
-        });
-
-        cargarAlumnosAsignados(materiaIdGlobal); // Recargar la lista
-
-    } catch (error) {
-        Swal.fire({
-            position: "top-end",
-            title: "Error",
-            text: "Hubo un problema al eliminar al alumno.",
-            icon: "error",
-            timer: 2500
-        });
-
-        console.error("Error al eliminar alumno:", error);
     }
-}

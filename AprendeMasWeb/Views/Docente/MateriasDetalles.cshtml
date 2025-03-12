@@ -4,11 +4,15 @@
 
     // Define el título de la página, que se usará en el navegador o en la pestaña.
     ViewData["Title"] = "Detalles de Materias";
+    //Carga modal crear actividad
+    @Html.Partial("~/Views/Docente/CrearActividadModal.cshtml")
 }
 
 <link rel="stylesheet" href="~/css/Docente/seccionAlumnoEnMateria.css" />
 <link rel="stylesheet" href="~/css/Docente/materias.css" />
 <link rel="stylesheet" href="~/css/Docente/avisosSeccion.css" />
+<link rel="stylesheet" href="~/css/Docente/actividadesSeccion.css" />
+
 
 <!-- Contenedor principal de la sección de materia -->
 <div class="materia-container">
@@ -59,13 +63,24 @@
             </div>
         </div>
 
-
-
-        <!--Contenedor que gestiona las actividades-->
+        <!-- Contenedor que gestiona las actividades -->
         <div id="seccion-actividades" class="seccion" style="display: none;">
-            <h2>Actividades</h2>
-            <p>Contenido de actividades...</p>
+            <!-- Botón de Crear con opciones -->
+            <div class="dropdown">
+                <button class="btn-crear">Crear ▼</button>
+                <div class="dropdown-content">
+                    <button class="misCursos-dropdown-item" data-bs-toggle="modal" data-bs-target="#crearActividadModal">
+                        📋Crear Tarea
+                    </button>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div id="listaActividadesDeMateria">
+                <!-- Aquí se alojarán las actividades desde el backend -->
+            </div>
         </div>
+
+
         <!-- Contenedor de gestión de alumnos -->
         <div id="seccion-alumnos" class="seccion" style="display: none;">
 
@@ -84,9 +99,6 @@
                 <!--Aqui se alojara la lista de alumnos desde el backend-->
             </div>
         </div>
-
-
-
 
         <!--contenedor que gestiona las calificaciones-->
         <div id="seccion-calificaciones" class="seccion" style="display: none;">
