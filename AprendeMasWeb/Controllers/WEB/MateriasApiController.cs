@@ -64,37 +64,6 @@ namespace AprendeMasWeb.Controllers.WEB
             return Ok(materiasSinGrupo);
         }
 
-        /*
-        // Controlador para eliminar una materia por su ID
-        [HttpDelete("EliminarMateria/{id}")]
-        public async Task<IActionResult> EliminarMateria(int id)
-        {
-            // Buscar la materia en la base de datos
-            var materia = await _context.tbMaterias.FindAsync(id);
-            if (materia == null)
-            {
-                return NotFound(new { mensaje = "La materia no existe" });
-            }
-
-            // Buscar relaciones en la tabla GruposYMaterias
-            var relacionesGrupos = _context.tbGruposMaterias.Where(gm => gm.MateriaId == id);
-            // Eliminar todas las relaciones de la materia con grupos
-            _context.tbGruposMaterias.RemoveRange(relacionesGrupos);
-
-            // Buscar relaciones en la tabla AlumnosMaterias
-            var relacionesAlumnos = _context.tbAlumnosMaterias.Where(am => am.MateriaId == id);
-            // Eliminar todas las relaciones de la materia con alumnos
-            _context.tbAlumnosMaterias.RemoveRange(relacionesAlumnos);
-
-            await _context.SaveChangesAsync(); // Guardamos cambios para eliminar relaciones
-
-            // Ahora eliminamos la materia
-            _context.tbMaterias.Remove(materia);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { mensaje = "Materia eliminada correctamente." });
-        }
-        */
 
         // Controlador para eliminar una materia por su ID
         [HttpDelete("EliminarMateria/{id}")]
@@ -123,6 +92,13 @@ namespace AprendeMasWeb.Controllers.WEB
             var relacionesAlumnos = _context.tbAlumnosMaterias.Where(am => am.MateriaId == id);
             _context.tbAlumnosMaterias.RemoveRange(relacionesAlumnos);
 
+            //Busca relacion de la materia si esta dentro de un grupo
+            var relacionMateriaConGrupo = _context.tbGruposMaterias.Where(mg => mg.MateriaId == id);
+
+            // Eliminar todas las relaciones de la materia con grupo
+            _context.tbGruposMaterias.RemoveRange(relacionMateriaConGrupo);
+
+
             // Ahora eliminamos la materia
             _context.tbMaterias.Remove(materia);
 
@@ -134,7 +110,7 @@ namespace AprendeMasWeb.Controllers.WEB
 
 
 
-        //Controlador actualiza materia
+        //Controlador actualiza materia, aun no funciona
         [HttpPut("ActualizarMateria/{id}")]
         public async Task<IActionResult> ActualizarMateria(int id, [FromBody] Materias materiaActualizada)
         {

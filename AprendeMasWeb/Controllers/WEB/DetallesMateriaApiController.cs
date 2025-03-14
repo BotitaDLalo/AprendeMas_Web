@@ -306,5 +306,59 @@ namespace AprendeMasWeb.Controllers.WEB
                 return Ok(new { message = "Actividad y registro eliminados correctamente." });
             }
 
+        //Controlador para crear un aviso
+        [HttpPost("CrearAviso")]
+        public async Task<IActionResult> CrearAviso([FromBody] Avisos avisos)
+        {
+            if(avisos == null)
+            {
+                return BadRequest(new { mensaje = "Datos Invalidos." });
+            }
+            try
+            {
+                var nuevoAviso = new Avisos
+                {
+                    DocenteId = avisos.DocenteId,
+                    Titulo = avisos.Titulo,
+                    Descripcion = avisos.Descripcion,
+                    GrupoId = avisos.GrupoId,
+                    MateriaId = avisos.MateriaId,
+                    FechaCreacion = DateTime.Now
+                };
+                _context.tbAvisos.Add(nuevoAviso);
+                await _context.SaveChangesAsync();
+                return Ok(new { mensaje = "Aviso creado con éxito"});
+
+            }catch(Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al crear el aviso", error = ex.Message });
+            }
+        }
+
+        //Controlador para obtener avisos
+        [HttpGet("ObtenerAvisos")]
+        public async Task<IActionResult> ObtenerAvisos([FromQuery] int IdMateria)
+        {
+            try
+            {
+                var avisos = await _context.tbAvisos
+                    .Where(a => a.MateriaId == IdMateria)
+                    .Select(a => new
+                    {
+                        a.AvisoId,
+                        a.Titulo,
+                        a.Descripcion,
+                        a.FechaCreacion
+                    })
+                    .ToListAsync();
+
+                return Ok(avisos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al obtener los avisos", error = ex.Message });
+            }
+        }
+
     }
 }

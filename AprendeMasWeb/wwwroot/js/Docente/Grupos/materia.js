@@ -26,11 +26,13 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => console.error("Error al obtener los datos de la materia:", error));
     }
-
+    //Cargar los avisos asinados a la materia
+    cargarAvisosDeMateria(materiaIdGlobal);
     // Cargar alumnos asignados a la materia
     cargarAlumnosAsignados(materiaIdGlobal);
     //Cargar actividades a la materia
     cargarActividadesDeMateria(materiaIdGlobal);
+
     //delegacion de evento 
     document.addEventListener("click", async function (event) {
         if (event.target.id === "btnAsignarAlumno") {
@@ -173,6 +175,71 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+//Funcion que carga los avisos a la vista.
+async function cargarAvisosDeMateria(materiaIdGlobal) {
+    const listaAvisos = document.getElementById("listaDeAvisos");
+    listaAvisos.innerHTML = "<p class='aviso-cargando'>Cargando avisos...</p>";
+
+    try {
+        const response = await fetch(`/api/DetallesMateriaApi/ObtenerAvisos?IdMateria=${materiaIdGlobal}`);
+        if (!response.ok) throw new Error("No se encontraron avisos.");
+        const avisos = await response.json();
+        renderizarAvisos(avisos);
+    } catch (error) {
+        listaAvisos.innerHTML = `<p class="aviso-error">${error.message}</p>`;
+    }
+}
+
+function renderizarAvisos(avisos) {
+    const listaAvisos = document.getElementById("listaDeAvisos");
+    listaAvisos.innerHTML = "";
+
+    if (avisos.length === 0) {
+        listaAvisos.innerHTML = "<p class='aviso-no-hay'>No hay avisos registrados para esta materia.</p>";
+        return;
+    }
+
+    avisos.forEach(aviso => {
+        const avisoItem = document.createElement("div");
+        avisoItem.classList.add("aviso-item");
+
+        const descripcionConEnlaces = convertirUrlsEnEnlaces(aviso.descripcion);
+
+        avisoItem.innerHTML = `
+            <div class="aviso-header">
+                <div class="aviso-icono">📢</div>
+                <div class="aviso-info">
+                    <strong class="aviso-titulo">${aviso.titulo}</strong>
+                    <p class="aviso-fecha">Publicado: ${new Date(aviso.fechaCreacion).toLocaleString()}</p>
+                    <p class="aviso-descripcion oculto">${descripcionConEnlaces}</p>
+                    <p class="aviso-ver-mas">Ver más</p>
+                </div>
+                <div class="aviso-botones">
+                    <button class="aviso-eliminar-btn" data-id="${aviso.avisoId}">Eliminar</button>
+                </div>
+            </div>
+        `;
+
+        const verMas = avisoItem.querySelector(".aviso-ver-mas");
+        const descripcion = avisoItem.querySelector(".aviso-descripcion");
+        verMas.addEventListener("click", () => {
+            descripcion.classList.toggle("oculto");
+        });
+
+        const btnEliminar = avisoItem.querySelector(".aviso-eliminar-btn");
+        btnEliminar.addEventListener("click", () => eliminarAviso(aviso.avisoId));
+
+        listaAvisos.appendChild(avisoItem);
+    });
+}
+
+function convertirUrlsEnEnlaces(texto) {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return texto.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
+}
+
+//Funcion que carga las actividades a la vista.
+
 async function cargarActividadesDeMateria(materiaIdGlobal) {
     const listaActividades = document.getElementById("listaActividadesDeMateria");
     listaActividades.innerHTML = "<p>Cargando actividades...</p>"; // Mostrar mensaje de carga
@@ -314,203 +381,294 @@ async function eliminarActividad(id) {
     }
 }
 
-    //Carga los alumnos a la materia y los muestra en el div
-    async function cargarAlumnosAsignados(materiaIdGlobal) {
-        try {
+//Carga los alumnos a la materia y los muestra en el div
+async function cargarAlumnosAsignados(materiaIdGlobal) {
+     try {
             // Hacer la petición al servidor
-            const response = await fetch(`/api/DetallesMateriaApi/ObtenerAlumnosPorMateria/${materiaIdGlobal}`);
+         const response = await fetch(`/api/DetallesMateriaApi/ObtenerAlumnosPorMateria/${materiaIdGlobal}`);
 
-            if (!response.ok) {
-                throw new Error("No se pudieron cargar los alumnos.");
-            }
+         if (!response.ok) {
+             throw new Error("No se pudieron cargar los alumnos.");
+         }
 
-            // Convertir la respuesta a JSON
-            const alumnos = await response.json();
+         // Convertir la respuesta a JSON
+         const alumnos = await response.json();
 
-            // Seleccionar el contenedor donde se mostrará la lista
-            const contenedor = document.getElementById("listaAlumnosAsignados");
-            contenedor.innerHTML = ""; // Limpiar contenido anterior
+         // Seleccionar el contenedor donde se mostrará la lista
+         const contenedor = document.getElementById("listaAlumnosAsignados");
+         contenedor.innerHTML = ""; // Limpiar contenido anterior
+          // Verificar si hay alumnos
+         if (alumnos.length === 0) {
+             contenedor.innerHTML = `<p class="text-muted">No hay alumnos asignados a esta materia.</p>`;
+             return;
+         }
 
-            // Verificar si hay alumnos
-            if (alumnos.length === 0) {
-                contenedor.innerHTML = `<p class="text-muted">No hay alumnos asignados a esta materia.</p>`;
-                return;
-            }
+         // Crear la lista de alumnos
+         alumnos.forEach(alumno => {
+             //  Crear el div del alumno
+             const divAlumno = document.createElement("div");
+             divAlumno.classList.add("d-flex", "justify-content-between", "align-items-center", "p-2", "mb-2");
+             divAlumno.style.background = "#f8f9fa"; // Color de fondo
+             divAlumno.style.borderRadius = "8px"; // Bordes redondeados
 
-            // Crear la lista de alumnos
-            alumnos.forEach(alumno => {
-                //  Crear el div del alumno
-                const divAlumno = document.createElement("div");
-                divAlumno.classList.add("d-flex", "justify-content-between", "align-items-center", "p-2", "mb-2");
-                divAlumno.style.background = "#f8f9fa"; // Color de fondo
-                divAlumno.style.borderRadius = "8px"; // Bordes redondeados
+             //  Agregar el nombre del alumno
+             const spanNombre = document.createElement("span");
+             spanNombre.textContent = `${alumno.nombre} ${alumno.apellidoPaterno} ${alumno.apellidoMaterno}`;
+             divAlumno.appendChild(spanNombre);
 
-                //  Agregar el nombre del alumno
-                const spanNombre = document.createElement("span");
-                spanNombre.textContent = `${alumno.nombre} ${alumno.apellidoPaterno} ${alumno.apellidoMaterno}`;
-                divAlumno.appendChild(spanNombre);
+             //  Contenedor de botón
+             const divBotones = document.createElement("div");
 
-                //  Contenedor de botón
-                const divBotones = document.createElement("div");
+             //  Botón "Eliminar del grupo" dentro de un menú desplegable
+             const dropdown = document.createElement("div");
+             dropdown.classList.add("dropdown");
 
-                //  Botón "Eliminar del grupo" dentro de un menú desplegable
-                const dropdown = document.createElement("div");
-                dropdown.classList.add("dropdown");
+             const btnDropdown = document.createElement("button");
+             btnDropdown.classList.add("btn", "btn-danger", "btn-sm", "dropdown-toggle");
+             btnDropdown.textContent = "Opciones";
+             btnDropdown.setAttribute("data-bs-toggle", "dropdown");
 
-                const btnDropdown = document.createElement("button");
-                btnDropdown.classList.add("btn", "btn-danger", "btn-sm", "dropdown-toggle");
-                btnDropdown.textContent = "Opciones";
-                btnDropdown.setAttribute("data-bs-toggle", "dropdown");
+             const dropdownMenu = document.createElement("ul");
+             dropdownMenu.classList.add("dropdown-menu");
 
-                const dropdownMenu = document.createElement("ul");
-                dropdownMenu.classList.add("dropdown-menu");
+             const eliminarItem = document.createElement("li");
+             const eliminarLink = document.createElement("a");
+             eliminarLink.classList.add("dropdown-item");
+             eliminarLink.href = "#";
+             eliminarLink.textContent = "Eliminar del grupo";
+             eliminarLink.onclick = function () {
+                 eliminardelgrupo(alumno.alumnoMateriaId);
+             };
 
-                const eliminarItem = document.createElement("li");
-                const eliminarLink = document.createElement("a");
-                eliminarLink.classList.add("dropdown-item");
-                eliminarLink.href = "#";
-                eliminarLink.textContent = "Eliminar del grupo";
-                eliminarLink.onclick = function () {
-                    eliminardelgrupo(alumno.alumnoMateriaId);
-                };
+             eliminarItem.appendChild(eliminarLink);
+             dropdownMenu.appendChild(eliminarItem);
+             dropdown.appendChild(btnDropdown);
+             dropdown.appendChild(dropdownMenu);
 
-                eliminarItem.appendChild(eliminarLink);
-                dropdownMenu.appendChild(eliminarItem);
-                dropdown.appendChild(btnDropdown);
-                dropdown.appendChild(dropdownMenu);
+             divBotones.appendChild(dropdown);
+             divAlumno.appendChild(divBotones);
 
-                divBotones.appendChild(dropdown);
-                divAlumno.appendChild(divBotones);
+             // Agregar alumno a la lista
+             contenedor.appendChild(divAlumno);
+         });
 
-                // Agregar alumno a la lista
-                contenedor.appendChild(divAlumno);
-            });
+     } catch (error) {
+         console.error("Error al cargar alumnos:", error);
+     }
+}
 
-        } catch (error) {
-            console.error("Error al cargar alumnos:", error);
-        }
+function cambiarSeccion(seccion) {
+    document.querySelectorAll('.seccion').forEach(div => div.style.display = 'none');
+    const seccionMostrar = document.getElementById(`seccion-${seccion}`);
+    if (seccionMostrar) {
+        seccionMostrar.style.display = 'block';
     }
 
-    function cambiarSeccion(seccion) {
-        document.querySelectorAll('.seccion').forEach(div => div.style.display = 'none');
-        const seccionMostrar = document.getElementById(`seccion-${seccion}`);
-        if (seccionMostrar) {
-            seccionMostrar.style.display = 'block';
+    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`button[onclick="cambiarSeccion('${seccion}')"]`).classList.add('active');
+
+    // Cargar datos si se seleccionan secciones dinámicas
+    if (seccion === "actividades") {
+        cargarActividadesDeMateria(materiaIdGlobal);
+    }
+    if (seccion === "alumnos") {
+        cargarAlumnosAsignados(materiaIdGlobal);
+    }
+    if (seccion === "avisos") {
+        cargarAvisosDeMateria(materiaIdGlobal);
+    }
+}
+
+
+
+async function eliminardelgrupo(alumnoMateriaId) {
+    try {
+        const confirmacion = await Swal.fire({
+            title: "¿Estás seguro?",
+            text: "Esta acción eliminará al alumno del grupo.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar"
+        });
+
+        if (!confirmacion.isConfirmed) return;
+
+        const response = await fetch(`/api/DetallesMateriaApi/EliminarAlumnoDeMateria/${alumnoMateriaId}`, {
+            method: "DELETE",
+        });
+
+        if (!response.ok) {
+            throw new Error("No se pudo eliminar al alumno del grupo.");
         }
 
-        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-        document.querySelector(`button[onclick="cambiarSeccion('${seccion}')"]`).classList.add('active');
+        Swal.fire({
+            position: "top-end",
+            title: "Eliminado",
+            text: "El alumno ha sido eliminado del grupo correctamente.",
+            icon: "success",
+            timer: 2500
+        });
 
-        // Cargar datos si se seleccionan secciones dinámicas
-        if (seccion === "actividades") {
-            cargarActividadesDeMateria(materiaIdGlobal);
-        }
-        if (seccion === "alumnos") {
-            cargarAlumnosAsignados(materiaIdGlobal);
-        }
+        cargarAlumnosAsignados(materiaIdGlobal); // Recargar la lista
+
+    } catch (error) {
+        Swal.fire({
+            position: "top-end",
+            title: "Error",
+            text: "Hubo un problema al eliminar al alumno.",
+            icon: "error",
+            timer: 2500
+        });
+
+        console.error("Error al eliminar alumno:", error);
+    }
+}
+
+async function registrarActividad() {
+    let nombre = document.getElementById("nombre").value;
+    let descripcion = document.getElementById("descripcion").value;
+    let fechaHoraLimite = document.getElementById("fechaHoraLimite").value;
+    let puntaje = document.getElementById("puntaje").value;
+
+    if (!nombre || !descripcion || !fechaHoraLimite || !puntaje) {
+        Swal.fire({
+            icon: "warning",
+            title: "Campos incompletos",
+            text: "Por favor, completa todos los campos antes de continuar."
+        });
+        return;
     }
 
+    let actividad = {
+        nombreActividad: nombre,
+        descripcion: descripcion,
+        fechaLimite: fechaHoraLimite,
+        tipoActividadId: 1, // Obtener esto dinámicamente si es necesario
+        puntaje: parseInt(puntaje),
+        materiaId: materiaIdGlobal //dentro de la materia que se encuentra
+    };
+
+    try {
+        let response = await fetch("/api/DetallesMateriaApi/CrearActividad", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(actividad)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+
+        let data = await response.json();
+
+        Swal.fire({
+            position: "top-end",
+            title: "Actividad creada",
+            text: "La actividad ha sido publicado correctamente.",
+            icon: "success",
+            timer: 3000,
+            showConfirmButton: false
+        });
+
+        setTimeout(() => {
+            location.reload(); // Recargar la página después de mostrar el mensaje
+        }, 2500);
+    } catch (error) {
+        console.error("Error:", error);
+        Swal.fire({
+            position: "top-end",
+            title: "Error al crear la actividad",
+            text: "Ocurrio un problema al crear la actividad..",
+            icon: "error",
+            timer: 3000,
+            showConfirmButton: false
+        });
+    }
+}
 
 
-    async function eliminardelgrupo(alumnoMateriaId) {
-        try {
-            const confirmacion = await Swal.fire({
-                title: "¿Estás seguro?",
-                text: "Esta acción eliminará al alumno del grupo.",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Sí, eliminar",
-                cancelButtonText: "Cancelar"
-            });
+async function publicarAviso() {
+    // Obtener valores de los inputs
+    let titulo = document.getElementById("titulo").value.trim();
+    let descripcion = document.getElementById("descripcionAviso").value.trim();
 
-            if (!confirmacion.isConfirmed) return;
+    // Validar que los campos no estén vacíos
+    if (!titulo || !descripcion) {
+        Swal.fire({
+            position: "top-end",
+            title: "Campos vacíos",
+            text: "Por favor, completa todos los campos.",
+            icon: "warning",
+            timer: 2500,
+            showConfirmButton: false
+        });
+        return;
+    }
 
-            const response = await fetch(`/api/DetallesMateriaApi/EliminarAlumnoDeMateria/${alumnoMateriaId}`, {
-                method: "DELETE",
-            });
+    // Variables globales que ya tienes en tu archivo .js
+    let docenteId = docenteIdGlobal;
+    let grupoId = grupoIdGlobal;
+    let materiaId = materiaIdGlobal;
 
-            if (!response.ok) {
-                throw new Error("No se pudo eliminar al alumno del grupo.");
-            }
+    // Crear objeto con los datos a enviar
+    let avisoData = {
+        DocenteId: docenteId,
+        Titulo: titulo,
+        Descripcion: descripcion,
+        GrupoId: grupoId,
+        MateriaId: materiaId
+    };
 
+    try {
+        // Enviar datos al controlador
+        let response = await fetch("/api/DetallesMateriaApi/CrearAviso", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(avisoData)
+        });
+
+        let result = await response.json();
+
+        if (response.ok) {
             Swal.fire({
                 position: "top-end",
-                title: "Eliminado",
-                text: "El alumno ha sido eliminado del grupo correctamente.",
+                title: "Aviso creado",
+                text: "El aviso ha sido publicado correctamente.",
                 icon: "success",
-                timer: 2500
+                timer: 3000,
+                showConfirmButton: false
             });
 
-            cargarAlumnosAsignados(materiaIdGlobal); // Recargar la lista
+            setTimeout(() => {
+                location.reload(); // Recargar la página después de mostrar el mensaje
+            }, 3000);
 
-        } catch (error) {
+        } else {
             Swal.fire({
                 position: "top-end",
                 title: "Error",
-                text: "Hubo un problema al eliminar al alumno.",
+                text: result.mensaje || "Error al crear el aviso.",
                 icon: "error",
-                timer: 2500
+                timer: 3000,
+                showConfirmButton: false
             });
-
-            console.error("Error al eliminar alumno:", error);
         }
+    } catch (error) {
+        console.error("Error:", error);
+        Swal.fire({
+            position: "top-end",
+            title: "Error",
+            text: "Hubo un problema al enviar el aviso.",
+            icon: "error",
+            timer: 3000,
+            showConfirmButton: false
+        });
     }
+}
 
-    async function registrarActividad() {
-        let nombre = document.getElementById("nombre").value;
-        let descripcion = document.getElementById("descripcion").value;
-        let fechaHoraLimite = document.getElementById("fechaHoraLimite").value;
-        let puntaje = document.getElementById("puntaje").value;
 
-        if (!nombre || !descripcion || !fechaHoraLimite || !puntaje) {
-            Swal.fire({
-                icon: "warning",
-                title: "Campos incompletos",
-                text: "Por favor, completa todos los campos antes de continuar."
-            });
-            return;
-        }
-
-        let actividad = {
-            nombreActividad: nombre,
-            descripcion: descripcion,
-            fechaLimite: fechaHoraLimite,
-            tipoActividadId: 1, // Obtener esto dinámicamente si es necesario
-            puntaje: parseInt(puntaje),
-            materiaId: materiaIdGlobal //dentro de la materia que se encuentra
-        };
-
-        try {
-            let response = await fetch("/api/DetallesMateriaApi/CrearActividad", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(actividad)
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
-            }
-
-            let data = await response.json();
-
-            Swal.fire({
-                icon: "success",
-                title: "Actividad creada",
-                text: "La actividad ha sido creada exitosamente.",
-                confirmButtonText: "OK"
-            }).then(() => {
-                location.reload(); // Recargar la página o actualizar la vista pero manda hasta avisos, checar eso
-            });
-
-        } catch (error) {
-            console.error("Error:", error);
-            Swal.fire({
-                icon: "error",
-                title: "Error al crear la actividad",
-                text: "Hubo un problema al crear la actividad. Inténtalo de nuevo.",
-                confirmButtonText: "Entendido"
-            });
-        }
-    }

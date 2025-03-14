@@ -6,6 +6,8 @@
     ViewData["Title"] = "Detalles de Materias";
     //Carga modal crear actividad
     @Html.Partial("~/Views/Docente/CrearActividadModal.cshtml")
+    @Html.Partial("~/Views/Docente/crearAvisoMateriaModal.cshtml")
+
 }
 
 <link rel="stylesheet" href="~/css/Docente/seccionAlumnoEnMateria.css" />
@@ -38,26 +40,16 @@
 
         <!-- Contenedor que gestiona los avisos -->
         <div id="seccion-avisos" class="seccion">
-            <!-- Sección para escribir un nuevo aviso -->
-            <div id="avisoParaPublicar" class="aviso-card">
-                <div class="aviso-header">
-                    <img src="icono-docente.svg" alt="Docente" class="icono-docente">
-                    <div>
-                        <strong>Tu Nombre</strong>
-                        <p id="fechaPublicacion"></p>
-                    </div>
-                </div>
-
-                <input type="text" id="tituloAviso" placeholder="Título del aviso" class="input-aviso">
-                <textarea id="descripcionAviso" placeholder="Escribe la descripción..." class="input-aviso"></textarea>
-
-                <div class="aviso-footer">
-                    <button id="btnAgregarLink" class="btn-aviso">Agregar Link</button>
-                    <button id="btnPublicarAviso" class="btn-publicar">Publicar</button>
+            <!-- Sección para ingresar un nuevo aviso -->
+            <div class="dropdown">
+                <button class="btn-crear">Crear ▼</button>
+                <div class="dropdown-content">
+                    <button class="misCursos-dropdown-item" data-bs-toggle="modal" data-bs-target="#crearAvisoMateriaModal">
+                        Crear Aviso
+                    </button>
                 </div>
             </div>
-
-            <!-- Lista de avisos que se cargarán desde el backend -->
+            <div class="divider"></div>
             <div id="listaDeAvisos">
                 <!-- Aquí estarán los avisos cargados desde backend -->
             </div>

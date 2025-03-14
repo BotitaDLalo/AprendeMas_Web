@@ -1,6 +1,6 @@
 let docenteIdGlobal = null; //Variable global para almacenar el docenteId
 let materiasPorCrear = []; // Lista de materias a crear
-
+let intentosAcceder = 0;
 // Agregar una nueva materia al formulario
 function agregarMateria() {
     const materiasContainer = document.getElementById("listaMaterias");
@@ -423,7 +423,12 @@ async function cargarMateriasSinGrupo() {
             if (result.dismiss === Swal.DismissReason.timer) {
                 // Si la alerta se cierra automáticamente por el temporizador
                 console.log("Reintentando cargar las materias sin grupo.");
-                inicializar(); // Llama a la función inicializar para reintentar la carga
+                if (intentosAcceder < 6) {
+                    inicializar(); // Llama a la función inicializar para reintentar la carga
+                    intentosAcceder++;
+                } else {
+                    AlertaCierreSesion();
+                }
             } else if (result.dismiss === Swal.DismissReason.cancel) {
                 // Si el usuario hace clic en "Cerrar sesión"
                 console.log("El usuario decidió cerrar sesión.");
@@ -521,7 +526,12 @@ async function cargarGrupos() { // Lógica para actualizar la lista de grupos en
             if (result.dismiss === Swal.DismissReason.timer) {
                 // Si la alerta se cerró automáticamente por el temporizador
                 console.log("Reintentando cargar los grupos.");
-                inicializar(); // Reintenta la carga de grupos automáticamente
+                if (intentosAcceder < 6) {
+                    inicializar(); // Llama a la función inicializar para reintentar la carga
+                    intentosAcceder++;
+                } else {
+                    AlertaCierreSesion();
+                }
             } else if (result.dismiss === Swal.DismissReason.cancel) {
                 // Si el usuario hizo clic en "Cerrar sesión"
                 console.log("El usuario decidió cerrar sesión.");
