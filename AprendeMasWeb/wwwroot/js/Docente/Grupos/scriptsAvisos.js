@@ -92,12 +92,9 @@ async function publicarAviso() {
 
 
 
-
-//Funcion que carga los avisos a la vista.
+// Funcion que carga los avisos a la vista.
 async function cargarAvisosDeMateria() {
     const listaAvisos = document.getElementById("listaDeAvisosDeMateria");
-    listaAvisos.innerHTML = "<p class='aviso-cargando'>Cargando avisos...</p>";
-
     try {
         const response = await fetch(`/api/DetallesMateriaApi/ObtenerAvisos?IdMateria=${materiaIdGlobal}`);
         if (!response.ok) throw new Error("No se encontraron avisos.");
@@ -110,16 +107,16 @@ async function cargarAvisosDeMateria() {
 
 function renderizarAvisos(avisos) {
     const listaAvisos = document.getElementById("listaDeAvisosDeMateria");
-    listaAvisos.innerHTML = "";
+    listaAvisos.innerHTML = ""; // Limpiar el contenedor
 
     if (avisos.length === 0) {
-        listaAvisos.innerHTML = "<p>No hay avisos registrados para esta materia.</p>";
+        listaAvisos.innerHTML = "<p>No hay actividades registradas para esta materia.</p>";
         return;
     }
+
     avisos.forEach(aviso => {
         const avisoItem = document.createElement("div");
         avisoItem.classList.add("aviso-item");
-
         const descripcionAvisoConEnlace = convertirUrlsEnEnlaces(aviso.descripcion);
 
         avisoItem.innerHTML = `
@@ -127,25 +124,40 @@ function renderizarAvisos(avisos) {
                 <div class="aviso-icono">📢</div>
                 <div class="aviso-info">
                     <strong>${aviso.titulo}</strong>
-                    <p class="aviso-fecha">Publicado: ${new Date(aviso.fechaCreacion).toLocaleString()}</p>
-                    <p class="aviso-descripcion oculto">${descripcionAvisoConEnlace}</p>
-                    <p class="aviso-ver-mas">Ver más</p>
+                    <p class="aviso-fecha-publicado">Publicado: ${formatearFecha(aviso.fechaCreacion)}</p>
+                    <p class="actividad-descripcion oculto">${descripcionAvisoConEnlace}</p>
+                    <p class="ver-completo">Ver completo</p>
                 </div>
-                <div class="aviso-botones">
+                <div class="aviso-botones-container">
+                    <button class="aviso-editar-btn" data-id="${aviso.avisoId}">Editar</button>
                     <button class="aviso-eliminar-btn" data-id="${aviso.avisoId}">Eliminar</button>
                 </div>
             </div>
         `;
 
-        const verMas = avisoItem.querySelector(".aviso-ver-mas");
-        const descripcion = avisoItem.querySelector(".aviso-descripcion");
-        verMas.addEventListener("click", () => {
-            descripcion.classList.toggle("oculto");
+        // Mostrar/ocultar descripción al hacer clic en "Ver completo"
+        const verCompleto = avisoItem.querySelector(".ver-completo");
+        const descripcion = avisoItem.querySelector(".actividad-descripcion");
+
+        verCompleto.addEventListener("click", () => {
+            // Alternar entre mostrar y ocultar la descripción
+            if (descripcion.classList.contains("oculto")) {
+                descripcion.classList.remove("oculto");
+                descripcion.classList.add("visible");
+            } else {
+                descripcion.classList.remove("visible");
+                descripcion.classList.add("oculto");
+            }
         });
 
+        // Agregar eventos a los botones
         const btnEliminar = avisoItem.querySelector(".aviso-eliminar-btn");
+        const btnEditar = avisoItem.querySelector(".aviso-editar-btn");
+
         btnEliminar.addEventListener("click", () => eliminarAviso(aviso.avisoId));
+        btnEditar.addEventListener("click", () => editarAviso(aviso.avisoId));
 
         listaAvisos.appendChild(avisoItem);
     });
 }
+
