@@ -113,6 +113,7 @@ function renderizarAvisos(avisos) {
         listaAvisos.innerHTML = "<p>No hay actividades registradas para esta materia.</p>";
         return;
     }
+    avisos.reverse();
 
     avisos.forEach(aviso => {
         const avisoItem = document.createElement("div");

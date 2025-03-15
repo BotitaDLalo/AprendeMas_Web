@@ -97,6 +97,7 @@ function renderizarActividades(actividades) {
         listaActividades.innerHTML = "<p>No hay actividades registradas para esta materia.</p>";
         return;
     }
+    actividades.reverse();
 
     actividades.forEach(actividad => {
         const actividadItem = document.createElement("div");
