@@ -10,37 +10,39 @@
 
 }
 
-<link rel="stylesheet" href="~/css/Docente/seccionAlumnoEnMateria.css" />
 <link rel="stylesheet" href="~/css/Docente/materias.css" />
+<link rel="stylesheet" href="~/css/Docente/MateriaDetallesEstilos.css" />
+<link rel="stylesheet" href="~/css/Docente/MateriaDetallesEstilosBotonesEtc.css" />
+
 <link rel="stylesheet" href="~/css/Docente/avisosSeccion.css" />
 <link rel="stylesheet" href="~/css/Docente/actividadesSeccion.css" />
+<link rel="stylesheet" href="~/css/Docente/alumnosSeccion.css" />
 
 
-<!-- Contenedor principal de la sección de materia -->
+
+<!-- Contenedor principal de la sección de detalle de la materia - Good -->
 <div class="materia-container">
-    <!-- Cabecera de la materia -->
+    <!-- Pre carga de detalle de materia - Good -->
     <div class="materia-header" id="materiaHeader" style="background-color: #d63384;">
-        <h1><span id="materiaNombre"></span></h1>
+        <h1><span id="materiaNombre">Cargando...</span></h1>
         <div class="materia-info">
-            <span>Código de clase: <strong id="codigoAcceso">...</strong></span>
-            <i class="fas fa-cog"></i> <!-- Icono de configuración -->
+            <span>Código de clase: <strong id="codigoAcceso">Cargando...</strong></span>
+            <i class="fas fa-copy copiar-icono" onclick="copiarCodigoAcceso()" title="Copiar código"></i>
         </div>
     </div>
 
-    <!-- Barra de navegación -->
+
+    <!-- Contenedor de la barra de navegación - VeryGood -->
     <nav class="materia-nav">
         <button class="tab-button active" onclick="cambiarSeccion('avisos')">Avisos</button>
         <button class="tab-button" onclick="cambiarSeccion('actividades')">Actividades</button>
         <button class="tab-button" onclick="cambiarSeccion('alumnos')">Alumnos</button>
         <button class="tab-button" onclick="cambiarSeccion('calificaciones')">Calificaciones</button>
     </nav>
-
-    <!-- Contenedor de secciones -->
+    <!-- Contenedor de secciones - Good -->
     <div id="contenedor-dinamico" class="materia-content">
-
-        <!-- Contenedor que gestiona los avisos -->
         <div id="seccion-avisos" class="seccion">
-            <!-- Sección para ingresar un nuevo aviso -->
+            <!-- Sección para ingresar un nuevo aviso - Good -->
             <div class="dropdown">
                 <button class="btn-crear">Crear ▼</button>
                 <div class="dropdown-content">
@@ -49,13 +51,13 @@
                     </button>
                 </div>
             </div>
-            <div class="divider"></div>
-            <div id="listaDeAvisos">
+            <div class="divider"></div> <!--Se encuentra en layout.css-->
+            <div id="listaDeAvisosDeMateria">
                 <!-- Aquí estarán los avisos cargados desde backend -->
             </div>
         </div>
 
-        <!-- Contenedor que gestiona las actividades -->
+        <!-- Contenedor que gestiona las actividades - VeryGood -->
         <div id="seccion-actividades" class="seccion" style="display: none;">
             <!-- Botón de Crear con opciones -->
             <div class="dropdown">
@@ -79,17 +81,19 @@
             <div class="container mt-3">
                 <label for="buscarAlumno" class="form-label">Buscar alumno por correo:</label>
 
-                <div class="input-group" style="display: flex; align-items: center; position: relative;">
-                    <input type="text" id="buscarAlumno" class="form-control" placeholder="Ingrese el correo del alumno..." autocomplete="off" style="flex: 1;">
+                <div class="input-group">
+                    <input type="text" id="buscarAlumno" class="form-control" placeholder="Ingrese el correo del alumno..." autocomplete="off">
                     <button id="btnAsignarAlumno" class="btn btn-primary">Asignar Alumno</button>
                 </div>
 
                 <!-- Lista de sugerencias -->
-                <ul id="sugerenciasAlumnos" class="list-group mt-2" style="position: absolute; width: 100%; z-index: 1000;"></ul>
+                <ul id="sugerenciasAlumnos" class="list-group mt-2"></ul>
             </div>
+
             <div id="listaAlumnosAsignados" class="mt-3">
-                <!--Aqui se alojara la lista de alumnos desde el backend-->
+                <!-- Aquí se alojará la lista de alumnos desde el backend -->
             </div>
+
         </div>
 
         <!--contenedor que gestiona las calificaciones-->
@@ -103,7 +107,11 @@
 @section Scripts {
     <!--Incluye un archivo JavaScript específico para manejar las funcionalidades relacionadas con los grupos de materias.-->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="~/js/Docente/Grupos/materia.js"></script>
+    <script src="~/js/Docente/Grupos/DetalleMateria.js"></script>
+    <script src="~/js/Docente/Grupos/DetalleMateriaIconos.js"></script>
+
+    <script src="~/js/Docente/Grupos/scriptsAvisos.js"></script>
+    <script src="~/js/Docente/Grupos/scriptsActividades.js"></script>
     <!-- Incluye un archivo CSS específico para los estilos de las materias. -->
     
 }

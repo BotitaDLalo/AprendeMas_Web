@@ -147,10 +147,13 @@ p, body {
 }
 
 .divider {
-    height: 2px;
-    background-color: red;
+    height: 3px;
+    background: linear-gradient(to right, #ff4b4b, #ff0000); /* Degradado rojo */
+    border-radius: 2px;
     margin: 20px 0;
+    opacity: 0.8; /* Un poco de transparencia */
 }
+
 
 .container-cards {
     display: flex;

@@ -14,8 +14,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 return response.json();
             })
             .then(data => {
-                console.log("Datos recibidos:", data);
-
                 if (data.nombreMateria && data.codigoAcceso && data.codigoColor) {
                     document.getElementById("materiaNombre").innerText = data.nombreMateria;
                     document.getElementById("codigoAcceso").innerText = data.codigoAcceso;
@@ -26,13 +24,9 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => console.error("Error al obtener los datos de la materia:", error));
     }
-    //Cargar los avisos asinados a la materia
-    cargarAvisosDeMateria(materiaIdGlobal);
     // Cargar alumnos asignados a la materia
     cargarAlumnosAsignados(materiaIdGlobal);
     //Cargar actividades a la materia
-    cargarActividadesDeMateria(materiaIdGlobal);
-
     //delegacion de evento 
     document.addEventListener("click", async function (event) {
         if (event.target.id === "btnAsignarAlumno") {
@@ -175,211 +169,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-//Funcion que carga los avisos a la vista.
-async function cargarAvisosDeMateria(materiaIdGlobal) {
-    const listaAvisos = document.getElementById("listaDeAvisos");
-    listaAvisos.innerHTML = "<p class='aviso-cargando'>Cargando avisos...</p>";
 
-    try {
-        const response = await fetch(`/api/DetallesMateriaApi/ObtenerAvisos?IdMateria=${materiaIdGlobal}`);
-        if (!response.ok) throw new Error("No se encontraron avisos.");
-        const avisos = await response.json();
-        renderizarAvisos(avisos);
-    } catch (error) {
-        listaAvisos.innerHTML = `<p class="aviso-error">${error.message}</p>`;
-    }
-}
-
-function renderizarAvisos(avisos) {
-    const listaAvisos = document.getElementById("listaDeAvisos");
-    listaAvisos.innerHTML = "";
-
-    if (avisos.length === 0) {
-        listaAvisos.innerHTML = "<p class='aviso-no-hay'>No hay avisos registrados para esta materia.</p>";
-        return;
-    }
-
-    avisos.forEach(aviso => {
-        const avisoItem = document.createElement("div");
-        avisoItem.classList.add("aviso-item");
-
-        const descripcionConEnlaces = convertirUrlsEnEnlaces(aviso.descripcion);
-
-        avisoItem.innerHTML = `
-            <div class="aviso-header">
-                <div class="aviso-icono">📢</div>
-                <div class="aviso-info">
-                    <strong class="aviso-titulo">${aviso.titulo}</strong>
-                    <p class="aviso-fecha">Publicado: ${new Date(aviso.fechaCreacion).toLocaleString()}</p>
-                    <p class="aviso-descripcion oculto">${descripcionConEnlaces}</p>
-                    <p class="aviso-ver-mas">Ver más</p>
-                </div>
-                <div class="aviso-botones">
-                    <button class="aviso-eliminar-btn" data-id="${aviso.avisoId}">Eliminar</button>
-                </div>
-            </div>
-        `;
-
-        const verMas = avisoItem.querySelector(".aviso-ver-mas");
-        const descripcion = avisoItem.querySelector(".aviso-descripcion");
-        verMas.addEventListener("click", () => {
-            descripcion.classList.toggle("oculto");
-        });
-
-        const btnEliminar = avisoItem.querySelector(".aviso-eliminar-btn");
-        btnEliminar.addEventListener("click", () => eliminarAviso(aviso.avisoId));
-
-        listaAvisos.appendChild(avisoItem);
-    });
-}
-
-function convertirUrlsEnEnlaces(texto) {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return texto.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
-}
-
-//Funcion que carga las actividades a la vista.
-
-async function cargarActividadesDeMateria(materiaIdGlobal) {
-    const listaActividades = document.getElementById("listaActividadesDeMateria");
-    listaActividades.innerHTML = "<p>Cargando actividades...</p>"; // Mostrar mensaje de carga
-
-    try {
-        const response = await fetch(`/api/DetallesMateriaApi/ObtenerActividadesPorMateria/${materiaIdGlobal}`);
-        if (!response.ok) throw new Error("No se encontraron actividades.");
-        const actividades = await response.json();
-        renderizarActividades(actividades);
-    } catch (error) {
-        listaActividades.innerHTML = `<p class="mensaje-error">${error.message}</p>`;
-    }
-}
-
-function renderizarActividades(actividades) {
-    const listaActividades = document.getElementById("listaActividadesDeMateria");
-    listaActividades.innerHTML = ""; // Limpiar el contenedor
-
-    if (actividades.length === 0) {
-        listaActividades.innerHTML = "<p>No hay actividades registradas para esta materia.</p>";
-        return;
-    }
-
-    actividades.forEach(actividad => {
-        const actividadItem = document.createElement("div");
-        actividadItem.classList.add("actividad-item");
-
-        actividadItem.innerHTML = `
-            <div class="actividad-header">
-                <div class="icono">📋</div>
-                <div class="info">
-                    <strong>${actividad.nombreActividad}</strong>
-                    <p class="fecha-publicado">Publicado: ${formatearFecha(actividad.fechaCreacion)}</p>
-                    <p class="puntaje" style="font-weight: bold; color: #d35400;">Puntaje: ${actividad.puntaje}</p>
-                    <p class="actividad-descripcion oculto">${actividad.descripcion}</p>
-                    <p class="ver-completo">Ver completo</p>
-                </div>
-                <div class="fecha-entrega">
-                    <strong>Fecha de entrega:</strong><br>
-                    ${formatearFecha(actividad.fechaLimite)}
-                </div>
-                <div class="botones-container">
-                    <button class="eliminar-btn" data-id="${actividad.materiaActividad}">Eliminar</button>
-                </div>
-            </div>
-        `;
-
-        // Mostrar/ocultar descripción al hacer clic en "Ver completo"
-        const verCompleto = actividadItem.querySelector(".ver-completo");
-        const descripcion = actividadItem.querySelector(".actividad-descripcion");
-        verCompleto.addEventListener("click", () => {
-            descripcion.classList.toggle("oculto");
-        });
-
-        // Agregar eventos a los botones
-        const btnEliminar = actividadItem.querySelector(".eliminar-btn");
-
-        btnEliminar.addEventListener("click", () => eliminarActividad(actividad.materiaActividad));
-
-        listaActividades.appendChild(actividadItem);
-    });
-}
-
-function formatearFecha(fecha) {
-    const dateObj = new Date(fecha);
-    return dateObj.toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" }) +
-        " " + dateObj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
-}
-
-
-
-// Funciones para manejar los botones
-
-
-async function eliminarActividad(id) {
-    // Confirmación con SweetAlert
-    const result = await Swal.fire({
-        title: '¿Estás seguro?',
-        text: "¡Esta acción no se puede deshacer!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar',
-        reverseButtons: true
-    });
-
-    if (result.isConfirmed) {
-        // Alerta de confirmación antes de la eliminación
-        Swal.fire(
-            'Eliminado!',
-            `La actividad con ID: ${id} ha sido eliminada.`,
-            'success'
-        );
-
-        try {
-            // Realizar la petición para eliminar la actividad
-            const response = await fetch(`/api/DetallesMateriaApi/EliminarActividad/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-
-            const data = await response.json();
-
-            if (data.message) {
-                Swal.fire({
-                    title: 'Éxito',
-                    text: data.message,
-                    icon: 'success',
-                    timer: 1500,  // Tiempo en milisegundos (1500ms = 1.5 segundos)
-                    showConfirmButton: false  // Esto es opcional, para que no aparezca el botón de "OK"
-                });
-                location.reload(); // Recargar la página o actualizar la vista pero manda hasta avisos, checar eso
-            } else {
-                Swal.fire(
-                    'Error',
-                    'No se pudo eliminar la actividad. Intenta nuevamente.',
-                    'error'
-                );
-            }
-        } catch (error) {
-            Swal.fire(
-                'Error',
-                'Hubo un error en la solicitud. Intenta nuevamente.',
-                'error'
-            );
-            console.error('Error al eliminar la actividad:', error);
-        }
-    } else {
-        Swal.fire({
-            title: 'Cancelado',
-            text: 'La actividad no fue eliminada.',
-            icon: 'info',
-            timer: 1500,  // El tiempo que se mostrará la alerta (1500ms = 1.5 segundos)
-            showConfirmButton: false  // Esto es opcional, para que no aparezca el botón "OK"
-        });
-
-    }
-}
 
 //Carga los alumnos a la materia y los muestra en el div
 async function cargarAlumnosAsignados(materiaIdGlobal) {
@@ -527,148 +317,17 @@ async function eliminardelgrupo(alumnoMateriaId) {
     }
 }
 
-async function registrarActividad() {
-    let nombre = document.getElementById("nombre").value;
-    let descripcion = document.getElementById("descripcion").value;
-    let fechaHoraLimite = document.getElementById("fechaHoraLimite").value;
-    let puntaje = document.getElementById("puntaje").value;
 
-    if (!nombre || !descripcion || !fechaHoraLimite || !puntaje) {
-        Swal.fire({
-            icon: "warning",
-            title: "Campos incompletos",
-            text: "Por favor, completa todos los campos antes de continuar."
-        });
-        return;
-    }
 
-    let actividad = {
-        nombreActividad: nombre,
-        descripcion: descripcion,
-        fechaLimite: fechaHoraLimite,
-        tipoActividadId: 1, // Obtener esto dinámicamente si es necesario
-        puntaje: parseInt(puntaje),
-        materiaId: materiaIdGlobal //dentro de la materia que se encuentra
-    };
-
-    try {
-        let response = await fetch("/api/DetallesMateriaApi/CrearActividad", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(actividad)
-        });
-
-        if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
-        }
-
-        let data = await response.json();
-
-        Swal.fire({
-            position: "top-end",
-            title: "Actividad creada",
-            text: "La actividad ha sido publicado correctamente.",
-            icon: "success",
-            timer: 3000,
-            showConfirmButton: false
-        });
-
-        setTimeout(() => {
-            location.reload(); // Recargar la página después de mostrar el mensaje
-        }, 2500);
-    } catch (error) {
-        console.error("Error:", error);
-        Swal.fire({
-            position: "top-end",
-            title: "Error al crear la actividad",
-            text: "Ocurrio un problema al crear la actividad..",
-            icon: "error",
-            timer: 3000,
-            showConfirmButton: false
-        });
-    }
+//Funciones reutilizables
+function convertirUrlsEnEnlaces(texto) {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return texto.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
 }
 
 
-async function publicarAviso() {
-    // Obtener valores de los inputs
-    let titulo = document.getElementById("titulo").value.trim();
-    let descripcion = document.getElementById("descripcionAviso").value.trim();
-
-    // Validar que los campos no estén vacíos
-    if (!titulo || !descripcion) {
-        Swal.fire({
-            position: "top-end",
-            title: "Campos vacíos",
-            text: "Por favor, completa todos los campos.",
-            icon: "warning",
-            timer: 2500,
-            showConfirmButton: false
-        });
-        return;
-    }
-
-    // Variables globales que ya tienes en tu archivo .js
-    let docenteId = docenteIdGlobal;
-    let grupoId = grupoIdGlobal;
-    let materiaId = materiaIdGlobal;
-
-    // Crear objeto con los datos a enviar
-    let avisoData = {
-        DocenteId: docenteId,
-        Titulo: titulo,
-        Descripcion: descripcion,
-        GrupoId: grupoId,
-        MateriaId: materiaId
-    };
-
-    try {
-        // Enviar datos al controlador
-        let response = await fetch("/api/DetallesMateriaApi/CrearAviso", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(avisoData)
-        });
-
-        let result = await response.json();
-
-        if (response.ok) {
-            Swal.fire({
-                position: "top-end",
-                title: "Aviso creado",
-                text: "El aviso ha sido publicado correctamente.",
-                icon: "success",
-                timer: 3000,
-                showConfirmButton: false
-            });
-
-            setTimeout(() => {
-                location.reload(); // Recargar la página después de mostrar el mensaje
-            }, 3000);
-
-        } else {
-            Swal.fire({
-                position: "top-end",
-                title: "Error",
-                text: result.mensaje || "Error al crear el aviso.",
-                icon: "error",
-                timer: 3000,
-                showConfirmButton: false
-            });
-        }
-    } catch (error) {
-        console.error("Error:", error);
-        Swal.fire({
-            position: "top-end",
-            title: "Error",
-            text: "Hubo un problema al enviar el aviso.",
-            icon: "error",
-            timer: 3000,
-            showConfirmButton: false
-        });
-    }
+function formatearFecha(fecha) {
+    const dateObj = new Date(fecha);
+    return dateObj.toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" }) +
+        " " + dateObj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
 }
-
-

@@ -1,4 +1,8 @@
-﻿/*Estilos modales*/
+﻿
+/*Apartir de aqui se acomoda estilos*/
+
+
+/*Estilos modales*/
 .modal-title {
     background: linear-gradient(135deg, #007bff 50%, #0056b3 100%); /* Fondo azul degradado */
     color: white; /* Letras blancas */
@@ -164,15 +168,7 @@
 
 
 
-/* Contenedor principal */
-.materia-container {
-    width: 100%;
-    max-width: 100%;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-}
+
 
 /* Encabezado de la materia */
 .materia-header {
@@ -193,49 +189,6 @@
         margin-left: 10px;
         cursor: pointer;
     }
-
-/* Navegación */
-.materia-nav {
-    display: flex;
-    justify-content: space-around;
-    background: #eee;
-    padding: 10px;
-}
-
-.tab-button {
-    background: none;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: 0.3s;
-    color: black;
-}
-
-    .tab-button:hover {
-        background: rgba(0, 0, 0, 0.1);
-    }
-
-    .tab-button.active {
-        border-bottom: 3px solid #d63384;
-        font-weight: bold;
-    }
-
-/* Contenido dinámico 
-.materia-content {
-    padding: 20px;
-    min-height: 150px;
-    text-align: center;
-}*/
-.materia-content {
-    padding: 20px;
-    width:100%;
-    min-height: auto; /* Dejar que crezca dinámicamente */
-    text-align: left; /* Alinear el contenido a la izquierda */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
 
 
 /* Estilos de la card */
@@ -343,59 +296,4 @@
     }
 
 
-    /*Css para actividades
-    */
-/* Estilo del contenedor dropdown */
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
 
-/* Estilo del botón principal */
-.btn-crear {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background 0.3s;
-}
-
-    .btn-crear:hover {
-        background-color: #0056b3;
-    }
-
-/* Contenedor del menú desplegable */
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: white;
-    min-width: 150px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-    overflow: hidden;
-    z-index: 10;
-}
-
-    /* Estilo de los enlaces dentro del menú */
-    .dropdown-content a {
-        color: black;
-        padding: 10px 15px;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 14px;
-        transition: background 0.2s;
-    }
-
-        .dropdown-content a:hover {
-            background-color: #f1f1f1;
-        }
-
-/* Mostrar el menú cuando el usuario pasa el mouse sobre el botón */
-.dropdown:hover .dropdown-content {
-    display: block;
-}

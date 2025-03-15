@@ -200,6 +200,7 @@ namespace AprendeMasWeb.Controllers.WEB
                     {
                         NombreActividad = actividadDto.NombreActividad,
                         Descripcion = actividadDto.Descripcion,
+                        FechaCreacion = DateTime.Now,
                         FechaLimite = actividadDto.FechaLimite,
                         TipoActividadId = actividadDto.TipoActividadId,
                         Puntaje = actividadDto.Puntaje,
