@@ -6,7 +6,7 @@ namespace AprendeMasWeb.Services
 {
     public interface ITiposActividadesService
     {
-        Task<TiposActividades> GetOrCreateTipoActividad(int tipoActividadId);
+        Task<cTiposActividades> GetOrCreateTipoActividad(int tipoActividadId);
     }
 
     public class TiposActividadesService : ITiposActividadesService
@@ -18,7 +18,7 @@ namespace AprendeMasWeb.Services
             _context = context;
         }
 
-        public async Task<TiposActividades> GetOrCreateTipoActividad(int tipoActividadId)
+        public async Task<cTiposActividades> GetOrCreateTipoActividad(int tipoActividadId)
         {
             // Buscar si el tipo de actividad ya existe
             var tipoActividad = await _context.cTiposActividades
@@ -35,7 +35,7 @@ namespace AprendeMasWeb.Services
                     _ => throw new ArgumentException("Tipo de actividad no válido.")
                 };
 
-                tipoActividad = new TiposActividades
+                tipoActividad = new cTiposActividades
                 {
                     TipoActividadId = tipoActividadId,
                     Nombre = nombreTipoActividad

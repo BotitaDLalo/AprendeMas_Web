@@ -21,7 +21,7 @@ namespace AprendeMasWeb.Controllers.WEB
 
         // POST: api/EventosAgenda
         [HttpPost]
-        public async Task<IActionResult> CrearEvento([FromBody] EventosAgenda evento)
+        public async Task<IActionResult> CrearEvento([FromBody] tbEventosAgenda evento)
         {
             if (evento == null)
             {

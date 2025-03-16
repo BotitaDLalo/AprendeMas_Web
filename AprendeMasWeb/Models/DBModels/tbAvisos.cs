@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace AprendeMasWeb.Models.DBModels
 {
-    public class Avisos
+    public class tbAvisos
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -23,12 +23,6 @@ namespace AprendeMasWeb.Models.DBModels
 
         public DateTime FechaCreacion { get; set; }
 
-        public virtual Docentes? Docentes { get; set; }
-
-        //public required DateTime FechaInicio { get; set; }
-
-        //public required DateTime FechaFin {  get; set; }
-
-        //public required bool Activo { get; set; }
+        public virtual tbDocentes? Docentes { get; set; }
     }
 }

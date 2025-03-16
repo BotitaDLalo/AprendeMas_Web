@@ -14,23 +14,22 @@ namespace AprendeMasWeb.Data
 
         // DbSets para las entidades
         public DbSet<tbUsuariosFcmTokens> tbUsuariosFcmTokens { get; set; }
-        public DbSet<Alumnos> tbAlumnos { get; set; }
-        public DbSet<Docentes> tbDocentes { get; set; }
-        public DbSet<AlumnosGrupos> tbAlumnosGrupos { get; set; }
-        public DbSet<AlumnosMaterias> tbAlumnosMaterias { get; set; }
-        public DbSet<AlumnosActividades> tbAlumnosActividades { get; set; }
-        public DbSet<EntregablesAlumno> tbEntregablesAlumno { get; set; }
-        public DbSet<Grupos> tbGrupos { get; set; }
-        public DbSet<GruposMaterias> tbGruposMaterias { get; set; }
-        public DbSet<Materias> tbMaterias { get; set; }
-        public DbSet<MateriasActividades> tbMateriasActividades { get; set; }
-        public DbSet<Actividades> tbActividades { get; set; }
-        public DbSet<Calificaciones> tbCalificaciones { get; set; }
-        public DbSet<TiposActividades> cTiposActividades { get; set; }
-        public DbSet<Avisos> tbAvisos { get; set; }
-        public DbSet<EventosAgenda> tbEventosAgenda { get; set; }
-        public DbSet<EventosGrupos> tbEventosGrupos { get; set; }
-        public DbSet<EventosMaterias> tbEventosMaterias { get; set; }
+        public DbSet<tbAlumnos> tbAlumnos { get; set; }
+        public DbSet<tbDocentes> tbDocentes { get; set; }
+        public DbSet<tbAlumnosGrupos> tbAlumnosGrupos { get; set; }
+        public DbSet<tbAlumnosMaterias> tbAlumnosMaterias { get; set; }
+        public DbSet<tbAlumnosActividades> tbAlumnosActividades { get; set; }
+        public DbSet<tbEntregablesAlumno> tbEntregablesAlumno { get; set; }
+        public DbSet<tbGrupos> tbGrupos { get; set; }
+        public DbSet<tbGruposMaterias> tbGruposMaterias { get; set; }
+        public DbSet<tbMaterias> tbMaterias { get; set; }
+        public DbSet<tbActividades> tbActividades { get; set; }
+        public DbSet<tbCalificaciones> tbCalificaciones { get; set; }
+        public DbSet<cTiposActividades> cTiposActividades { get; set; }
+        public DbSet<tbAvisos> tbAvisos { get; set; }
+        public DbSet<tbEventosAgenda> tbEventosAgenda { get; set; }
+        public DbSet<tbEventosGrupos> tbEventosGrupos { get; set; }
+        public DbSet<tbEventosMaterias> tbEventosMaterias { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -44,13 +43,13 @@ namespace AprendeMasWeb.Data
             #endregion
 
             #region AlumnosGrupos
-            modelBuilder.Entity<AlumnosGrupos>()
+            modelBuilder.Entity<tbAlumnosGrupos>()
                 .HasOne(a => a.Alumnos)
                 .WithMany(a => a.AlumnosGrupos)
                 .HasForeignKey(a => a.AlumnoId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<AlumnosGrupos>()
+            modelBuilder.Entity<tbAlumnosGrupos>()
                 .HasOne(a => a.Grupos)
                 .WithMany(a => a.AlumnosGrupos)
                 .HasForeignKey(a => a.GrupoId)
@@ -58,13 +57,13 @@ namespace AprendeMasWeb.Data
             #endregion
 
             #region  Alumnos Materias
-            modelBuilder.Entity<AlumnosMaterias>()
+            modelBuilder.Entity<tbAlumnosMaterias>()
                 .HasOne(a => a.Alumnos)
                 .WithMany(a => a.AlumnosMaterias)
                 .HasForeignKey(a => a.AlumnoId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<AlumnosMaterias>()
+            modelBuilder.Entity<tbAlumnosMaterias>()
                 .HasOne(a => a.Materias)
                 .WithMany(a => a.AlumnosMaterias)
                 .HasForeignKey(a => a.MateriaId)
@@ -72,28 +71,27 @@ namespace AprendeMasWeb.Data
             #endregion
 
             #region Alumnos Actividades
-            modelBuilder.Entity<AlumnosActividades>()
+            modelBuilder.Entity<tbAlumnosActividades>()
                 .HasOne(a => a.Alumnos)
                 .WithMany(a => a.AlumnosActividades)
                 .HasForeignKey(a => a.AlumnoId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-
-            modelBuilder.Entity<AlumnosActividades>()
+            modelBuilder.Entity<tbAlumnosActividades>()
                 .HasOne(a => a.Actividades)
                 .WithMany(a => a.AlumnosActividades)
                 .HasForeignKey(a => a.ActividadId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<AlumnosActividades>()
+            modelBuilder.Entity<tbAlumnosActividades>()
                 .HasOne(a => a.EntregablesAlumno)
                 .WithOne(a => a.AlumnosActividades)
-                .HasForeignKey<EntregablesAlumno>(a => a.AlumnoActividadId)
+                .HasForeignKey<tbEntregablesAlumno>(a => a.AlumnoActividadId)
                 .OnDelete(DeleteBehavior.NoAction);
             #endregion
 
             #region Grupos
-            modelBuilder.Entity<Grupos>()
+            modelBuilder.Entity<tbGrupos>()
                 .HasOne(a => a.Docentes)
                 .WithMany(a => a.Grupos)
                 .HasForeignKey(a => a.DocenteId)
@@ -101,14 +99,14 @@ namespace AprendeMasWeb.Data
             #endregion
 
             #region Grupos Materias
-            modelBuilder.Entity<GruposMaterias>()
+            modelBuilder.Entity<tbGruposMaterias>()
                 .HasOne(a => a.Grupos)
                 .WithMany(a => a.GruposMaterias)
                 .HasForeignKey(a => a.GrupoId)
                 .OnDelete(DeleteBehavior.NoAction);
 
 
-            modelBuilder.Entity<GruposMaterias>()
+            modelBuilder.Entity<tbGruposMaterias>()
                 .HasOne(a => a.Materias)
                 .WithMany(a => a.GruposMaterias)
                 .HasForeignKey(a => a.MateriaId)
@@ -116,39 +114,30 @@ namespace AprendeMasWeb.Data
             #endregion
 
             #region Materias
-            modelBuilder.Entity<Materias>()
+            modelBuilder.Entity<tbMaterias>()
                 .HasOne(a => a.Docentes)
                 .WithMany(a => a.Materias)
                 .HasForeignKey(a => a.DocenteId)
                 .OnDelete(DeleteBehavior.NoAction);
             #endregion
 
-            #region Materias actividades
-
-            modelBuilder.Entity<MateriasActividades>()
-                .HasOne(a => a.Materias)
-                .WithMany(a => a.MateriasActividades)
-                .HasForeignKey(a => a.MateriaId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-
-            modelBuilder.Entity<MateriasActividades>()
-                .HasOne(a => a.Actividades)
-                .WithMany(a => a.MateriasActividades)
-                .HasForeignKey(a => a.ActividadId)
-                .OnDelete(DeleteBehavior.NoAction);
-            #endregion
-
             #region Actividades
-            modelBuilder.Entity<Actividades>()
+            modelBuilder.Entity<tbActividades>()
                 .HasOne(a => a.TiposActividades)
                 .WithMany(a => a.Actividades)
                 .HasForeignKey(a => a.TipoActividadId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+
+            modelBuilder.Entity<tbActividades>()
+                .HasOne(a => a.Materias)
+                .WithMany(a => a.Actividades)
+                .HasForeignKey(a => a.MateriaId)
+                .OnDelete(DeleteBehavior.NoAction);
             #endregion
 
             #region Calificaciones
-            modelBuilder.Entity<Calificaciones>()
+            modelBuilder.Entity<tbCalificaciones>()
                 .HasOne(a => a.EntregablesAlumno)
                 .WithMany(a => a.Calificaciones)
                 .HasForeignKey(a => a.EntregaId)
@@ -156,7 +145,7 @@ namespace AprendeMasWeb.Data
             #endregion
 
             #region Avisos
-            modelBuilder.Entity<Avisos>()
+            modelBuilder.Entity<tbAvisos>()
                 .HasOne(a => a.Docentes)
                 .WithMany(a => a.Avisos)
                 .HasForeignKey(a => a.DocenteId)
@@ -164,7 +153,7 @@ namespace AprendeMasWeb.Data
             #endregion
 
             #region Eventos agenda
-            modelBuilder.Entity<EventosAgenda>()
+            modelBuilder.Entity<tbEventosAgenda>()
                 .HasOne(a => a.Docentes)
                 .WithMany(a => a.EventosAgendas)
                 .HasForeignKey(a => a.DocenteId)
@@ -172,13 +161,13 @@ namespace AprendeMasWeb.Data
             #endregion
 
             #region Eventos grupos
-            modelBuilder.Entity<EventosGrupos>()
+            modelBuilder.Entity<tbEventosGrupos>()
                 .HasOne(a => a.Grupos)
                 .WithMany(a => a.EventosGrupos)
                 .HasForeignKey(a => a.GrupoId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<EventosGrupos>()
+            modelBuilder.Entity<tbEventosGrupos>()
                 .HasOne(a => a.EventosAgenda)
                 .WithMany(a => a.EventosGrupos)
                 .HasForeignKey(a => a.FechaId)
@@ -186,14 +175,14 @@ namespace AprendeMasWeb.Data
             #endregion
 
             #region Eventos materias
-            modelBuilder.Entity<EventosMaterias>()
+            modelBuilder.Entity<tbEventosMaterias>()
                 .HasOne(a => a.Materias)
                 .WithMany(a => a.EventosMaterias)
                 .HasForeignKey(a => a.MateriaId)
                 .OnDelete(DeleteBehavior.Cascade);
 
 
-            modelBuilder.Entity<EventosMaterias>()
+            modelBuilder.Entity<tbEventosMaterias>()
                 .HasOne(a => a.EventosAgenda)
                 .WithMany(a => a.EventosMaterias)
                 .HasForeignKey(a => a.FechaId)

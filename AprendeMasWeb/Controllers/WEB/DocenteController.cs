@@ -29,7 +29,7 @@ namespace AprendeMasWeb.Controllers.WEB
 
         // Acción HTTP POST para crear un nuevo aviso
         [HttpPost]
-        public async Task<IActionResult> CrearAviso(Avisos aviso)
+        public async Task<IActionResult> CrearAviso(tbAvisos aviso)
         {
             // Verifica si el modelo enviado es válido (por ejemplo, si todos los campos obligatorios están completos)
             if (ModelState.IsValid)

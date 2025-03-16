@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AprendeMasWeb.Models.DBModels
 {
-    public class EntregablesAlumno
+    public class tbEntregablesAlumno
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -17,8 +17,8 @@ namespace AprendeMasWeb.Models.DBModels
 
         public string? Respuesta {  get; set; }
 
-        public AlumnosActividades? AlumnosActividades { get; set; }
-        public virtual ICollection<Calificaciones>? Calificaciones { get; set; }
+        public tbAlumnosActividades? AlumnosActividades { get; set; }
+        public virtual ICollection<tbCalificaciones>? Calificaciones { get; set; }
 
     }
 }

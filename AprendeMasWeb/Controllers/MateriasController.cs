@@ -83,7 +83,7 @@ namespace AprendeMasWeb.Controllers
         }
 
 
-        public async Task<List<Materias>> ConsultaMaterias()
+        public async Task<List<tbMaterias>> ConsultaMaterias()
         {
             try
             {
@@ -99,7 +99,7 @@ namespace AprendeMasWeb.Controllers
             }
         }
 
-        public async Task<List<Materias>> ConsultaMateriasPorDocente(int docenteId)
+        public async Task<List<tbMaterias>> ConsultaMateriasPorDocente(int docenteId)
         {
             try
             {
@@ -118,7 +118,7 @@ namespace AprendeMasWeb.Controllers
         }
 
         [HttpGet("ObtenerMateriasDocente")]
-        public async Task<ActionResult<List<Materias>>> ObtenerMateriasSinGrupoDocente(int docenteId)
+        public async Task<ActionResult<List<tbMaterias>>> ObtenerMateriasSinGrupoDocente(int docenteId)
         {
             try
             {
@@ -148,7 +148,7 @@ namespace AprendeMasWeb.Controllers
 
 
         [HttpGet("ObtenerMaterias")]
-        public async Task<ActionResult<List<Materias>>> ObtenerMaterias()
+        public async Task<ActionResult<List<tbMaterias>>> ObtenerMaterias()
         {
             try
             {
@@ -164,7 +164,7 @@ namespace AprendeMasWeb.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Materias>> ObtenerMateriaUnica(int id)
+        public async Task<ActionResult<tbMaterias>> ObtenerMateriaUnica(int id)
         {
             var subject = await _context.tbMaterias.FindAsync(id);
             if (subject is null) return NotFound("Materia no encontrado");
@@ -174,7 +174,7 @@ namespace AprendeMasWeb.Controllers
 
 
         [HttpPost("CrearMateriaSinGrupo")]
-        public async Task<ActionResult> CrearMateriaSinGrupo([FromBody] Materias materia)
+        public async Task<ActionResult> CrearMateriaSinGrupo([FromBody] tbMaterias materia)
         {
             try
             {
@@ -200,7 +200,7 @@ namespace AprendeMasWeb.Controllers
                 if (gruposVinculados.All(a => lsGruposId.Contains(a)))
                 {
 
-                    Materias materia = new()
+                    tbMaterias materia = new()
                     {
                         DocenteId = docenteId,
                         NombreMateria = materiaConGrupo.NombreMateria,
@@ -221,7 +221,7 @@ namespace AprendeMasWeb.Controllers
                     foreach (var grupo in gruposVinculados)
                     {
 
-                        GruposMaterias gruposMaterias = new()
+                        tbGruposMaterias gruposMaterias = new()
                         {
                             GrupoId = grupo,
                             MateriaId = idMateria
@@ -251,7 +251,7 @@ namespace AprendeMasWeb.Controllers
 
 
         [HttpPut]
-        public async Task<ActionResult<List<Materias>>> UpdateSubject(Materias updatedSubject)
+        public async Task<ActionResult<List<tbMaterias>>> UpdateSubject(tbMaterias updatedSubject)
         {
             var dbSubject = await _context.tbMaterias.FindAsync(updatedSubject.MateriaId);
             if (dbSubject is null) return NotFound("Materia no encontrado");
@@ -279,7 +279,7 @@ namespace AprendeMasWeb.Controllers
         #region Alumno
 
         [HttpGet("ObtenerMateriasAlumno")]
-        public async Task<ActionResult<List<Materias>>> ObtenerMateriasSinGrupoAlumno(int alumnoId)
+        public async Task<ActionResult<List<tbMaterias>>> ObtenerMateriasSinGrupoAlumno(int alumnoId)
         {
             try
             {

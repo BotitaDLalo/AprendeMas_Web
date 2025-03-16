@@ -95,7 +95,7 @@ namespace AprendeMasWeb.Controllers.WEB
             // Crear registro en la tabla correspondiente
             if (role == Recursos.Roles.ALUMNO)
             {
-                Alumnos alumnos = new()
+                tbAlumnos alumnos = new()
                 {
                     ApellidoPaterno = apellidoPaterno,
                     ApellidoMaterno = apellidoMaterno,
@@ -115,7 +115,7 @@ namespace AprendeMasWeb.Controllers.WEB
 
                 DateTime fechaExpiracionCodigo = DateTime.UtcNow.AddMinutes(59);
                 string codigo = RecursosGenerales.GenerarCodigoAleatorio();
-                Docentes docentes = new()
+                tbDocentes docentes = new()
                 {
                     ApellidoPaterno = apellidoPaterno,
                     ApellidoMaterno = apellidoMaterno,

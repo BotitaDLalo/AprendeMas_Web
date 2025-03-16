@@ -23,7 +23,7 @@ namespace AprendeMasWeb.Controllers.WEB
 
         // Acción para crear un grupo mediante una solicitud POST (API)
         [HttpPost("CrearGrupo")]
-        public async Task<IActionResult> CrearGrupo([FromBody] Grupos grupo)
+        public async Task<IActionResult> CrearGrupo([FromBody] tbGrupos grupo)
         {
             // Verifica si el modelo enviado es válido (ejemplo: los datos del grupo están completos)
             if (!ModelState.IsValid)
@@ -91,7 +91,7 @@ namespace AprendeMasWeb.Controllers.WEB
                 if (materiaExiste)
                 {
                     // Crea una nueva relación entre el grupo y la materia
-                    var nuevaRelacion = new GruposMaterias
+                    var nuevaRelacion = new tbGruposMaterias
                     {
                         GrupoId = request.GrupoId,
                         MateriaId = materiaId

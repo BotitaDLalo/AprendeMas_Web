@@ -23,7 +23,7 @@ namespace AprendeMasWeb.Controllers.WEB
 
         // Controlador para crear una nueva materia mediante una solicitud POST (API)
         [HttpPost("CrearMateria")]
-        public async Task<IActionResult> CrearMateria([FromBody] Materias materia)
+        public async Task<IActionResult> CrearMateria([FromBody] tbMaterias materia)
         {
             // Verifica si el modelo enviado es válido (ejemplo: los datos de la materia están completos)
             if (!ModelState.IsValid)

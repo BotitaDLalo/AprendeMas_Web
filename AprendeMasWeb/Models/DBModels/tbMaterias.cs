@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace AprendeMasWeb.Models.DBModels
 {
-    public class Materias
+    public class tbMaterias
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -19,14 +19,14 @@ namespace AprendeMasWeb.Models.DBModels
         public required int DocenteId { get; set; }
 
 
-        public virtual Docentes? Docentes { get; set; }
+        public virtual tbDocentes? Docentes { get; set; }
 
-        public virtual ICollection<GruposMaterias>? GruposMaterias { get; set; }
+        public virtual ICollection<tbGruposMaterias>? GruposMaterias { get; set; }
 
-        public virtual ICollection<AlumnosMaterias>? AlumnosMaterias { get; set; }
+        public virtual ICollection<tbAlumnosMaterias>? AlumnosMaterias { get; set; }
 
-        public  virtual ICollection<MateriasActividades>? MateriasActividades { get; set; }
+        public virtual ICollection<tbActividades>? Actividades { get; set; }
 
-        public  virtual ICollection<EventosMaterias>? EventosMaterias { get; set; }
+        public  virtual ICollection<tbEventosMaterias>? EventosMaterias { get; set; }
     }
 }

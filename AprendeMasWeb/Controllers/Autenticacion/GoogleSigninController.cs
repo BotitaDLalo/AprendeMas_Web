@@ -199,7 +199,7 @@ namespace AprendeMasWeb.Controllers.Autenticacion
                     var identityUserId = await _userManager.GetUserIdAsync(user);
                     DateTime fechaExpiracionCodigo = DateTime.UtcNow.AddMinutes(59);
                     string codigo = RecursosGenerales.GenerarCodigoAleatorio();
-                    Docentes docente = new()
+                    tbDocentes docente = new()
                     {
                         Nombre = nombres,
                         ApellidoPaterno = apellidoPaterno,
@@ -230,7 +230,7 @@ namespace AprendeMasWeb.Controllers.Autenticacion
 
                     var identityUserId = await _userManager.GetUserIdAsync(user);
 
-                    Alumnos alumno = new()
+                    tbAlumnos alumno = new()
                     {
                         Nombre = nombres,
                         ApellidoPaterno = apellidoPaterno,

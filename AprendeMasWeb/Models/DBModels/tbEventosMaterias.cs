@@ -6,7 +6,7 @@ using AprendeMasWeb.Models.DBModels;
 
 namespace AprendeMasWeb.Models.DBModels
 {
-    public class EventosMaterias
+    public class tbEventosMaterias
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -15,7 +15,7 @@ namespace AprendeMasWeb.Models.DBModels
         public int? FechaId { get; set; }
 
         public required int MateriaId {  get; set; }
-        public virtual EventosAgenda? EventosAgenda { get; set; }
-        public virtual Materias? Materias { get; set; }
+        public virtual tbEventosAgenda? EventosAgenda { get; set; }
+        public virtual tbMaterias? Materias { get; set; }
     }
 }

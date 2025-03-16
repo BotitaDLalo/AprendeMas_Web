@@ -23,7 +23,7 @@ namespace AprendeMasWeb.Controllers
             try
             {
                 DateTime dateTime = DateTime.Now;
-                Avisos avisos = new()
+                tbAvisos avisos = new()
                 {
                     DocenteId = crearAviso.DocenteId,
                     Titulo = crearAviso.Titulo,
@@ -120,7 +120,7 @@ namespace AprendeMasWeb.Controllers
             try
             {
                 List<RespuestaConsultarAvisos> lsResAvisos = new List<RespuestaConsultarAvisos>();
-                List<Avisos> lsAvisos = new List<Avisos>();
+                List<tbAvisos> lsAvisos = new List<tbAvisos>();
                 int grupoId = consultarAvisos.GrupoId;
                 int materiaId = consultarAvisos.MateriaId;
 

@@ -119,7 +119,7 @@ namespace AprendeMasWeb.Controllers.WEB
             }
 
             // Si no existe la relación, agregarla a la tabla alumnosMaterias
-            var nuevaRelacion = new AlumnosMaterias
+            var nuevaRelacion = new tbAlumnosMaterias
             {
                 AlumnoId = alumno.AlumnoId,
                 MateriaId = materiaId

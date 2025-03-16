@@ -5,7 +5,7 @@ using AprendeMasWeb.Models.DBModels;
 
 namespace AprendeMasWeb.Models
 {
-    public class Actividades
+    public class tbActividades
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -26,9 +26,8 @@ namespace AprendeMasWeb.Models
         public int MateriaId { get; set; }
 
 
-        public virtual ICollection<AlumnosActividades>? AlumnosActividades { get; set; }    
-        public virtual ICollection<MateriasActividades>? MateriasActividades { get; set; }
-        public virtual TiposActividades? TiposActividades { get; set; }
-        //public virtual ICollection<Calificaciones>? Calificaciones { get; set; } 
+        public virtual ICollection<tbAlumnosActividades>? AlumnosActividades { get; set; }
+        public virtual cTiposActividades? TiposActividades { get; set; }
+        public virtual tbMaterias? Materias { get; set; }
     }
 }

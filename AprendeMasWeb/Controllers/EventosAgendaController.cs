@@ -76,7 +76,7 @@ namespace AprendeMasWeb.Controllers
 
 
         [HttpPost("CrearEventos")]
-        public async Task<ActionResult<EventosAgenda>> CrearEvento([FromBody] EventosAgenda nuevoEvento)
+        public async Task<ActionResult<tbEventosAgenda>> CrearEvento([FromBody] tbEventosAgenda nuevoEvento)
         {
 
             try
@@ -88,7 +88,7 @@ namespace AprendeMasWeb.Controllers
                 // Después de guardar, asignamos el EventoId generado a EventosGrupos y EventosMaterias
                 if (nuevoEvento.EventosGrupos != null)
                 {
-                    var grupos = nuevoEvento.EventosGrupos.Select(grupo => new EventosGrupos
+                    var grupos = nuevoEvento.EventosGrupos.Select(grupo => new tbEventosGrupos
                     {
                         FechaId = nuevoEvento.EventoId,
                         GrupoId = grupo.GrupoId
@@ -100,7 +100,7 @@ namespace AprendeMasWeb.Controllers
 
                 if (nuevoEvento.EventosMaterias != null)
                 {
-                    var materias = nuevoEvento.EventosMaterias.Select(materia => new EventosMaterias
+                    var materias = nuevoEvento.EventosMaterias.Select(materia => new tbEventosMaterias
                     {
                         FechaId = nuevoEvento.EventoId,
                         MateriaId = materia.MateriaId,
@@ -123,7 +123,7 @@ namespace AprendeMasWeb.Controllers
 
 
         [HttpPatch("ActualizarEvento/{id}")]
-        public async Task<ActionResult> ActualizarEvento(int id, [FromBody] EventosAgenda eventoActualizado)
+        public async Task<ActionResult> ActualizarEvento(int id, [FromBody] tbEventosAgenda eventoActualizado)
         {
             try
             {
@@ -173,7 +173,7 @@ namespace AprendeMasWeb.Controllers
                         return BadRequest(new { Message = "Uno o más GrupoId no existen en la base de datos." });
                     }
 
-                    eventoExistente.EventosGrupos = eventoActualizado.EventosGrupos.Select(grupo => new EventosGrupos
+                    eventoExistente.EventosGrupos = eventoActualizado.EventosGrupos.Select(grupo => new tbEventosGrupos
                     {
                         FechaId = eventoExistente.EventoId,
                         GrupoId = grupo.GrupoId
@@ -194,7 +194,7 @@ namespace AprendeMasWeb.Controllers
                         return BadRequest(new { Message = "Uno o más MateriaId no existen en la base de datos." });
                     }
 
-                    eventoExistente.EventosMaterias = eventoActualizado.EventosMaterias.Select(materia => new EventosMaterias
+                    eventoExistente.EventosMaterias = eventoActualizado.EventosMaterias.Select(materia => new tbEventosMaterias
                     {
                         FechaId = eventoExistente.EventoId,
                         MateriaId = materia.MateriaId

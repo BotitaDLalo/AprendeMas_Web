@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace AprendeMasWeb.Models.DBModels
 {
-    public class Grupos
+    public class tbGrupos
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -16,10 +16,10 @@ namespace AprendeMasWeb.Models.DBModels
         public string? CodigoColor { get; set; }
         public required int DocenteId { get; set; }
 
-        public virtual Docentes? Docentes { get; set; }
-        public  ICollection<GruposMaterias>? GruposMaterias { get; set; }
-        public ICollection<AlumnosGrupos>? AlumnosGrupos { get; set; }  
+        public virtual tbDocentes? Docentes { get; set; }
+        public  ICollection<tbGruposMaterias>? GruposMaterias { get; set; }
+        public ICollection<tbAlumnosGrupos>? AlumnosGrupos { get; set; }  
 
-        public ICollection<EventosGrupos>? EventosGrupos { get; set; }
+        public ICollection<tbEventosGrupos>? EventosGrupos { get; set; }
     }
 }

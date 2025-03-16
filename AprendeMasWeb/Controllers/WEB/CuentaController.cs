@@ -8,6 +8,7 @@ using System.Security.Claims; // Manejo de Claims para autenticación y autoriza
 
 namespace AprendeMasWeb.Controllers.WEB
 {
+
     public class CuentaController : Controller // Controlador encargado de la autenticación de usuarios
     {
         private readonly SignInManager<IdentityUser> _signInManager; // Maneja el inicio y cierre de sesión

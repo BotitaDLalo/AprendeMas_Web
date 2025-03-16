@@ -5,28 +5,25 @@ using Newtonsoft.Json;
 
 namespace AprendeMasWeb.Models.DBModels
 {
-    public class Alumnos
+    public class tbDocentes
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public  int AlumnoId { get; set; }
-
+        public int DocenteId { get; set; }
         public required string ApellidoPaterno { get; set; }
-
         public required string ApellidoMaterno { get; set; }
-
         public required string Nombre { get; set; }
+        public bool? estaAutorizado { get; set; }
+        public bool? seEnvioCorreo {  get; set; }
+        public DateTime? FechaExpiracionCodigo { get; set; }
+        public string? CodigoAutorizacion {  get; set; }
 
         public virtual IdentityUser? IdentityUser { get; set; }
-        
         [ForeignKey("IdentityUser")]
         public required string UserId { get; set; }
-        public virtual ICollection<AlumnosTokens>? AlumnosTokens {  get; set; } 
-
-        public virtual ICollection<AlumnosGrupos>? AlumnosGrupos { get; set; }
-        
-        public virtual ICollection<AlumnosMaterias>? AlumnosMaterias { get; set; }
-        
-        public virtual ICollection<AlumnosActividades>? AlumnosActividades { get; set; }
+        public virtual ICollection<tbGrupos>? Grupos { get; set; }
+        public virtual ICollection<tbMaterias>? Materias { get; set; }
+        public virtual ICollection<tbEventosAgenda>? EventosAgendas { get; set; }
+        public virtual ICollection<tbAvisos>? Avisos { get; set; }
     }
 }

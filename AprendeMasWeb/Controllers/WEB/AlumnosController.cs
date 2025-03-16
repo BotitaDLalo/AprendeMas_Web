@@ -38,7 +38,7 @@ namespace AprendeMasWeb.Controllers.WEB
 				if (!existeRelacion)
 				{
 					// Agregar el alumno al grupo
-					var nuevaRelacion = new AlumnosGrupos
+					var nuevaRelacion = new tbAlumnosGrupos
 					{
 						AlumnoId = request.AlumnoId,
 						GrupoId = grupo.GrupoId
@@ -62,7 +62,7 @@ namespace AprendeMasWeb.Controllers.WEB
 				if (!existeRelacion)
 				{
 					// Agregar el alumno a la materia
-					var nuevaRelacion = new AlumnosMaterias
+					var nuevaRelacion = new tbAlumnosMaterias
 					{
 						AlumnoId = request.AlumnoId,
 						MateriaId = materia.MateriaId

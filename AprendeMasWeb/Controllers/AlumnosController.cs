@@ -28,13 +28,13 @@ namespace AprendeMasWeb.Controllers
                 var respuesta = entregable.Respuesta;
                 var fechaEntrega = entregable.FechaEntrega;
 
-                AlumnosActividades actividad = new AlumnosActividades()
+                tbAlumnosActividades actividad = new tbAlumnosActividades()
                 {
                     ActividadId = actividadId,
                     AlumnoId = alumnoId,
                     FechaEntrega = DateTime.Parse(fechaEntrega),
                     EstatusEntrega = true,
-                    EntregablesAlumno = new EntregablesAlumno()
+                    EntregablesAlumno = new tbEntregablesAlumno()
                     {
                         Respuesta = respuesta
                     }
@@ -167,7 +167,7 @@ namespace AprendeMasWeb.Controllers
 
                 var grupoId = _context.tbGrupos.Where(a => a.CodigoAcceso == codigoAcceso).Select(a => a.GrupoId).FirstOrDefault();
 
-                AlumnosGrupos alumnoGrupo = new()
+                tbAlumnosGrupos alumnoGrupo = new()
                 {
                     AlumnoId = alumnoId,
                     GrupoId = grupoId,
@@ -196,7 +196,7 @@ namespace AprendeMasWeb.Controllers
 
                 var materiaId = _context.tbMaterias.Where(a => a.CodigoAcceso == codigoAcceso).Select(a => a.MateriaId).FirstOrDefault();
 
-                AlumnosMaterias alumnoMateria = new()
+                tbAlumnosMaterias alumnoMateria = new()
                 {
                     AlumnoId = alumnoId,
                     MateriaId = materiaId
@@ -320,7 +320,7 @@ namespace AprendeMasWeb.Controllers
                         bool alumnoYaRegistrado = _context.tbAlumnosGrupos.Any(a => a.GrupoId == grupoId && a.AlumnoId == aluId);
                         if (!alumnoYaRegistrado)
                         {
-                            AlumnosGrupos alumnosGrupos = new()
+                            tbAlumnosGrupos alumnosGrupos = new()
                             {
                                 AlumnoId = aluId,
                                 GrupoId = grupoId
@@ -358,7 +358,7 @@ namespace AprendeMasWeb.Controllers
                         bool alumnoYaRegistrado = _context.tbAlumnosMaterias.Any(a => a.MateriaId == materiaId && a.AlumnoId == aluId);
                         if (!alumnoYaRegistrado)
                         {
-                            AlumnosMaterias alumnosMaterias = new()
+                            tbAlumnosMaterias alumnosMaterias = new()
                             {
                                 AlumnoId = aluId,
                                 MateriaId = materiaId
@@ -436,6 +436,18 @@ namespace AprendeMasWeb.Controllers
                 return BadRequest(new { mensaje = e.Message });
             }
         }
+
+        //public async Task<ActionResult> EliminarAlumnoMateria([FromBody])
+        //{
+        //    try
+        //    {
+
+        //    }
+        //    catch (Exception)
+        //    {
+
+        //    }
+        //}
 
         private async Task<List<EmailVerificadoAlumno>> ObtenerListaAlumnos(List<int> lsAlumnosId)
         {

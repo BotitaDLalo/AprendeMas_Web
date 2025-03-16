@@ -4,15 +4,11 @@ using System.Text.Json.Serialization;
 
 namespace AprendeMasWeb.Models.DBModels
 {
-    public class Calificaciones
+    public class tbCalificaciones
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CalificacionId { get; set; }
-
-        //public required int ActividadId { get; set; }
-
-        //public virtual Actividades? Actividades { get; set; }
 
         public required int EntregaId { get; set; }
 
@@ -20,6 +16,6 @@ namespace AprendeMasWeb.Models.DBModels
 
         public string? Comentarios {  get; set; }
         public required int Calificacion { get; set; }
-        public virtual EntregablesAlumno? EntregablesAlumno { get; set; }
+        public virtual tbEntregablesAlumno? EntregablesAlumno { get; set; }
     }
 }

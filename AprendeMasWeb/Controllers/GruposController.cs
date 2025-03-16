@@ -103,7 +103,7 @@ namespace AprendeMasWeb.Controllers
         }
        
         [HttpGet("ObtenerGruposCreados")]
-        public async Task<ActionResult<List<Grupos>>> ObtenerGruposCreados(int docenteId)
+        public async Task<ActionResult<List<tbGrupos>>> ObtenerGruposCreados(int docenteId)
         {
             try
             {
@@ -126,7 +126,7 @@ namespace AprendeMasWeb.Controllers
         }
 
         [HttpGet("ObtenerGruposMateriasDocente")]
-        public async Task<ActionResult<List<Grupos>>> ObtenerGruposMateriasDocente(int docenteId)
+        public async Task<ActionResult<List<tbGrupos>>> ObtenerGruposMateriasDocente(int docenteId)
         {
             try
             {
@@ -174,7 +174,7 @@ namespace AprendeMasWeb.Controllers
 
 
         [HttpPost("CrearGrupo")]
-        public async Task<ActionResult<List<Grupos>>> CrearGrupo([FromBody] Grupos group)
+        public async Task<ActionResult<List<tbGrupos>>> CrearGrupo([FromBody] tbGrupos group)
         {
             try
             {
@@ -193,17 +193,17 @@ namespace AprendeMasWeb.Controllers
         }
 
         [HttpPost("CrearGrupoMaterias")]
-        public async Task<ActionResult<List<Grupos>>> CrearGrupoMaterias([FromBody] GrupoMateriasRegistro group)
+        public async Task<ActionResult<List<tbGrupos>>> CrearGrupoMaterias([FromBody] GrupoMateriasRegistro group)
         {
             try
             {
                 int docenteId = group.DocenteId;
 
-                List<Materias> lsMaterias = [];
+                List<tbMaterias> lsMaterias = [];
                 foreach (var materia in group.Materias)
                 {
                     string codigoAccesoMateria = ObtenerClave();
-                    Materias nuevaMateria= new() 
+                    tbMaterias nuevaMateria= new() 
                     { 
                         DocenteId = docenteId,
                         NombreMateria = materia.NombreMateria,
@@ -214,7 +214,7 @@ namespace AprendeMasWeb.Controllers
                     lsMaterias.Add(nuevaMateria);
                 }
                 string codigoAccesoGrupo = ObtenerClave();
-                Grupos nuevoGrupo = new()
+                tbGrupos nuevoGrupo = new()
                 { 
                     DocenteId = group.DocenteId,
                     NombreGrupo = group.NombreGrupo,
@@ -230,10 +230,10 @@ namespace AprendeMasWeb.Controllers
 
                 var nuevoGrupoId = nuevoGrupo.GrupoId;
                 var lsMateriasId = lsMaterias.Select(a => a.MateriaId).ToList();
-                List<GruposMaterias> vinculos = [];
+                List<tbGruposMaterias> vinculos = [];
                 foreach (var materiaId in lsMateriasId)
                 {
-                    GruposMaterias vinculo = new()
+                    tbGruposMaterias vinculo = new()
                     {
                         GrupoId = nuevoGrupoId,
                         MateriaId = materiaId
@@ -256,7 +256,7 @@ namespace AprendeMasWeb.Controllers
 
 
         [HttpPut("ActualizarGrupo")]
-        public async Task<ActionResult<List<Grupos>>> ActualizarGrupo([FromBody]Grupos updatedGroup)
+        public async Task<ActionResult<List<tbGrupos>>> ActualizarGrupo([FromBody]tbGrupos updatedGroup)
         {
             try
             {
@@ -296,7 +296,7 @@ namespace AprendeMasWeb.Controllers
 
         #region Alumno
         [HttpGet("ObtenerGruposMateriasAlumno")]
-        public async Task<ActionResult<List<Grupos>>> ObtenerGruposMateriasAlumno(int alumnoId)
+        public async Task<ActionResult<List<tbGrupos>>> ObtenerGruposMateriasAlumno(int alumnoId)
         {
             try
             {

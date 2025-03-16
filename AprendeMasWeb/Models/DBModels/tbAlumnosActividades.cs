@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace AprendeMasWeb.Models.DBModels
 {
-    public class AlumnosActividades
+    public class tbAlumnosActividades
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -18,9 +18,9 @@ namespace AprendeMasWeb.Models.DBModels
 
         public required bool EstatusEntrega { get; set; } 
 
-        public Actividades? Actividades {  get; set; } 
-        public Alumnos? Alumnos { get; set; }
-        public EntregablesAlumno? EntregablesAlumno { get; set; }
+        public tbActividades? Actividades {  get; set; } 
+        public tbAlumnos? Alumnos { get; set; }
+        public tbEntregablesAlumno? EntregablesAlumno { get; set; }
 
     }
 }

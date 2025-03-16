@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace AprendeMasWeb.Models.DBModels
 {
-    public class EventosAgenda
+    public class tbEventosAgenda
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -12,7 +12,7 @@ namespace AprendeMasWeb.Models.DBModels
 
         public required int DocenteId { get; set; }
 
-        public virtual Docentes? Docentes { get; set; }
+        public virtual tbDocentes? Docentes { get; set; }
 
         public required DateTime FechaInicio { get; set; }
 
@@ -24,8 +24,8 @@ namespace AprendeMasWeb.Models.DBModels
 
         public required string Color { get; set; }
 
-        public virtual ICollection<EventosGrupos>? EventosGrupos { get; set; }
+        public virtual ICollection<tbEventosGrupos>? EventosGrupos { get; set; }
 
-        public virtual ICollection<EventosMaterias>? EventosMaterias { get; set; }
+        public virtual ICollection<tbEventosMaterias>? EventosMaterias { get; set; }
     }
 }
