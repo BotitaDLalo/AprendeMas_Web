@@ -134,7 +134,7 @@ namespace AprendeMasWeb.Controllers
 
         // Obtener una actividad específica
         [HttpGet("{id}")]
-        public async Task<ActionResult<Actividades>> ObtenerActividad(int id)
+        public async Task<ActionResult<tbActividades>> ObtenerActividad(int id)
         {
             var activity = await _context.tbActividades.FindAsync(id);
             if (activity == null) return NotFound("Actividad no encontrada"); // Retorna un mensaje adecuado si no se encuentra la actividad
@@ -143,7 +143,7 @@ namespace AprendeMasWeb.Controllers
         }
 
         [HttpPost("CrearActividad")]
-        public async Task<ActionResult<List<Actividades>>> CrearActividad([FromBody] Actividades nuevaActividad)
+        public async Task<ActionResult<List<tbActividades>>> CrearActividad([FromBody] tbActividades nuevaActividad)
         {
             try
             {
@@ -195,7 +195,7 @@ namespace AprendeMasWeb.Controllers
 
 
         [HttpPut("ActualizarActividad/{id}")]
-        public async Task<ActionResult<Actividades>> UpdateActivity(int id, Actividades updatedActivity)
+        public async Task<ActionResult<tbActividades>> UpdateActivity(int id, tbActividades updatedActivity)
         {
             var dbActivity = await _context.tbActividades.FindAsync(id);
             if (dbActivity is null) return NotFound("Actividad no encontrada");
@@ -214,16 +214,38 @@ namespace AprendeMasWeb.Controllers
         {
             try
             {
-                // Verificar si la actividad existe
-                var dbActivity = await _context.tbActividades.FirstOrDefaultAsync(a => a.ActividadId == id);
+                var activity = await _context.tbActividades.FirstOrDefaultAsync(a => a.ActividadId == id);
 
-                if (dbActivity is null) return NotFound("Actividad no encontrada");
+                if (activity is null) return BadRequest("Actividad no encontrada");
 
-                // Eliminar la actividad
-                _context.tbActividades.Remove(dbActivity);
+                var alumnoActividad = await _context.tbAlumnosActividades.FirstOrDefaultAsync(a => a.ActividadId == activity.ActividadId);
+
+                if (alumnoActividad != null)
+                {
+
+                    var entrega = await _context.tbEntregablesAlumno.Where(a => a.AlumnoActividadId == alumnoActividad.AlumnoActividadId).FirstOrDefaultAsync();
+                    if (entrega != null)
+                    {
+                        var calificacion = await _context.tbCalificaciones.FirstOrDefaultAsync(a => a.EntregaId == entrega.EntregaId);
+
+                        if (calificacion != null)
+                        {
+                            _context.tbCalificaciones.Remove(calificacion);
+                            _context.tbEntregablesAlumno.Remove(entrega);
+                            _context.tbAlumnosActividades.Remove(alumnoActividad);
+                        }
+                        else
+                        {
+                            _context.tbEntregablesAlumno.Remove(entrega);
+                            _context.tbAlumnosActividades.Remove(alumnoActividad);
+                        }
+                    }
+                }
+
+                _context.tbActividades.Remove(activity);
                 await _context.SaveChangesAsync();
 
-                return Ok("Actividad eliminada con éxito.");
+                return Ok();
             }
             catch (DbUpdateException dbEx)
             {
@@ -325,7 +347,7 @@ namespace AprendeMasWeb.Controllers
 
                 if (calificacion == null)
                 {
-                    Calificaciones calificaciones = new Calificaciones()
+                    tbCalificaciones calificaciones = new tbCalificaciones()
                     {
                         Calificacion = nuevaCalificacion,
                         EntregaId = entregaId,
