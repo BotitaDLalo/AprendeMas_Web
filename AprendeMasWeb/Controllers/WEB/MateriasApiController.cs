@@ -64,7 +64,7 @@ namespace AprendeMasWeb.Controllers.WEB
             return Ok(materiasSinGrupo);
         }
 
-
+        /*
         // Controlador para eliminar una materia por su ID
         [HttpDelete("EliminarMateria/{id}")]
         public async Task<IActionResult> EliminarMateria(int id)
@@ -75,7 +75,7 @@ namespace AprendeMasWeb.Controllers.WEB
             {
                 return NotFound(new { mensaje = "La materia no existe" });
             }
-
+            
             // Buscar relaciones en la tabla MateriasActividades
             var relacionesMateriasActividades = _context.tbMateriasActividades.Where(ma => ma.MateriaId == id);
             // Eliminar las relaciones de la materia con las actividades
@@ -107,7 +107,44 @@ namespace AprendeMasWeb.Controllers.WEB
 
             return Ok(new { mensaje = "Materia y sus relaciones eliminadas correctamente." });
         }
+        */
+        // Controlador para eliminar una materia por su ID
+        [HttpDelete("EliminarMateria/{id}")]
+        public async Task<IActionResult> EliminarMateria(int id)
+        {
+            // Buscar la materia en la base de datos
+            var materia = await _context.tbMaterias.FindAsync(id);
+            if (materia == null)
+            {
+                return NotFound(new { mensaje = "La materia no existe" });
+            }
 
+            // Obtener y eliminar las actividades directamente asociadas a esta materia
+            var actividades = _context.tbActividades.Where(a => a.MateriaId == id);
+            _context.tbActividades.RemoveRange(actividades);
+
+            //Buscar y eliminar los avisos directamente asociadas a esta materia
+            var avisos = _context.tbAvisos.Where(a => a.MateriaId == id);
+            _context.tbAvisos.RemoveRange(avisos);
+
+
+            // Eliminar las relaciones en la tabla AlumnosMaterias
+            var relacionesAlumnos = _context.tbAlumnosMaterias.Where(am => am.MateriaId == id);
+            _context.tbAlumnosMaterias.RemoveRange(relacionesAlumnos);
+
+            // Buscar y eliminar las relaciones de la materia con los grupos
+            var relacionMateriaConGrupo = _context.tbGruposMaterias.Where(mg => mg.MateriaId == id);
+            _context.tbGruposMaterias.RemoveRange(relacionMateriaConGrupo);
+
+
+            // Ahora eliminamos la materia
+            _context.tbMaterias.Remove(materia);
+
+            // Guardar cambios en la base de datos
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = "Materia y sus relaciones eliminadas correctamente." });
+        }
 
 
         //Controlador actualiza materia, aun no funciona

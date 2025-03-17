@@ -3,6 +3,7 @@ using AprendeMasWeb.Data;
 using AprendeMasWeb.Models.DBModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace AprendeMasWeb.Controllers.WEB
 {
@@ -152,7 +153,7 @@ namespace AprendeMasWeb.Controllers.WEB
 
             return Ok(new { mensaje = "Grupo eliminado correctamente." });
         }
-
+        /*
         //Elimina grupo con materias
         [HttpDelete("EliminarGrupoConMaterias/{grupoId}")]
         public async Task<IActionResult> EliminarGrupoConMaterias(int grupoId)
@@ -200,7 +201,49 @@ namespace AprendeMasWeb.Controllers.WEB
             await _context.SaveChangesAsync();
             return Ok(new { mensaje = "Grupo, materias y actividades eliminados correctamente" });
         }
+        */
+        // Elimina un grupo junto con sus materias, actividades y avisos asociados
+        [HttpDelete("EliminarGrupoConMaterias/{grupoId}")]
+        public async Task<IActionResult> EliminarGrupoConMaterias(int grupoId)
+        {
+            // Buscar el grupo en la base de datos
+            var grupo = await _context.tbGrupos.FindAsync(grupoId);
+            if (grupo == null)
+            {
+                return NotFound(new { mensaje = "El grupo no existe" });
+            }
 
+            // Obtener las relaciones del grupo con las materias
+            var relacionesGruposMaterias = _context.tbGruposMaterias.Where(mg => mg.GrupoId == grupoId);
+            var materiasIds = relacionesGruposMaterias.Select(r => r.MateriaId).ToList();
+
+            // Eliminar relaciones entre alumnos y materias
+            var relacionesAlumnosMaterias = _context.tbAlumnosMaterias.Where(am => materiasIds.Contains(am.MateriaId));
+            _context.tbAlumnosMaterias.RemoveRange(relacionesAlumnosMaterias);
+
+            // Eliminar relaciones entre grupos y materias
+            _context.tbGruposMaterias.RemoveRange(relacionesGruposMaterias);
+
+            // Obtener y eliminar las actividades asociadas a las materias
+            var actividades = _context.tbActividades.Where(a => materiasIds.Contains(a.MateriaId));
+            _context.tbActividades.RemoveRange(actividades);
+
+            // Obtener y eliminar los avisos asociados a las materias
+            var avisos = _context.tbAvisos.Where(av => av.MateriaId.HasValue && materiasIds.Contains(av.MateriaId.Value));
+            _context.tbAvisos.RemoveRange(avisos);
+
+            // Obtener y eliminar las materias
+            var materias = _context.tbMaterias.Where(m => materiasIds.Contains(m.MateriaId));
+            _context.tbMaterias.RemoveRange(materias);
+
+            // Eliminar el grupo
+            _context.tbGrupos.Remove(grupo);
+
+            // Guardar cambios en la base de datos
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = "Grupo, materias, actividades y avisos eliminados correctamente" });
+        }
 
 
     }

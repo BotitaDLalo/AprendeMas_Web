@@ -64,7 +64,8 @@ async function publicarAviso() {
             });
 
             setTimeout(() => {
-                location.reload(); // Recargar la página después de mostrar el mensaje
+                document.getElementById("avisosForm").reset();//Resetear  formulario
+                cargarAvisosDeMateria();
             }, 3000);
 
         } else {

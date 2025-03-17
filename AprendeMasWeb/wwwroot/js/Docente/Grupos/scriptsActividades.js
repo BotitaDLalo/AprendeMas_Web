@@ -57,7 +57,8 @@ async function registrarActividad() {
         });
 
         setTimeout(() => {
-            location.reload(); // Recargar la página después de mostrar el mensaje
+            document.getElementById("actividadesForm").reset();//Resetear  formulario
+            cargarActividadesDeMateria(); // Recargar la página después de mostrar el mensaje
         }, 2500);
     } catch (error) {
         console.error("Error:", error);
@@ -197,7 +198,7 @@ async function eliminarActividad(id) {
                     timer: 1500,  // Tiempo en milisegundos (1500ms = 1.5 segundos)
                     showConfirmButton: false  // Esto es opcional, para que no aparezca el botón de "OK"
                 });
-                location.reload(); // Recargar la página o actualizar la vista pero manda hasta avisos, checar eso
+                cargarActividadesDeMateria();// Recargar las actividades.
             } else {
                 Swal.fire(
                     'Error',
