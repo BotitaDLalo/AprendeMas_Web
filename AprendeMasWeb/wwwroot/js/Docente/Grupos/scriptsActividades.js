@@ -119,9 +119,9 @@ function renderizarActividades(actividades) {
                     ${formatearFecha(actividad.fechaLimite)}
                 </div>
                 <div class="botones-container">
-                    <button class="btn-ir-actividades" data-id="${actividad.materiaActividad}">Ir a actividad</button>
-                    <button class="editar-btn" data-id="${actividad.materiaActividad}">Editar</button>
-                    <button class="eliminar-btn" data-id="${actividad.materiaActividad}">Eliminar</button>
+                    <button class="btn-ir-actividades" data-id="${actividad.actividadId}">Ir a actividad</button>
+                    <button class="editar-btn" data-id="${actividad.actividadId}">Editar</button>
+                    <button class="eliminar-btn" data-id="${actividad.actividadId}">Eliminar</button>
                 </div>
             </div>
         `;
@@ -146,9 +146,9 @@ function renderizarActividades(actividades) {
         const btnEditar = actividadItem.querySelector(".editar-btn");
         const btnIrActividad = actividadItem.querySelector(".btn-ir-actividades");
 
-        btnEliminar.addEventListener("click", () => eliminarActividad(actividad.materiaActividad));
-        btnEditar.addEventListener("click", () => editarActividad(actividad.materiaActividad));
-        btnIrActividad.addEventListener("click", () => IrAActividad(actividad.materiaActividad));
+        btnEliminar.addEventListener("click", () => eliminarActividad(actividad.actividadId));
+        btnEditar.addEventListener("click", () => editarActividad(actividad.actividadId));
+        btnIrActividad.addEventListener("click", () => IrAActividad(actividad.actividadId));
 
         listaActividades.appendChild(actividadItem);
     });

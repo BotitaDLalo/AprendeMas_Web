@@ -182,7 +182,7 @@ namespace AprendeMasWeb.Controllers.WEB
         }
 
         //Controlador api que crea actividades
-
+        //Guarda la actividad directo en tabla actividades. 
         [HttpPost("CrearActividad")]
         public async Task<IActionResult> CrearActividad([FromBody] Actividades actividadDto)
         {
@@ -191,51 +191,28 @@ namespace AprendeMasWeb.Controllers.WEB
                 return BadRequest(new { mensaje = "Datos inválidos." });
             }
 
-            using (var transaction = await _context.Database.BeginTransactionAsync())
+            
+            try
             {
-                try
-                {
-                    // Crear nueva actividad
-                    var nuevaActividad = new Actividades
-                    {
-                        NombreActividad = actividadDto.NombreActividad,
-                        Descripcion = actividadDto.Descripcion,
-                        FechaCreacion = DateTime.Now,
-                        FechaLimite = actividadDto.FechaLimite,
-                        TipoActividadId = actividadDto.TipoActividadId,
-                        Puntaje = actividadDto.Puntaje,
-                        MateriaId = actividadDto.MateriaId
-                    };
+                 // Crear nueva actividad
+                 var nuevaActividad = new Actividades
+                 {
+                     NombreActividad = actividadDto.NombreActividad,
+                     Descripcion = actividadDto.Descripcion,
+                     FechaCreacion = DateTime.Now,
+                     FechaLimite = actividadDto.FechaLimite,
+                     TipoActividadId = actividadDto.TipoActividadId,
+                     Puntaje = actividadDto.Puntaje,
+                     MateriaId = actividadDto.MateriaId
+                 };
 
-                    _context.tbActividades.Add(nuevaActividad);
-                    await _context.SaveChangesAsync(); // Guarda la actividad para obtener su ID
-
-                    // Verificar que la actividad tiene un ID generado
-                    if (nuevaActividad.ActividadId <= 0)
-                    {
-                        throw new Exception("No se pudo obtener el ID de la actividad después de guardarla.");
-                    }
-
-                    // Registrar en la tabla MateriasActividades
-                    var nuevaRelacion = new MateriasActividades
-                    {
-                        MateriaId = actividadDto.MateriaId,  // ID recibido del JSON
-                        ActividadId = nuevaActividad.ActividadId // ID recién generado
-                    };
-
-                    _context.tbMateriasActividades.Add(nuevaRelacion);
-                    await _context.SaveChangesAsync(); // Guarda la relación
-
-                    // Confirmar transacción
-                    await transaction.CommitAsync();
-
-                    return Ok(new { mensaje = "Actividad creada con éxito", actividadId = nuevaActividad.ActividadId });
-                }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync();
+                 _context.tbActividades.Add(nuevaActividad);
+                 await _context.SaveChangesAsync(); // Guarda la actividad para obtener su ID
+                 return Ok(new { mensaje = "Actividad creada con éxito", actividadId = nuevaActividad.ActividadId });
+            }  
+            catch (Exception ex)
+            {
                     return StatusCode(500, new { mensaje = "Error al crear la actividad", error = ex.Message });
-                }
             }
         }
 
@@ -245,17 +222,16 @@ namespace AprendeMasWeb.Controllers.WEB
         {
             try
             {
-                var actividades = await _context.tbMateriasActividades
-                .Where(ma => ma.MateriaId == materiaId)
-                .Select(ma => new
+                var actividades = await _context.tbActividades
+                .Where(a => a.MateriaId == materiaId)
+                .Select(a => new
                  {
-                     ma.MateriaActividad,  
-                     ma.Actividades.ActividadId,  
-                     ma.Actividades.NombreActividad,
-                     ma.Actividades.Descripcion,
-                     ma.Actividades.FechaCreacion,
-                     ma.Actividades.FechaLimite,
-                     ma.Actividades.Puntaje
+                     a.ActividadId,  
+                     a.NombreActividad,
+                     a.Descripcion,
+                     a.FechaCreacion,
+                     a.FechaLimite,
+                     a.Puntaje
                 })
                 .ToListAsync();
                 if (actividades == null || actividades.Count == 0)
@@ -276,35 +252,19 @@ namespace AprendeMasWeb.Controllers.WEB
             public async Task<IActionResult> EliminarActividad(int id)
             {
                 // Buscar el registro en la tabla materiasActividades con el ID recibido
-                var materiaActividad = await _context.tbMateriasActividades
-                    .FirstOrDefaultAsync(ma => ma.MateriaActividad == id);
+                var Actividad = await _context.tbActividades
+                    .FirstOrDefaultAsync(a => a.ActividadId == id);
 
-                if (materiaActividad == null)
-                {
-                    return NotFound("No se encontró el registro en materiasActividades.");
-                }
-
-                // Eliminar el registro de materiasActividades primero
-                _context.tbMateriasActividades.Remove(materiaActividad);
-                await _context.SaveChangesAsync();
-
-                // Obtener el actividadId desde el registro de materiasActividades
-                var actividadId = materiaActividad.ActividadId;
-
-                // Buscar y eliminar el registro en la tabla Actividades
-                var actividad = await _context.tbActividades
-                    .FirstOrDefaultAsync(a => a.ActividadId == actividadId);
-
-                if (actividad == null)
+                if (Actividad == null)
                 {
                     return NotFound("No se encontró el registro en Actividades.");
                 }
 
-                // Eliminar el registro de Actividades
-                _context.tbActividades.Remove(actividad);
+                // Eliminar el registro de materiasActividades primero
+                _context.tbActividades.Remove(Actividad);
                 await _context.SaveChangesAsync();
 
-                return Ok(new { message = "Actividad y registro eliminados correctamente." });
+                return Ok(new { message = "Actividad eliminada correctamente." });
             }
 
         //Controlador para crear un aviso
