@@ -64,50 +64,6 @@ namespace AprendeMasWeb.Controllers.WEB
             return Ok(materiasSinGrupo);
         }
 
-        /*
-        // Controlador para eliminar una materia por su ID
-        [HttpDelete("EliminarMateria/{id}")]
-        public async Task<IActionResult> EliminarMateria(int id)
-        {
-            // Buscar la materia en la base de datos
-            var materia = await _context.tbMaterias.FindAsync(id);
-            if (materia == null)
-            {
-                return NotFound(new { mensaje = "La materia no existe" });
-            }
-            
-            // Buscar relaciones en la tabla MateriasActividades
-            var relacionesMateriasActividades = _context.tbMateriasActividades.Where(ma => ma.MateriaId == id);
-            // Eliminar las relaciones de la materia con las actividades
-            _context.tbMateriasActividades.RemoveRange(relacionesMateriasActividades);
-
-            // Obtener los IDs de las actividades relacionadas
-            var actividadesIds = relacionesMateriasActividades.Select(ma => ma.ActividadId).ToList();
-
-            // Eliminar las actividades relacionadas con esta materia
-            var actividades = _context.tbActividades.Where(a => actividadesIds.Contains(a.ActividadId));
-            _context.tbActividades.RemoveRange(actividades);
-
-            // Eliminar las relaciones en la tabla AlumnosMaterias
-            var relacionesAlumnos = _context.tbAlumnosMaterias.Where(am => am.MateriaId == id);
-            _context.tbAlumnosMaterias.RemoveRange(relacionesAlumnos);
-
-            //Busca relacion de la materia si esta dentro de un grupo
-            var relacionMateriaConGrupo = _context.tbGruposMaterias.Where(mg => mg.MateriaId == id);
-
-            // Eliminar todas las relaciones de la materia con grupo
-            _context.tbGruposMaterias.RemoveRange(relacionMateriaConGrupo);
-
-
-            // Ahora eliminamos la materia
-            _context.tbMaterias.Remove(materia);
-
-            // Guardar cambios para eliminar relaciones y la materia
-            await _context.SaveChangesAsync();
-
-            return Ok(new { mensaje = "Materia y sus relaciones eliminadas correctamente." });
-        }
-        */
         // Controlador para eliminar una materia por su ID
         [HttpDelete("EliminarMateria/{id}")]
         public async Task<IActionResult> EliminarMateria(int id)
@@ -146,7 +102,7 @@ namespace AprendeMasWeb.Controllers.WEB
             return Ok(new { mensaje = "Materia y sus relaciones eliminadas correctamente." });
         }
 
-
+        /*
         //Controlador actualiza materia, aun no funciona
         [HttpPut("ActualizarMateria/{id}")]
         public async Task<IActionResult> ActualizarMateria(int id, [FromBody] Materias materiaActualizada)
@@ -168,6 +124,31 @@ namespace AprendeMasWeb.Controllers.WEB
             await _context.SaveChangesAsync();
 
             return Ok(new { mensaje = "Materia actualizada correctamente." });
+        }*/
+        [HttpPut("ActualizarMateria/{materiaId}")]
+        public async Task<IActionResult> ActualizarMateria(int materiaId, [FromBody] Materias materiaDto)
+        {
+            var materiaExistente = await _context.tbMaterias.FindAsync(materiaId);
+
+            if (materiaExistente == null)
+            {
+                return NotFound("Materia no encontrada.");
+            }
+
+            // Solo se actualizan los campos que llegaron
+            if (!string.IsNullOrEmpty(materiaDto.NombreMateria))
+            {
+                materiaExistente.NombreMateria = materiaDto.NombreMateria;
+            }
+
+            if (!string.IsNullOrEmpty(materiaDto.Descripcion))
+            {
+                materiaExistente.Descripcion = materiaDto.Descripcion;
+            }
+            await _context.SaveChangesAsync();
+
+            return Ok(materiaExistente);
         }
+
     }
 }

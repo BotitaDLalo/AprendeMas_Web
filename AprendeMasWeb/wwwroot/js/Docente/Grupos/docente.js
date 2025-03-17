@@ -584,8 +584,8 @@ async function editarMateria(materiaId, nombreActual, descripcionActual) {
         cancelButtonText: "Cancelar",
         preConfirm: () => {
             return {
-                nombre: document.getElementById("swal-nombre").value,
-                descripcion: document.getElementById("swal-descripcion").value
+                NombreMateria: document.getElementById("swal-nombre").value, // Nombre correcto
+                Descripcion: document.getElementById("swal-descripcion").value // Nombre correcto
             };
         }
     });
