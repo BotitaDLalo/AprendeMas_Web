@@ -1,0 +1,187 @@
+﻿@{
+    // Establece el diseño de la vista utilizando una plantilla compartida específica para docentes.
+    Layout = "~/Views/Shared/_LayoutDocente.cshtml";
+
+    // Define el título de la página, que se usará en el navegador o en la pestaña.
+    ViewData["Title"] = "Evaluar Actividades";
+
+}
+
+<div class="container mt-5">
+    <!-- Información de la actividad -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card mb-4">
+            <div class="card-header" style="background-color: #2196F3; color: white;">
+                <h4 class="mb-0">Información de la Actividad</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Nombre de la Actividad:</strong> <span>Actividad 1: Examen Final</span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Descripción:</strong> <span>Examen final sobre temas de matemáticas, que cubre todos los temas vistos durante el semestre.</span>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <strong>Fecha de Creación:</strong> <span>01/03/2025</span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Fecha Límite de Entrega:</strong> <span>15/03/2025</span>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <strong>Tipo de Actividad:</strong> <span>Tarea</span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Puntaje Máximo:</strong> <span>100</span>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <strong>Alumnos que han entregado:</strong> <span class="badge bg-success">8 de 10</span>
+                        <br>
+                        <strong>Actividades Calificadas:</strong> <span class="badge bg-primary">5 de 10</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    <!-- Lista de alumnos -->
+        <div class="card mb-4">
+            <div class="card-header" style="background-color: #4CAF50; color: white;">
+                <h5 class="mb-0">Alumnos que han entregado</h5>
+            </div>
+        <div class="card-body">
+            <div id="listaAlumnos" class="list-group">
+                <!-- Ejemplo de cómo se vería un alumno -->
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1" style="font-weight: bold; color: #333;">Juan Pérez</h5>
+                        <p class="mb-1" style="color: #777;">Entrega: 14/01/2025</p>
+                    </div>
+                    <span class="badge bg-success">Entregado</span>
+                    <button class="btn btn-primary btn-sm" onclick="verRespuesta(1)">Ver Respuesta</button>
+                    <button class="btn btn-warning btn-sm" onclick="abrirModalCalificar(1)">Calificar</button>
+                </div>
+
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1" style="font-weight: bold; color: #333;">María López</h5>
+                        <p class="mb-1" style="color: #777;">Entrega: 15/01/2025</p>
+                    </div>
+                    <span class="badge bg-danger">No entregado</span>
+                    <button class="btn btn-primary btn-sm" disabled>Ver Respuesta</button>
+                    <button class="btn btn-warning btn-sm" disabled>Calificar</button>
+                </div>
+                <!-- Aquí se generarán dinámicamente los alumnos -->
+            </div>
+        </div>
+    </div>
+        <!-- Alumnos que no han entregado -->
+        <div class="card mb-4">
+            <div class="card-header" style="background-color: #F44336; color: white;">
+                <h5 class="mb-0">Alumnos que no han entregado</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <span><strong>Mario Rodríguez</strong></span>
+                    </li>
+                    <li class="list-group-item">
+                        <span><strong>Lucía Martínez</strong></span>
+                    </li>
+                    <!-- Aquí puedes agregar más alumnos -->
+                </ul>
+            </div>
+        </div>
+
+    <!-- Modal para calificar -->
+    <div class="modal fade" id="calificarModal" tabindex="-1" aria-labelledby="calificarModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #2196F3; color: white;">
+                    <h5 class="modal-title" id="calificarModalLabel">Calificar Alumno</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formCalificacion">
+                        <div class="mb-3">
+                            <label for="calificacion" class="form-label">Calificación</label>
+                            <input type="number" class="form-control" id="calificacion" min="0" max="100" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="comentario" class="form-label">Comentario</label>
+                            <textarea class="form-control" id="comentario" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar Calificación</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Respuesta del alumno -->
+    <div class="modal fade" id="respuestaModal" tabindex="-1" aria-labelledby="respuestaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #2196F3; color: white;">
+                    <h5 class="modal-title" id="respuestaModalLabel">Respuesta del Alumno</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="respuesta-alumno">
+                        <!-- Aquí se muestra la respuesta del alumno -->
+                        <p><strong>Archivo Subido:</strong> <a href="#" id="archivo-respuesta">Ver archivo</a></p>
+                        <p><strong>Texto enviado:</strong></p>
+                        <pre id="texto-respuesta">Texto de la respuesta del alumno.</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para mostrar la respuesta del alumno y abrir el modal -->
+<script>
+    function verRespuesta(alumnoId) {
+        // Aquí puedes hacer la petición para obtener la respuesta del alumno con el id correspondiente
+        // Este es solo un ejemplo estático
+        document.getElementById('respuesta-alumno').innerHTML = `
+            <p><strong>Archivo Subido:</strong> <a href="#" id="archivo-respuesta">Ver archivo</a></p>
+            <p><strong>Texto enviado:</strong></p>
+            <pre id="texto-respuesta">Este es el texto de la respuesta del alumno.</pre>
+        `;
+        // Abre el modal de la respuesta
+        $('#respuestaModal').modal('show');
+    }
+
+    function abrirModalCalificar(alumnoId) {
+        // Aquí se puede cargar la información del alumno para calificarlo
+        // Esto es solo un ejemplo de abrir el modal para calificar
+        $('#calificarModal').modal('show');
+    }
+
+    // Enviar calificación y comentario
+    document.getElementById("formCalificacion").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const calificacion = document.getElementById("calificacion").value;
+        const comentario = document.getElementById("comentario").value;
+
+        // Aquí enviarías la calificación y el comentario al servidor para guardarlos
+        console.log(`Calificación: ${calificacion}, Comentario: ${comentario}`);
+
+        // Cerrar el modal después de guardar la calificación
+        $('#calificarModal').modal('hide');
+    });
+</script>
+
+@section Scripts {
+    <!--Incluye un archivo JavaScript específico para manejar las funcionalidades relacionadas con los grupos de materias.-->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+}

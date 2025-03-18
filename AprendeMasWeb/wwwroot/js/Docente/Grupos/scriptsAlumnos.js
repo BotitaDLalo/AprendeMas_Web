@@ -186,7 +186,7 @@ async function cargarAlumnosAsignados(materiaIdGlobal) {
 
             //  Agregar el nombre del alumno
             const spanNombre = document.createElement("span");
-            spanNombre.textContent = `${alumno.nombre} ${alumno.apellidoPaterno} ${alumno.apellidoMaterno}`;
+            spanNombre.textContent = `${alumno.apellidoPaterno} ${alumno.apellidoMaterno} ${alumno.nombre}`;
             divAlumno.appendChild(spanNombre);
 
             //  Contenedor de botón

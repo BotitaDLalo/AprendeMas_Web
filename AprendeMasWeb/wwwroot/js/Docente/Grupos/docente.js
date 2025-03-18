@@ -65,7 +65,7 @@ async function asociarMateriasAGrupo(grupoId, materias) {
 function irAMateria(materiaIdSeleccionada,seccion = 'avisos') {
     //guardar el id de la materia para acceder a la materia en la que se entro y usarla en otro script
     localStorage.setItem("materiaIdSeleccionada", materiaIdSeleccionada);
-    //window.location.href = `/Docente/MateriasDetalles?materiaId=${materiaIdSeleccionada}`; // Redirige a la página de detalles de la materia
+    // Redirige a la página de detalles de la materia
     window.location.href = `/Docente/MateriasDetalles?materiaId=${materiaIdSeleccionada}&seccion=${seccion}`;
 }
 

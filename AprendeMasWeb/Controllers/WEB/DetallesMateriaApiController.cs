@@ -150,10 +150,14 @@ namespace AprendeMasWeb.Controllers.WEB
                         a.ApellidoPaterno,
                         a.ApellidoMaterno
                     })
+                .OrderBy(a => a.ApellidoPaterno) // Ordena por apellido paterno
+                .ThenBy(a => a.ApellidoMaterno)  // Si hay empate en el apellido paterno, ordena por el apellido materno
+                .ThenBy(a => a.Nombre)           // Si hay empate en el apellido materno, ordena por el nombre
                 .ToListAsync();
             return Ok(alumnos);
         }
 
+        //Eliminar a un alumno de la materia.
         [HttpDelete("EliminarAlumnoDeMateria/{idEnlace}")]
         public async Task<IActionResult> EliminarAlumnoDeMateria(int idEnlace)
         {

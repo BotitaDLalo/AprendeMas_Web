@@ -156,6 +156,13 @@ function renderizarActividades(actividades) {
 }
 
 
+async function IrAActividad(actividadIdSeleccionada) {
+    alert("Esta en la actividad " + actividadIdSeleccionada);
+    //guardar el id de la materia para acceder a la materia en la que se entro y usarla en otro script
+   localStorage.setItem("actividadIdSeleccionada", actividadIdSeleccionada);
+    // Redirige a la página de detalles de la materia
+    window.open(`/Docente/EvaluarActividades`, '_blank');
+}
 // Funciones para manejar los botones
 
 async function eliminarActividad(id) {
