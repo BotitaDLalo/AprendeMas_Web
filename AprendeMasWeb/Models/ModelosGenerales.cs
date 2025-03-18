@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using AprendeMasWeb.Models.DBModels;
 
 namespace AprendeMasWeb.Models
 {
@@ -268,5 +269,42 @@ namespace AprendeMasWeb.Models
     public class VerificarGoogleIdToken
     {
         public required string IdToken { get; set; }
+    }
+
+    public class UnirseAClaseRequest
+    {
+        public int AlumnoId { get; set; }
+        public required string CodigoAcceso { get; set; }
+    }
+
+
+    public class GrupoRes
+    {
+        public int GrupoId { get; set; }
+
+        public string? NombreGrupo {  get; set; }
+
+        public string? Descripcion { get; set; }
+
+        public string? CodigoAcceso { get; set; }   
+
+        public string? CodigoColor {  get; set; }
+
+        public List<MateriaRes>? Materias { get; set; }
+    }
+
+    public class MateriaRes
+    {
+      public int MateriaId { get; set; }
+      public string? NombreMateria { get; set; }
+      public string?  Descripcion {  get; set; }
+      public List<tbActividades>? Actividades {  get; set; }
+    }
+
+    public class UnirseAClaseMRespuesta
+    {
+        public GrupoRes? Grupo {  get; set; }
+        public MateriaRes? Materia { get; set; }
+        public bool? EsGrupo {  get; set; }
     }
 }

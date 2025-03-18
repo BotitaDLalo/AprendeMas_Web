@@ -18,6 +18,179 @@ namespace AprendeMasWeb.Controllers
         private readonly UserManager<IdentityUser> _userManager = userManager;
 
 
+        // Endpoint para unirse a una clase con código de acceso
+        [HttpPost("UnirseAClase")]
+        public async Task<IActionResult> UnirseAClase([FromBody] UnirseAClaseRequest request)
+        {
+            if (string.IsNullOrEmpty(request.CodigoAcceso))
+            {
+                return BadRequest(new { mensaje = "El código de acceso es obligatorio" });
+            }
+
+            // Buscar si el código pertenece a un Grupo
+            var grupo = await _context.tbGrupos.FirstOrDefaultAsync(g => g.CodigoAcceso == request.CodigoAcceso);
+
+            if (grupo != null)
+            {
+                // Verificar si el alumno ya está inscrito en el grupo
+                var existeRelacion = await _context.tbAlumnosGrupos
+                    .AnyAsync(ag => ag.AlumnoId == request.AlumnoId && ag.GrupoId == grupo.GrupoId);
+
+                if (!existeRelacion)
+                {
+                    // Agregar el alumno al grupo
+                    var nuevaRelacion = new tbAlumnosGrupos
+                    {
+                        AlumnoId = request.AlumnoId,
+                        GrupoId = grupo.GrupoId
+                    };
+                    _context.tbAlumnosGrupos.Add(nuevaRelacion);
+                    await _context.SaveChangesAsync();
+                    return Ok(new { mensaje = "Te has unido al grupo", nombre = grupo.NombreGrupo, esGrupo = true });
+                }
+
+            }
+
+            // Buscar si el código pertenece a una Materia
+            var materia = await _context.tbMaterias.FirstOrDefaultAsync(m => m.CodigoAcceso == request.CodigoAcceso);
+
+            if (materia != null)
+            {
+                // Verificar si el alumno ya está inscrito en la materia
+                var existeRelacion = await _context.tbAlumnosMaterias
+                    .AnyAsync(am => am.AlumnoId == request.AlumnoId && am.MateriaId == materia.MateriaId);
+
+                if (!existeRelacion)
+                {
+                    // Agregar el alumno a la materia
+                    var nuevaRelacion = new tbAlumnosMaterias
+                    {
+                        AlumnoId = request.AlumnoId,
+                        MateriaId = materia.MateriaId
+                    };
+                    _context.tbAlumnosMaterias.Add(nuevaRelacion);
+                    await _context.SaveChangesAsync();
+                    return Ok(new { mensaje = "Te has unido a la materia", nombre = materia.NombreMateria, esGrupo = false });
+                }
+
+            }
+
+            return NotFound(new { mensaje = "Código de acceso no válido" });
+        }
+
+        [HttpPost("UnirseAClaseM")]
+        public async Task<IActionResult> UnirseAClaseM([FromBody] UnirseAClaseRequest request)
+        {
+            try
+            {
+                var codigo = request.CodigoAcceso;
+
+                var grupo = await _context.tbGrupos.FirstOrDefaultAsync(g => g.CodigoAcceso == request.CodigoAcceso);
+
+                if (grupo != null)
+                {
+                    int docenteId = grupo.DocenteId;
+                    var docente = await _context.tbDocentes.Where(a => a.DocenteId == docenteId).FirstOrDefaultAsync();
+
+                    if (docente == null) return BadRequest();
+
+                    var existeRelacion = await _context.tbAlumnosGrupos
+                        .AnyAsync(ag => ag.AlumnoId == request.AlumnoId && ag.GrupoId == grupo.GrupoId);
+
+                    if (!existeRelacion)
+                    {
+                        var lsMateriasId = await _context.tbGruposMaterias.Where(a => a.GrupoId == grupo.GrupoId).Select(a => a.MateriaId).ToListAsync();
+
+                        var lsMaterias = await _context.tbMaterias.Where(a => lsMateriasId.Contains(a.MateriaId)).Select(m => new MateriaRes
+                        {
+                            MateriaId = m.MateriaId,
+                            NombreMateria = m.NombreMateria,
+                            Descripcion = m.Descripcion,
+                            //m.CodigoColor,
+                            Actividades = _context.tbActividades.Where(a => a.MateriaId == m.MateriaId).ToList()
+                        }).ToListAsync();
+
+
+                        GrupoRes grupoRes = new()
+                        {
+                            GrupoId = grupo.GrupoId,
+                            NombreGrupo = grupo.NombreGrupo,
+                            Descripcion = grupo.Descripcion,
+                            CodigoAcceso = grupo.CodigoAcceso,
+                            CodigoColor = grupo.CodigoColor,
+                            Materias = lsMaterias
+                        };
+
+                        var nuevaRelacion = new tbAlumnosGrupos
+                        {
+                            AlumnoId = request.AlumnoId,
+                            GrupoId = grupo.GrupoId
+                        };
+                        _context.tbAlumnosGrupos.Add(nuevaRelacion);
+                        await _context.SaveChangesAsync();
+
+
+                        UnirseAClaseMRespuesta respuesta = new()
+                        {
+                            Grupo = grupoRes,
+                            EsGrupo = true
+                        };
+
+
+                        return Ok(respuesta);
+                    }
+                    return BadRequest();
+
+                }
+
+                var materia = await _context.tbMaterias.FirstOrDefaultAsync(m => m.CodigoAcceso == request.CodigoAcceso);
+
+                if (materia != null)
+                {
+                    int docenteId = materia.DocenteId;
+                    var docente = await _context.tbDocentes.Where(a => a.DocenteId == docenteId).FirstOrDefaultAsync();
+
+                    if (docente == null) return BadRequest();
+                    var existeRelacion = await _context.tbAlumnosMaterias
+                         .AnyAsync(am => am.AlumnoId == request.AlumnoId && am.MateriaId == materia.MateriaId);
+
+                    if (!existeRelacion)
+                    {
+                        MateriaRes materiaRes = new()
+                        {
+                            MateriaId = materia.MateriaId,
+                            NombreMateria = materia.NombreMateria,
+                            Descripcion = materia.Descripcion,
+                            Actividades = await _context.tbActividades.Where(a => a.MateriaId == materia.MateriaId).ToListAsync()
+                        };
+
+                        var nuevaRelacion = new tbAlumnosMaterias
+                        {
+                            AlumnoId = request.AlumnoId,
+                            MateriaId = materia.MateriaId
+                        };
+                        _context.tbAlumnosMaterias.Add(nuevaRelacion);
+                        await _context.SaveChangesAsync();
+
+                        UnirseAClaseMRespuesta respuesta = new()
+                        {
+                            Materia = materiaRes,
+                            EsGrupo = false
+                        };
+
+                        return Ok(respuesta);
+                    }
+                    return BadRequest();
+                }
+
+                return NotFound(new { mensaje = "No existe la clase." });
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
         [HttpPost("RegistrarEnvioActividadAlumno")]
         public async Task<ActionResult> RegistrarEnvioActividadAlumno([FromBody] EntregableAlumno entregable)
         {
@@ -77,7 +250,7 @@ namespace AprendeMasWeb.Controllers
             try
             {
 
-                var datosAlumnoActividad = await _context.tbAlumnosActividades.Where(a => a.ActividadId == ActividadId && a.AlumnoId == AlumnoId).Select(a => new{ a.AlumnoActividadId, a.FechaEntrega, a.EstatusEntrega}).FirstOrDefaultAsync();
+                var datosAlumnoActividad = await _context.tbAlumnosActividades.Where(a => a.ActividadId == ActividadId && a.AlumnoId == AlumnoId).Select(a => new { a.AlumnoActividadId, a.FechaEntrega, a.EstatusEntrega }).FirstOrDefaultAsync();
 
 
                 var alumnoActividadId = datosAlumnoActividad?.AlumnoActividadId ?? 0;
@@ -418,7 +591,7 @@ namespace AprendeMasWeb.Controllers
 
                 if (grupoId > 0 && materiaId > 0)
                 {
-                    List<int> lsAlumnosGruposId = await _context.tbAlumnosGrupos.Where(a=>a.GrupoId == grupoId).Select(a=>a.AlumnoId).ToListAsync();
+                    List<int> lsAlumnosGruposId = await _context.tbAlumnosGrupos.Where(a => a.GrupoId == grupoId).Select(a => a.AlumnoId).ToListAsync();
                     List<EmailVerificadoAlumno> lsAlumnos = await ObtenerListaAlumnos(lsAlumnosGruposId);
                     return Ok(lsAlumnos);
                 }
