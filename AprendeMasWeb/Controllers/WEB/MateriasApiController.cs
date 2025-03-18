@@ -145,6 +145,7 @@ namespace AprendeMasWeb.Controllers.WEB
             {
                 materiaExistente.Descripcion = materiaDto.Descripcion;
             }
+
             await _context.SaveChangesAsync();
 
             return Ok(materiaExistente);

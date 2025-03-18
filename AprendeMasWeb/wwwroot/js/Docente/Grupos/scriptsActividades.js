@@ -89,7 +89,7 @@ async function cargarActividadesDeMateria() {
         listaActividades.innerHTML = `<p class="mensaje-error">${error.message}</p>`;
     }
 }
-
+//Renderiza actividades despues de confirmar existencia
 function renderizarActividades(actividades) {
     const listaActividades = document.getElementById("listaActividadesDeMateria");
     listaActividades.innerHTML = ""; // Limpiar el contenedor
@@ -157,7 +157,6 @@ function renderizarActividades(actividades) {
 
 
 // Funciones para manejar los botones
-
 
 async function eliminarActividad(id) {
     // Confirmación con SweetAlert

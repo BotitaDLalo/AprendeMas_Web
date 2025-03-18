@@ -6,6 +6,7 @@
     font-size: 16px;
 }
 
+
 body {
     background-color: #f1f2f4;
     margin: 0;
@@ -111,15 +112,15 @@ p, body {
 }
 
 .dropdown-menu {
-    display: none;
-    position: absolute;
+    display: none; 
+    position: relative; 
     right: 0;
     top: 100%;
     background-color: #fff;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     padding: 10px 15px;
-    z-index: 1000;
+    z-index: 1000; 
     animation: fadeIn 0.3s ease;
 }
 
@@ -162,10 +163,11 @@ p, body {
     justify-content: flex-start;
 }
 
+
 .card-custom {
     width: 250px;
     border-radius: 10px;
-    overflow: hidden;
+    overflow: visible !important; /*Se cambio de hidden a visible !important */
     background-color: #f8f9fa;
     transition: transform 0.2s, box-shadow 0.2s;
 }
