@@ -253,9 +253,13 @@ async function handleCardClick(grupoId) {
                                         </div>
                                     </div>
                                 </div>
+
+
                                 <div class="card-body card-body-custom" style="background-color: #e0e0e0">
                                     <p class="card-text">${materia.descripcion || "Sin descripción"}</p>
                                 </div>
+
+
                                 <div class="card-footer card-footer-custom">
                                     <button class="btn btn-sm btn-primary" onclick="irAMateria(${materia.materiaId})">Ver Materia</button>
                                     <div class="icon-container">

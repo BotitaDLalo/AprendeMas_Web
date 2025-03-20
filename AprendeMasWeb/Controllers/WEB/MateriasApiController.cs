@@ -50,19 +50,53 @@ namespace AprendeMasWeb.Controllers.WEB
             // Genera una cadena de 10 caracteres aleatorios entre A y Z
             return new string(Enumerable.Range(0, 10).Select(_ => (char)random.Next('A', 'Z')).ToArray());
         }
+        
 
-        // Controlador para obtener las materias que no tienen asignado un grupo
+        // Controlador para obtener las materias sin grupo y sus 2 actividades más recientes
         [HttpGet("ObtenerMateriasSinGrupo/{docenteId}")]
         public async Task<IActionResult> ObtenerMateriasSinGrupo(int docenteId)
         {
-            // Consulta las materias que pertenecen al docente con el ID proporcionado
-            // Obtiene las matgerias del docente que No estan en la tabla GruposYMaterias
             var materiasSinGrupo = await _context.tbMaterias
                 .Where(m => m.DocenteId == docenteId &&
                     !_context.tbGruposMaterias.Any(gm => gm.MateriaId == m.MateriaId))
-                .ToListAsync();
-            return Ok(materiasSinGrupo);
+                .ToListAsync(); // Obtener materias primero
+
+            // Para cada materia, buscar sus 2 actividades más recientes
+            var resultado = new List<object>();
+
+            foreach (var materia in materiasSinGrupo)
+            {
+                var actividadesRecientes = await _context.tbActividades
+                    .Where(a => a.MateriaId == materia.MateriaId)
+                    .OrderByDescending(a => a.FechaCreacion)
+                    .Take(2)
+                    .Select(a => new
+                    {
+                        a.ActividadId,
+                        a.NombreActividad,
+                        a.FechaCreacion
+                    })
+                    .ToListAsync(); // Obtener actividades recientes de esta materia
+
+                resultado.Add(new
+                {
+                    materia.MateriaId,
+                    materia.NombreMateria,
+                    materia.Descripcion,
+                    materia.CodigoColor,
+                    materia.CodigoAcceso,
+                    materia.DocenteId,
+                    ActividadesRecientes = actividadesRecientes // Se asignan correctamente aquí
+                });
+            }
+
+            return Ok(resultado);
         }
+
+
+
+
+
 
         // Controlador para eliminar una materia por su ID
         [HttpDelete("EliminarMateria/{id}")]

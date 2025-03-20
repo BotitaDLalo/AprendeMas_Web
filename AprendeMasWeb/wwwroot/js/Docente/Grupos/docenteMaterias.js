@@ -122,9 +122,26 @@ async function cargarMateriasSinGrupo() {
                             </div>
                         </div>
 
-                        <div class="card-body card-body-custom" style="background-color: #e0e0e0">
-                            <p class="card-text">${materiaSinGrupo.descripcion || "Sin descripción"}</p> <!-- Muestra la descripción de la materia o un mensaje por defecto -->
-                        </div>
+                        <div class="card-body card-body-custom" style="background-color: #ffffff">
+    <p class="card-text">
+    ${materiaSinGrupo.actividadesRecientes.length > 0
+        ? materiaSinGrupo.actividadesRecientes.map(actividad => {
+            const fechaFormateada = new Date(actividad.fechaCreacion).toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+            return `
+                <a href="#" onclick="verActividad(${actividad.actividadId})">
+                    ${actividad.nombreActividad} (${fechaFormateada})
+                </a>
+            `;
+        }).join('<br>')
+        : "Sin actividades recientes"}
+</p>
+
+</div>
+
 
                         <div class="card-footer card-footer-custom">
                             <button class="btn btn-sm btn-primary" onclick="irAMateria(${materiaSinGrupo.materiaId})">Ver Materia</button> <!-- Botón para ver los detalles de la materia -->
