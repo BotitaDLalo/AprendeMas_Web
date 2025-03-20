@@ -55,6 +55,8 @@ namespace AprendeMasWeb.Migrations
 
                     b.HasKey("ActividadId");
 
+                    b.HasIndex("MateriaId");
+
                     b.HasIndex("TipoActividadId");
 
                     b.ToTable("tbActividades");
@@ -164,31 +166,6 @@ namespace AprendeMasWeb.Migrations
                     b.HasIndex("MateriaId");
 
                     b.ToTable("tbAlumnosMaterias");
-                });
-
-            modelBuilder.Entity("AprendeMasWeb.Models.DBModels.AlumnosTokens", b =>
-                {
-                    b.Property<int>("FCMToken")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FCMToken"));
-
-                    b.Property<int>("AlumnoId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("AlumnosAlumnoId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("FCMToken");
-
-                    b.HasIndex("AlumnosAlumnoId");
-
-                    b.ToTable("AlumnosTokens");
                 });
 
             modelBuilder.Entity("AprendeMasWeb.Models.DBModels.Avisos", b =>
@@ -485,29 +462,6 @@ namespace AprendeMasWeb.Migrations
                     b.ToTable("tbMaterias");
                 });
 
-            modelBuilder.Entity("AprendeMasWeb.Models.DBModels.MateriasActividades", b =>
-                {
-                    b.Property<int>("MateriaActividad")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MateriaActividad"));
-
-                    b.Property<int>("ActividadId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MateriaId")
-                        .HasColumnType("int");
-
-                    b.HasKey("MateriaActividad");
-
-                    b.HasIndex("ActividadId");
-
-                    b.HasIndex("MateriaId");
-
-                    b.ToTable("tbMateriasActividades");
-                });
-
             modelBuilder.Entity("AprendeMasWeb.Models.DBModels.TiposActividades", b =>
                 {
                     b.Property<int>("TipoActividadId")
@@ -748,11 +702,19 @@ namespace AprendeMasWeb.Migrations
 
             modelBuilder.Entity("AprendeMasWeb.Models.Actividades", b =>
                 {
+                    b.HasOne("AprendeMasWeb.Models.DBModels.Materias", "Materias")
+                        .WithMany("Actividades")
+                        .HasForeignKey("MateriaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("AprendeMasWeb.Models.DBModels.TiposActividades", "TiposActividades")
                         .WithMany("Actividades")
                         .HasForeignKey("TipoActividadId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("Materias");
 
                     b.Navigation("TiposActividades");
                 });
@@ -823,13 +785,6 @@ namespace AprendeMasWeb.Migrations
                     b.Navigation("Alumnos");
 
                     b.Navigation("Materias");
-                });
-
-            modelBuilder.Entity("AprendeMasWeb.Models.DBModels.AlumnosTokens", b =>
-                {
-                    b.HasOne("AprendeMasWeb.Models.DBModels.Alumnos", null)
-                        .WithMany("AlumnosTokens")
-                        .HasForeignKey("AlumnosAlumnoId");
                 });
 
             modelBuilder.Entity("AprendeMasWeb.Models.DBModels.Avisos", b =>
@@ -964,25 +919,6 @@ namespace AprendeMasWeb.Migrations
                     b.Navigation("Docentes");
                 });
 
-            modelBuilder.Entity("AprendeMasWeb.Models.DBModels.MateriasActividades", b =>
-                {
-                    b.HasOne("AprendeMasWeb.Models.Actividades", "Actividades")
-                        .WithMany("MateriasActividades")
-                        .HasForeignKey("ActividadId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("AprendeMasWeb.Models.DBModels.Materias", "Materias")
-                        .WithMany("MateriasActividades")
-                        .HasForeignKey("MateriaId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Actividades");
-
-                    b.Navigation("Materias");
-                });
-
             modelBuilder.Entity("AprendeMasWeb.Models.DBModels.tbUsuariosFcmTokens", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
@@ -1048,8 +984,6 @@ namespace AprendeMasWeb.Migrations
             modelBuilder.Entity("AprendeMasWeb.Models.Actividades", b =>
                 {
                     b.Navigation("AlumnosActividades");
-
-                    b.Navigation("MateriasActividades");
                 });
 
             modelBuilder.Entity("AprendeMasWeb.Models.DBModels.Alumnos", b =>
@@ -1059,8 +993,6 @@ namespace AprendeMasWeb.Migrations
                     b.Navigation("AlumnosGrupos");
 
                     b.Navigation("AlumnosMaterias");
-
-                    b.Navigation("AlumnosTokens");
                 });
 
             modelBuilder.Entity("AprendeMasWeb.Models.DBModels.AlumnosActividades", b =>
@@ -1102,13 +1034,13 @@ namespace AprendeMasWeb.Migrations
 
             modelBuilder.Entity("AprendeMasWeb.Models.DBModels.Materias", b =>
                 {
+                    b.Navigation("Actividades");
+
                     b.Navigation("AlumnosMaterias");
 
                     b.Navigation("EventosMaterias");
 
                     b.Navigation("GruposMaterias");
-
-                    b.Navigation("MateriasActividades");
                 });
 
             modelBuilder.Entity("AprendeMasWeb.Models.DBModels.TiposActividades", b =>
