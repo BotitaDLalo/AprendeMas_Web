@@ -89,5 +89,21 @@ document.addEventListener("DOMContentLoaded", () => {
     inicializar(); // Carga inicial de datos
     // Se ejecuta solo cuando se abre el modal
     document.getElementById("gruposModal").addEventListener("shown.bs.modal", cargarMaterias);
+
+
+    // Delegación de eventos: escucha los clics en el contenedor padre
+    document.body.addEventListener("click", function (event) {
+        let link = event.target.closest(".actividad-link"); // Detecta si el clic fue en un enlace de actividad
+        if (link) {
+            event.preventDefault(); // Evita la recarga de la página si es un <a>
+            let actividadId = link.getAttribute("data-id"); // Obtener el ID correcto
+            verActividad(actividadId);
+        }
+    });
 });
 
+
+function verActividad(id) {
+    alert("Actividad seleccionada con ID:" + id);
+    // Aquí se redirigira a la actividad seleccionada pasando como parametros a la actividad.
+}
