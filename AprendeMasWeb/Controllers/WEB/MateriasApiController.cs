@@ -95,9 +95,6 @@ namespace AprendeMasWeb.Controllers.WEB
 
 
 
-
-
-
         // Controlador para eliminar una materia por su ID
         [HttpDelete("EliminarMateria/{id}")]
         public async Task<IActionResult> EliminarMateria(int id)

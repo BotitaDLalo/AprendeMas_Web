@@ -107,7 +107,7 @@ namespace AprendeMasWeb.Controllers.WEB
             // Retorna una respuesta exitosa con un mensaje
             return Ok(new { mensaje = "Materias asociadas correctamente." });
         }
-
+        /*
         [HttpGet("ObtenerMateriasPorGrupo/{grupoId}")]
         public async Task<IActionResult> ObtenerMateriasPorGrupo(int grupoId)
         {
@@ -128,7 +128,43 @@ namespace AprendeMasWeb.Controllers.WEB
                 .ToListAsync();
 
             return Ok(materias);
+        }*/
+
+        [HttpGet("ObtenerMateriasPorGrupo/{grupoId}")]
+        public async Task<IActionResult> ObtenerMateriasPorGrupo(int grupoId)
+        {
+            // Obtener los IDs de las materias que pertenecen al grupo
+            var materiasIds = await _context.tbGruposMaterias
+                .Where(gm => gm.GrupoId == grupoId)
+                .Select(gm => gm.MateriaId)
+                .ToListAsync();
+
+            // Obtener las materias con sus actividades recientes
+            var materiasConActividades = await _context.tbMaterias
+                .Where(m => materiasIds.Contains(m.MateriaId))
+                .Select(m => new
+                {
+                    m.MateriaId,
+                    m.NombreMateria,
+                    m.Descripcion,
+                    m.CodigoColor,
+                    ActividadesRecientes = _context.tbActividades
+                        .Where(a => a.MateriaId == m.MateriaId)
+                        .OrderByDescending(a => a.FechaCreacion)
+                        .Take(2)
+                        .Select(a => new
+                        {
+                            a.ActividadId,
+                            a.NombreActividad,
+                            a.FechaCreacion
+                        })
+                        .ToList() // Obtener las actividades recientes
+                })
+                .ToListAsync();
+
+            return Ok(materiasConActividades);
         }
+
 
         [HttpDelete("EliminarGrupo/{grupoId}")]
         public async Task<IActionResult> EliminarGrupo(int grupoId)

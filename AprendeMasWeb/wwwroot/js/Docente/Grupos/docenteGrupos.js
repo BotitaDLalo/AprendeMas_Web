@@ -255,9 +255,29 @@ async function handleCardClick(grupoId) {
                                 </div>
 
 
-                                <div class="card-body card-body-custom" style="background-color: #e0e0e0">
-                                    <p class="card-text">${materia.descripcion || "Sin descripción"}</p>
-                                </div>
+                                <div class="card-body card-body-custom">
+    <p class="card-text">
+        ${materia.actividadesRecientes.length > 0
+                            ? materia.actividadesRecientes.map((actividad, index) => {
+                                    const fechaFormateada = new Date(actividad.fechaCreacion).toLocaleDateString('es-ES', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric'
+                                    });
+                                    return `
+                    <div class="actividad-item">
+                        <a href="#" class="actividad-link" data-id="${actividad.actividadId}">
+                            ${actividad.nombreActividad}
+                        </a>
+                        <p class="actividad-fecha">Asignada: ${fechaFormateada}</p>
+                    </div>
+                `;
+                                }).join('')
+                                : "<p class='sin-actividades'>Sin actividades recientes</p>"
+        }
+    </p>
+</div>
+
 
 
                                 <div class="card-footer card-footer-custom">

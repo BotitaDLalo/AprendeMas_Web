@@ -122,25 +122,30 @@ async function cargarMateriasSinGrupo() {
                             </div>
                         </div>
 
-                        <div class="card-body card-body-custom" style="background-color: #ffffff">
+                       <div class="card-body card-body-custom">
     <p class="card-text">
-    ${materiaSinGrupo.actividadesRecientes.length > 0
-        ? materiaSinGrupo.actividadesRecientes.map(actividad => {
-            const fechaFormateada = new Date(actividad.fechaCreacion).toLocaleDateString('es-ES', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-            return `
-                <a href="#" onclick="verActividad(${actividad.actividadId})">
-                    ${actividad.nombreActividad} (${fechaFormateada})
-                </a>
-            `;
-        }).join('<br>')
-        : "Sin actividades recientes"}
-</p>
-
+        ${materiaSinGrupo.actividadesRecientes.length > 0
+                        ? materiaSinGrupo.actividadesRecientes.map((actividad, index) => {
+                            const fechaFormateada = new Date(actividad.fechaCreacion).toLocaleDateString('es-ES', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric'
+                            });
+                            return `
+                    <div class="actividad-item">
+                        <a href="#" class="actividad-link" data-id="${actividad.actividadId}">
+                            ${actividad.nombreActividad}
+                        </a>
+                        <p class="actividad-fecha">Asignada: ${fechaFormateada}</p>
+                    </div>
+                `;
+                        }).join('')
+                        : "<p class='sin-actividades'>Sin actividades recientes</p>"
+        }
+    </p>
 </div>
+
+
 
 
                         <div class="card-footer card-footer-custom">
