@@ -45,6 +45,30 @@
     <!-- Aquí se mostrará la lista de grupos que el docente ha creado. Esta parte está controlada por el archivo docente.js -->
 </div>
 
+<div class="card bg-primary text-white" style="max-width: 30em; height: 6em; display: flex; flex-direction: row; align-items: center; transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 10px 20px rgba(0, 0, 0, 0.2)';" onmouseout="this.style.transform=''; this.style.boxShadow='';">
+    <img class="card-img-top" src="/Iconos/1-26.svg" alt="Card image cap"
+         style="max-width: 25%; margin: auto; padding: 0.5em; border-radius: 0.7em;">
+
+    <div class="card-body" style="display: flex; justify-content: space-between; align-items: center; flex: 1; overflow: hidden;">
+        <div class="text-section" style="max-width: 100%; overflow: hidden; display: flex; flex-direction: column; justify-content: center;">
+            <h5 class="card-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; font-weight: bold;">Card title</h5>
+            <p class="card-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0;">
+                Some quick example text to build on the card title and make up the bulk of the card's content.
+            </p>
+        </div>
+
+        <div class="cta-section" style="max-width: 40%; display: flex; flex-direction: column; justify-content: center;">
+            <button class="btn btn-link text-white p-0" type="button" data-bs-toggle="dropdown"
+                    aria-expanded="false" onclick="event.stopPropagation();"
+                    style="width: 3em; height: 3em; display: flex; align-items: center; justify-content: center; border: none; outline: none; text-decoration: none;">
+                <i class="fas fa-cog" style="font-size: 1.5em;"></i> <!-- Icono de engranaje más grande -->
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
 <div id="contenedorMaterias"></div>
 
 
