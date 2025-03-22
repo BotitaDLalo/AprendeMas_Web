@@ -7,47 +7,53 @@
 
 }
 
+<link rel="stylesheet" href="~/css/Docente/DetalleActividadesEstilos.css" />
+
+
+
 <div class="container mt-5">
     <!-- Información de la actividad -->
     <div class="card mb-4 shadow-sm">
-        <div class="card mb-4">
-            <div class="card-header" style="background-color: #2196F3; color: white;">
+        <div class="card actividad-card mb-4">
+            <div class="card-header">
                 <h4 class="mb-0">Información de la Actividad</h4>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <strong>Nombre de la Actividad:</strong> <span>Actividad 1: Examen Final</span>
+                        <strong>Nombre de la Actividad:</strong> <span id="nombreActividad">Cargando...</span>
                     </div>
                     <div class="col-md-6">
-                        <strong>Descripción:</strong> <span>Examen final sobre temas de matemáticas, que cubre todos los temas vistos durante el semestre.</span>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-md-6">
-                        <strong>Fecha de Creación:</strong> <span>01/03/2025</span>
-                    </div>
-                    <div class="col-md-6">
-                        <strong>Fecha Límite de Entrega:</strong> <span>15/03/2025</span>
+                        <strong>Descripción:</strong> <span id="descripcionActividad">Cargando...</span>
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="col-md-6">
-                        <strong>Tipo de Actividad:</strong> <span>Tarea</span>
+                        <strong>Fecha de Creación:</strong> <span id="fechaCreacion">Cargando...</span>
                     </div>
                     <div class="col-md-6">
-                        <strong>Puntaje Máximo:</strong> <span>100</span>
+                        <strong>Fecha Límite de Entrega:</strong> <span id="fechaLimite">Cargando...</span>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <strong>Tipo de Actividad:</strong> <span id="tipoActividad">Cargando...</span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Puntaje Máximo:</strong> <span id="puntajeMaximo">Cargando...</span>
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="col-md-12">
-                        <strong>Alumnos que han entregado:</strong> <span class="badge bg-success">8 de 10</span>
+                        <strong>Alumnos que han entregado:</strong> <span class="badge bg-success" id="alumnosEntregados">Cargando...</span>
                         <br>
-                        <strong>Actividades Calificadas:</strong> <span class="badge bg-primary">5 de 10</span>
+                        <strong>Actividades Calificadas:</strong> <span class="badge bg-primary" id="actividadesCalificadas">Cargando...</span>
                     </div>
                 </div>
             </div>
         </div>
+
+
 
 
     <!-- Lista de alumnos -->
@@ -183,5 +189,7 @@
 @section Scripts {
     <!--Incluye un archivo JavaScript específico para manejar las funcionalidades relacionadas con los grupos de materias.-->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/Docente/Grupos/DetalleActividad.js"></script>
+
 
 }
