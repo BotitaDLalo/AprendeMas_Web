@@ -185,8 +185,7 @@ namespace AprendeMasWeb.Controllers.WEB
             }
         }
 
-        //Controlador api que crea actividades
-        //Guarda la actividad directo en tabla actividades. 
+        // Controlador api que crea actividades y asigna a los alumnos
         [HttpPost("CrearActividad")]
         public async Task<IActionResult> CrearActividad([FromBody] Actividades actividadDto)
         {
@@ -195,30 +194,75 @@ namespace AprendeMasWeb.Controllers.WEB
                 return BadRequest(new { mensaje = "Datos inválidos." });
             }
 
-            
+            // Validar que la fecha límite sea en el futuro
+            if (actividadDto.FechaLimite <= DateTime.Now)
+            {
+                return BadRequest(new { mensaje = "La fecha límite debe ser en el futuro." });
+            }
+
+            // Verificar que la materia exista en la base de datos
+            var materiaExiste = await _context.tbMaterias.AnyAsync(m => m.MateriaId == actividadDto.MateriaId);
+            if (!materiaExiste)
+            {
+                return BadRequest(new { mensaje = "La materia especificada no existe." });
+            }
+
+            // Verificar que el tipo de actividad exista en la base de datos
+            var tipoActividadExiste = await _context.cTiposActividades.AnyAsync(t => t.TipoActividadId == actividadDto.TipoActividadId);
+            if (!tipoActividadExiste)
+            {
+                return BadRequest(new { mensaje = "El tipo de actividad especificado no existe." });
+            }
+
             try
             {
-                 // Crear nueva actividad
-                 var nuevaActividad = new Actividades
-                 {
-                     NombreActividad = actividadDto.NombreActividad,
-                     Descripcion = actividadDto.Descripcion,
-                     FechaCreacion = DateTime.Now,
-                     FechaLimite = actividadDto.FechaLimite,
-                     TipoActividadId = actividadDto.TipoActividadId,
-                     Puntaje = actividadDto.Puntaje,
-                     MateriaId = actividadDto.MateriaId
-                 };
+                // Crear la nueva actividad
+                var nuevaActividad = new Actividades
+                {
+                    NombreActividad = actividadDto.NombreActividad,
+                    Descripcion = actividadDto.Descripcion,
+                    FechaCreacion = DateTime.Now,
+                    FechaLimite = actividadDto.FechaLimite,
+                    TipoActividadId = actividadDto.TipoActividadId,
+                    Puntaje = actividadDto.Puntaje,
+                    MateriaId = actividadDto.MateriaId
+                };
 
-                 _context.tbActividades.Add(nuevaActividad);
-                 await _context.SaveChangesAsync(); // Guarda la actividad para obtener su ID
-                 return Ok(new { mensaje = "Actividad creada con éxito", actividadId = nuevaActividad.ActividadId });
-            }  
+                _context.tbActividades.Add(nuevaActividad);
+                await _context.SaveChangesAsync(); // Guarda la actividad y genera el ID
+
+                // Obtener los alumnos que pertenecen a la materia
+                var alumnosMateria = await _context.tbAlumnosMaterias
+                    .Where(am => am.MateriaId == actividadDto.MateriaId)
+                    .Select(am => am.AlumnoId)
+                    .ToListAsync();
+
+                // Crear registros en la tabla AlumnoActividad para cada alumno
+                foreach (var alumnoId in alumnosMateria)
+                {
+                    var alumnoActividad = new AlumnosActividades
+                    {
+                        ActividadId = nuevaActividad.ActividadId,
+                        AlumnoId = alumnoId,
+                        FechaEntrega = DateTime.Now, // Asignar la fecha de creación como la fecha de entrega
+                        EstatusEntrega = false // Inicialmente no entregado
+                    };
+
+                    _context.tbAlumnosActividades.Add(alumnoActividad);
+                }
+
+                // Guardar los cambios en la tabla AlumnoActividad
+                await _context.SaveChangesAsync();
+
+                return Ok(new { mensaje = "Actividad creada y asignada a los alumnos con éxito", actividadId = nuevaActividad.ActividadId });
+            }
             catch (Exception ex)
             {
-                    return StatusCode(500, new { mensaje = "Error al crear la actividad", error = ex.Message });
+                return StatusCode(500, new { mensaje = "Error al crear la actividad", error = ex.Message });
             }
         }
+
+
 
         //Controlador que obtiene  todo lo de actividades que pertecenen a esa materia
         [HttpGet("ObtenerActividadesPorMateria/{materiaId}")]

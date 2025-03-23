@@ -1,9 +1,4 @@
-﻿// Obtener el ID del docente almacenado en localStorage
-docenteIdGlobal = localStorage.getItem("docenteId");
-materiaIdGlobal = localStorage.getItem("materiaIdSeleccionada");
-grupoIdGlobal = localStorage.getItem("grupoIdSeleccionado");
-
-document.addEventListener("DOMContentLoaded", function () {
+﻿document.addEventListener("DOMContentLoaded", function () {
     //Cargar los avisos asinados a la materia
     cargarAvisosDeMateria();
 });

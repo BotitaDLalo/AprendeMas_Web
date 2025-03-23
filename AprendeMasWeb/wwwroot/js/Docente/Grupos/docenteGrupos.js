@@ -211,7 +211,7 @@ async function cargarGrupos() { // Lógica para actualizar la lista de grupos en
 
 // Función para cargar materias de un grupo cuando se hace clic en la card del grupo
 async function handleCardClick(grupoId) {
-    localStorage.setItem("grupoIdSeleccionado", grupoId);
+    localStorage.setItem("grupoIdSeleccionado", grupoId); //Se guardar el localstorage el id del grupo seleccionado
 
     // Ocultar todas las materias de otros grupos
     document.querySelectorAll("[id^='materiasContainer-']").forEach(container => {

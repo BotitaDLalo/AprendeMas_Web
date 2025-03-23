@@ -1,4 +1,4 @@
-let docenteIdGlobal = null; //Variable global para almacenar el docenteId
+let docenteIdGlobal = null; //Variable para almacenar el docenteId
 let materiasPorCrear = []; // Lista de materias a crear
 let intentosAcceder = 0;
 
@@ -10,8 +10,8 @@ async function obtenerDocenteId() {
         const response = await fetch('/Cuenta/ObtenerDocenteId'); // Llamar al controlador
         const data = await response.json(); // Convertimos la respuesta en formato JSON
         if (data.docenteId) {
-            docenteIdGlobal = data.docenteId; // Guardamos el docenteId en la variable global
-            localStorage.setItem("docenteId", docenteIdGlobal); // Guardamos el docenteId en el almacenamiento local
+            docenteIdGlobal = data.docenteId; // Guardamos el docenteId en la variable 
+            localStorage.setItem("docenteId", docenteIdGlobal); // Guardamos el docenteIdGlobal en el almacenamiento local
 
             // Alerta con diseño de Toast
             const Toast = Swal.mixin({
@@ -63,7 +63,7 @@ async function asociarMateriasAGrupo(grupoId, materias) {
 
 // Función para redirigir a la vista Materias dentro del controlador Docente
 function irAMateria(materiaIdSeleccionada,seccion = 'avisos') {
-    //guardar el id de la materia para acceder a la materia en la que se entro y usarla en otro script
+    //guardar el id de la materia en localstorage para obtenerla en otros scripts
     localStorage.setItem("materiaIdSeleccionada", materiaIdSeleccionada);
     // Redirige a la página de detalles de la materia
     window.location.href = `/Docente/MateriasDetalles?materiaId=${materiaIdSeleccionada}&seccion=${seccion}`;

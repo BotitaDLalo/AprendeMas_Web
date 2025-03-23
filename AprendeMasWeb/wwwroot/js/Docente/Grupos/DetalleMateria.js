@@ -1,7 +1,7 @@
 // Obtener el ID del docente almacenado en localStorage
-docenteIdGlobal = localStorage.getItem("docenteId");
-materiaIdGlobal = localStorage.getItem("materiaIdSeleccionada");
-grupoIdGlobal = localStorage.getItem("grupoIdSeleccionado");
+let docenteIdGlobal = localStorage.getItem("docenteId"); //Se obtiene el docenteIdGlobal desde localstorage
+let materiaIdGlobal = localStorage.getItem("materiaIdSeleccionada"); //se obtiene el id materia seleccionado desde localstorage
+let grupoIdGlobal = localStorage.getItem("grupoIdSeleccionado"); //se obtiene el id del grupo seleccionado desde localstorage
 // Esperar a que el DOM esté completamente cargado antes de ejecutar el código
 document.addEventListener("DOMContentLoaded", function () {
     // Verificar si se tienen ambos IDs antes de hacer la petición

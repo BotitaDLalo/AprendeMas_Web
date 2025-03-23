@@ -1,9 +1,4 @@
-﻿// Obtener el ID del docente almacenado en localStorage
-docenteIdGlobal = localStorage.getItem("docenteId");
-materiaIdGlobal = localStorage.getItem("materiaIdSeleccionada");
-grupoIdGlobal = localStorage.getItem("grupoIdSeleccionado");
-
-// Esperar a que el DOM esté completamente cargado antes de ejecutar el código
+﻿// Esperar a que el DOM esté completamente cargado antes de ejecutar el código
 document.addEventListener("DOMContentLoaded", function () {
 
     // Cargar alumnos asignados a la materia

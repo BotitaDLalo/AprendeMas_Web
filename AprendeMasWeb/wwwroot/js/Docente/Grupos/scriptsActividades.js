@@ -1,22 +1,19 @@
-﻿// Obtener el ID del docente almacenado en localStorage
-docenteIdGlobal = localStorage.getItem("docenteId");
-materiaIdGlobal = localStorage.getItem("materiaIdSeleccionada");
-grupoIdGlobal = localStorage.getItem("grupoIdSeleccionado");
-// Esperar a que el DOM esté completamente cargado antes de ejecutar el código
+﻿// Esperar a que el DOM esté completamente cargado antes de ejecutar el código
 document.addEventListener("DOMContentLoaded", function () {
 
     cargarActividadesDeMateria();
 
 });
 
-//Funcion que registra una nueva actividad
+// Función que registra una nueva actividad
 async function registrarActividad() {
-    let nombre = document.getElementById("nombre").value;
-    let descripcion = document.getElementById("descripcion").value;
+    let nombre = document.getElementById("nombre").value.trim();
+    let descripcion = document.getElementById("descripcion").value.trim();
     let fechaHoraLimite = document.getElementById("fechaHoraLimite").value;
-    let puntaje = document.getElementById("puntaje").value;
+    let puntaje = parseInt(document.getElementById("puntaje").value, 10);
 
-    if (!nombre || !descripcion || !fechaHoraLimite || !puntaje) {
+    // Validaciones básicas
+    if (!nombre || !descripcion || !fechaHoraLimite || isNaN(puntaje)) {
         Swal.fire({
             icon: "warning",
             title: "Campos incompletos",
@@ -25,13 +22,35 @@ async function registrarActividad() {
         return;
     }
 
+    // Validar que la fecha límite sea mayor a la fecha actual
+    let fechaActual = new Date();
+    let fechaLimite = new Date(fechaHoraLimite);
+    if (fechaLimite <= fechaActual) {
+        Swal.fire({
+            icon: "warning",
+            title: "Fecha inválida",
+            text: "La fecha límite debe ser posterior a la fecha actual."
+        });
+        return;
+    }
+
+    // Validar materiaIdGlobal
+    if (!materiaIdGlobal) {
+        Swal.fire({
+            icon: "error",
+            title: "Error en materia",
+            text: "No se ha identificado la materia seleccionada."
+        });
+        return;
+    }
+
     let actividad = {
         nombreActividad: nombre,
         descripcion: descripcion,
         fechaLimite: fechaHoraLimite,
-        tipoActividadId: 1, // Obtener esto dinámicamente si es necesario
-        puntaje: parseInt(puntaje),
-        materiaId: materiaIdGlobal //dentro de la materia que se encuentra
+        tipoActividadId: 1, // Cambiar si se obtiene dinámicamente
+        puntaje: puntaje,
+        materiaId: materiaIdGlobal
     };
 
     try {
@@ -41,37 +60,39 @@ async function registrarActividad() {
             body: JSON.stringify(actividad)
         });
 
-        if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
-        }
-
         let data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.mensaje || `Error HTTP: ${response.status}`);
+        }
 
         Swal.fire({
             position: "top-end",
             title: "Actividad creada",
-            text: "La actividad ha sido publicado correctamente.",
+            text: "La actividad ha sido publicada correctamente.",
             icon: "success",
             timer: 3000,
             showConfirmButton: false
         });
 
         setTimeout(() => {
-            document.getElementById("actividadesForm").reset();//Resetear  formulario
-            cargarActividadesDeMateria(); // Recargar la página después de mostrar el mensaje
+            document.getElementById("actividadesForm").reset();
+            cargarActividadesDeMateria(); // Recargar las actividades
         }, 2500);
+
     } catch (error) {
         console.error("Error:", error);
         Swal.fire({
             position: "top-end",
             title: "Error al crear la actividad",
-            text: "Ocurrio un problema al crear la actividad..",
+            text: error.message || "Ocurrió un problema al crear la actividad.",
             icon: "error",
             timer: 3000,
             showConfirmButton: false
         });
     }
 }
+
 
 
 
@@ -158,9 +179,9 @@ function renderizarActividades(actividades) {
 
 async function IrAActividad(actividadIdSeleccionada) {
    //guardar el id de la materia para acceder a la materia en la que se entro y usarla en otro script
-   localStorage.setItem("actividadIdSeleccionada", actividadIdSeleccionada);
+   localStorage.setItem("actividadSeleccionada", actividadIdSeleccionada);
     // Redirige a la página de detalles de la materia
-    window.open(`/Docente/EvaluarActividades`, '_blank');
+    window.open(`/Docente/EvaluarActividades/${actividadIdSeleccionada}`, '_blank'); //Aqui lleva en la url el id de la actividadSeleccionada
 }
 // Funciones para manejar los botones
 
