@@ -1,4 +1,5 @@
-﻿// Obtener el ID del docente almacenado en localStorage
+﻿let actividadesData = {};
+// Obtener el ID del docente almacenado en localStorage
 let docenteIdGlobal = localStorage.getItem("docenteId");
 let materiaIdGlobal = localStorage.getItem("materiaIdSeleccionada");
 let grupoIdGlobal = localStorage.getItem("grupoIdSeleccionado");
@@ -101,6 +102,9 @@ async function obtenerActividadesParaEvaluar() {
 
         // Convertir la respuesta a JSON
         let data = await response.json();
+        // Guardar los datos en la variable global
+        actividadesData = data;
+
 
         // Mostrar los resultados en la consola
         console.log("Actividades No Entregadas:", data.noEntregados);

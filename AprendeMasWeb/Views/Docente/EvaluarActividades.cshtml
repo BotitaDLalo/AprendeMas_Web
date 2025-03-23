@@ -55,7 +55,7 @@
     </div>
 
 
-    <!-- Lista de alumnos -->
+    <!-- Alumnos que entregaron actividad -->
         <div class="card mb-4">
             <div class="card-header" style="background-color: #4CAF50; color: white;">
                 <h5 class="mb-0">Alumnos que han entregado</h5>
@@ -114,7 +114,7 @@
                 <div class="modal-body">
                     <div id="respuesta-alumno">
                         <!-- Aquí se muestra la respuesta del alumno -->
-                        <p><strong>Texto enviado:</strong></p>
+                        <p><strong>Respuesta recibida :</strong></p>
                         <pre id="texto-respuesta">Texto de la respuesta del alumno.</pre>
                     </div>
                 </div>
@@ -125,15 +125,17 @@
 
 <!-- Script para mostrar la respuesta del alumno y abrir el modal -->
 <script>
-    function verRespuesta(alumnoId) {
-        // Aquí puedes hacer la petición para obtener la respuesta del alumno con el id correspondiente
-        // Este es solo un ejemplo estático
-        document.getElementById('respuesta-alumno').innerHTML = `
-            <p><strong>Archivo Subido:</strong> <a href="#" id="archivo-respuesta">Ver archivo</a></p>
-            <p><strong>Texto enviado:</strong></p>
-            <pre id="texto-respuesta">Este es el texto de la respuesta del alumno.</pre>
-        `;
-        // Abre el modal de la respuesta
+        function verRespuesta(alumnoActividadId) {
+        // Buscar al alumno en la lista de entregados
+        let alumno = actividadesData.entregados.find(a => a.alumnoActividadId === alumnoActividadId);
+
+        if (!alumno) {
+            document.getElementById('texto-respuesta').innerText = "No se encontró la respuesta.";
+        } else {
+            document.getElementById('texto-respuesta').innerText = alumno.entrega.respuesta || "Sin respuesta.";
+        }
+
+        // Mostrar el modal
         $('#respuestaModal').modal('show');
     }
 
