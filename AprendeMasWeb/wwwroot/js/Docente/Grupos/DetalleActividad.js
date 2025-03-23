@@ -164,3 +164,8 @@ function renderizarAlumnos(data) {
         listaNoEntregados.innerHTML += alumnoHTML;
     });
 }
+
+function convertirUrlsEnEnlaces(texto) {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return texto.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
+}

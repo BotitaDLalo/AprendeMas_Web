@@ -75,71 +75,7 @@ namespace AprendeMasWeb.Controllers.WEB
                 .ToListAsync();
             return Ok(alumnos);
         }
-        /*
-        // Controlador para obtener arrays filtrados por entregados y no entregados
-        [HttpPost("ObtenerActividadesParaEvaluar")]
-        public async Task<IActionResult> ObtenerActividadesParaEvaluar([FromBody] EvaluacionRequest request)
-        {
-            if (request == null || request.Alumnos == null || !request.Alumnos.Any() || request.ActividadId <= 0)
-            {
-                return BadRequest(new { error = "Datos inválidos en la solicitud" });
-            }
-
-            // Extraer los ID de los alumnos
-            var alumnoIds = request.Alumnos.Select(a => a.AlumnoId).ToList();
-
-            // Obtener actividades de los alumnos para la actividad específica
-            var alumnosActividades = await _context.tbAlumnosActividades
-                .Where(aa => alumnoIds.Contains(aa.AlumnoId) && aa.ActividadId == request.ActividadId)
-                .Select(aa => new
-                {
-                    aa.AlumnoActividadId,
-                    aa.AlumnoId,
-                    aa.FechaEntrega,
-                    aa.EstatusEntrega
-                })
-                .ToListAsync();
-
-            if (alumnosActividades == null || !alumnosActividades.Any())
-            {
-                return NotFound(new { error = $"No se encontraron registros para la actividadId {request.ActividadId}" });
-            }
-
-            // Separar en entregados y no entregados
-            var noEntregados = alumnosActividades
-                .Where(aa => !aa.EstatusEntrega) // Solo los que no han entregado
-                .Select(aa => new
-                {
-                    aa.AlumnoActividadId,
-                    aa.FechaEntrega,
-                    aa.EstatusEntrega
-                })
-                .ToList();
-
-            // Obtener los IDs de actividades entregadas
-            var entregadosIds = alumnosActividades
-                .Where(aa => aa.EstatusEntrega) // Solo los que han entregado
-                .Select(aa => aa.AlumnoActividadId)
-                .ToList();
-
-            // Obtener la información de los entregados
-            var entregados = await _context.tbEntregablesAlumno
-                .Where(ea => entregadosIds.Contains(ea.AlumnoActividadId))
-                .Select(ea => new
-                {
-                    ea.EntregaId,
-                    ea.AlumnoActividadId,
-                    ea.Respuesta
-                })
-                .ToListAsync();
-
-            // Retornar resultado en formato JSON
-            return Ok(new
-            {
-                NoEntregados = noEntregados,
-                Entregados = entregados
-            });
-        }}*/
+        
 
         [HttpPost("ObtenerActividadesParaEvaluar")]
         public async Task<IActionResult> ObtenerActividadesParaEvaluar([FromBody] EvaluacionRequest request)

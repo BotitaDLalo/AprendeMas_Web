@@ -125,15 +125,17 @@
 
 <!-- Script para mostrar la respuesta del alumno y abrir el modal -->
 <script>
-        function verRespuesta(alumnoActividadId) {
+            function verRespuesta(alumnoActividadId) {
         // Buscar al alumno en la lista de entregados
         let alumno = actividadesData.entregados.find(a => a.alumnoActividadId === alumnoActividadId);
 
-        if (!alumno) {
-            document.getElementById('texto-respuesta').innerText = "No se encontró la respuesta.";
-        } else {
-            document.getElementById('texto-respuesta').innerText = alumno.entrega.respuesta || "Sin respuesta.";
-        }
+        let respuesta = alumno ? alumno.entrega.respuesta || "Sin respuesta." : "No se encontró la respuesta.";
+
+        // Convertir URLs en enlaces
+        respuesta = convertirUrlsEnEnlaces(respuesta);
+
+        // Insertar la respuesta en el modal (con innerHTML para interpretar los enlaces)
+        document.getElementById('texto-respuesta').innerHTML = respuesta;
 
         // Mostrar el modal
         $('#respuestaModal').modal('show');
