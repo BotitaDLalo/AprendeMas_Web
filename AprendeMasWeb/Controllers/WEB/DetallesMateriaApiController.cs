@@ -244,7 +244,7 @@ namespace AprendeMasWeb.Controllers.WEB
                     {
                         ActividadId = nuevaActividad.ActividadId,
                         AlumnoId = alumnoId,
-                        FechaEntrega = DateTime.Now, // Asignar la fecha de creación como la fecha de entrega
+                        FechaEntrega = DateTime.Now, // Asignar la fecha de creación como la fecha de entrega Despues se actualiza cuando el alumno lo entrega
                         EstatusEntrega = false // Inicialmente no entregado
                     };
 

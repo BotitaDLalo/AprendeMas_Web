@@ -7,13 +7,6 @@ let actividadIdGlobal = localStorage.getItem("actividadSeleccionada");
 document.addEventListener("DOMContentLoaded", function () {
 
     if (actividadIdGlobal != null && materiaIdGlobal != null) {
-        alert(docenteIdGlobal + "Docente");
-        alert(materiaIdGlobal + "Materia");
-        alert(grupoIdGlobal + "Grupo");
-        alert(actividadIdGlobal + "Actividad");
-
-        AlumnosDeMateriaParaActividades();
-
         fetch(`/api/EvaluarActividadesApi/ObtenerActividadPorId/${actividadIdGlobal}`)
             .then(response => {
                 if (!response.ok) {
@@ -43,14 +36,20 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => console.error("Error al obtener los datos de la actividad:", error));
     }
+
+    prepararAlumnosYActividades(); //Prepara y espera hasta obtener los datos que necesita para funsionar en esta vista.
 });
 
+async function prepararAlumnosYActividades() {
+    await AlumnosDeMateriaParaActividades();
+    await obtenerActividadesParaEvaluar();
+}
 
 
-
+//Obtener los alumnos que estan en la materia seleciconada para guardarlos en un array
 async function AlumnosDeMateriaParaActividades() {
     try {
-        const response = await fetch(`/api/DetallesMateriaApi/ObtenerAlumnosPorMateria/${materiaIdGlobal}`);
+        const response = await fetch(`/api/EvaluarActividadesApi/AlumnosParaCalificarActividades/${materiaIdGlobal}`);
 
         if (!response.ok) {
             throw new Error("No se pudieron cargar los alumnos.");
@@ -66,4 +65,98 @@ async function AlumnosDeMateriaParaActividades() {
     } catch (error) {
         console.error("Error al cargar alumnos:", error);
     }
+}
+
+
+
+
+async function obtenerActividadesParaEvaluar() {
+    try {
+        // Recuperar los alumnos desde localStorage
+        let alumnos = JSON.parse(localStorage.getItem(`alumnos_materia_${materiaIdGlobal}`)) || [];
+
+        // Recuperar el ID de la actividad desde localStorage
+        let actividadId = localStorage.getItem("actividadSeleccionada");
+
+        // Verificar si los datos existen antes de enviarlos
+        if (!actividadId || alumnos.length === 0) {
+            console.error("No hay datos suficientes para enviar la solicitud.");
+            return;
+        }
+
+        // Construir el objeto de la solicitud
+        let requestData = {
+            Alumnos: alumnos, // El array de alumnos
+            ActividadId: parseInt(actividadId) // Convertir a número si es necesario
+        };
+
+        // Hacer la solicitud al backend
+        let response = await fetch("/api/EvaluarActividadesApi/ObtenerActividadesParaEvaluar", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestData)
+        });
+
+        // Convertir la respuesta a JSON
+        let data = await response.json();
+
+        // Mostrar los resultados en la consola
+        console.log("Actividades No Entregadas:", data.noEntregados);
+        console.log("Actividades Entregadas:", data.entregados);
+        // Llamar a la función para renderizar la lista de alumnos en la vista
+        renderizarAlumnos(data);
+    } catch (error) {
+        console.error("Error al obtener las actividades:", error);
+    }
+}
+
+
+// Función para renderizar los alumnos en la vista
+function renderizarAlumnos(data) {
+    const listaEntregados = document.getElementById("listaAlumnosEntregados");
+    const listaNoEntregados = document.getElementById("listaAlumnosSinEntregar");
+
+    // Limpiar las listas antes de agregar nuevos elementos
+    listaEntregados.innerHTML = "";
+    listaNoEntregados.innerHTML = "";
+
+    // Renderizar alumnos que entregaron actividad
+    data.entregados.forEach(alumno => {
+        const fechaEntrega = new Date(alumno.fechaEntrega).toLocaleDateString("es-ES");
+        const fechaCalificacion = alumno.entrega?.fechaCalificacion
+            ? new Date(alumno.entrega.fechaCalificacion).toLocaleDateString("es-ES")
+            : "Sin calificar";
+
+        const alumnoHTML = `
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-1" style="font-weight: bold; color: #333;">${alumno.nombre} ${alumno.apellidoPaterno} ${alumno.apellidoMaterno}</h5>
+                    <p class="mb-1" style="color: #777;">Entregó: ${fechaEntrega}</p>
+                </div>
+                <span class="badge bg-success">Entregado</span>
+                <button class="btn btn-primary btn-sm" onclick="verRespuesta(${alumno.alumnoActividadId})">Ver Respuesta</button>
+                <button class="btn btn-warning btn-sm" onclick="abrirModalCalificar(${alumno.alumnoActividadId})">Calificar</button>
+                <p class="mb-1" style="color: #777;">Calificado el: ${fechaCalificacion}</p>
+            </div>
+        `;
+
+        listaEntregados.innerHTML += alumnoHTML;
+    });
+
+    // Renderizar alumnos que NO entregaron actividad
+    data.noEntregados.forEach(alumno => {
+        const alumnoHTML = `
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-1" style="font-weight: bold; color: #333;">${alumno.nombre} ${alumno.apellidoPaterno} ${alumno.apellidoMaterno}</h5>
+                    <p class="mb-1" style="color: #777;">Entregó: Sin entregar</p>
+                </div>
+                <span class="badge bg-danger">No entregado</span>
+            </div>
+        `;
+
+        listaNoEntregados.innerHTML += alumnoHTML;
+    });
 }
