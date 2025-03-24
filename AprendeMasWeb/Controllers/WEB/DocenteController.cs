@@ -62,11 +62,18 @@ namespace AprendeMasWeb.Controllers.WEB
             return View(aviso); // Si el modelo no es válido, regresa la vista con el modelo actual para mostrar errores
         }
 
-        // Acción para mostrar los detalles de una materia
+        // Mostrar los detalles de una materia
         public IActionResult MateriasDetalles()
         {
-            // Lógica para mostrar en vista cuando se accede a una materia (sin lógica específica en este caso)
-            return View(); // Retorna la vista 'MateriasDetalles'
+            // Lógica para mostrar en vista cuando se accede a una materia
+            return View(); // Retorna la vista 'MateriasDetalles.cshtml'
+        }
+
+        //Mostrar los detalles de la actividad
+        public IActionResult EvaluarActividades()
+        {
+            //Logica para mostrar en vista cuando se accede a una materia 
+            return View();//Retorna la vista EvaluarActividades.cshtml
         }
 
 

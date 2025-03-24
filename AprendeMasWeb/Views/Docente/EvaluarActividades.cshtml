@@ -1,0 +1,171 @@
+﻿@{
+    // Establece el diseño de la vista utilizando una plantilla compartida específica para docentes.
+    Layout = "~/Views/Shared/_LayoutDocente.cshtml";
+
+    // Define el título de la página, que se usará en el navegador o en la pestaña.
+    ViewData["Title"] = "Evaluar Actividades";
+
+}
+
+<link rel="stylesheet" href="~/css/Docente/DetalleActividadesEstilos.css" />
+
+
+
+<div class="container mt-5">
+    <!-- Información de la actividad -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card actividad-card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">Información de la Actividad</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Nombre de la Actividad:</strong> <span id="nombreActividad">Cargando...</span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Descripción:</strong> <span id="descripcionActividad">Cargando...</span>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <strong>Fecha de Creación:</strong> <span id="fechaCreacion">Cargando...</span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Fecha Límite de Entrega:</strong> <span id="fechaLimite">Cargando...</span>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <strong>Tipo de Actividad:</strong> <span id="tipoActividad">Cargando...</span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Puntaje Máximo:</strong> <span id="puntajeMaximo">Cargando...</span>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <strong>Alumnos que han entregado:</strong> <span class="badge bg-success" id="alumnosEntregados">Cargando...</span>
+                        <br>
+                        <strong>Actividades Calificadas:</strong> <span class="badge bg-primary" id="actividadesCalificadas">Cargando...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Alumnos que entregaron actividad -->
+        <div class="card mb-4">
+            <div class="card-header" style="background-color: #4CAF50; color: white;">
+                <h5 class="mb-0">Alumnos que han entregado</h5>
+            </div>
+        <div class="card-body">
+            <div id="listaAlumnosEntregados" class="list-group">
+                <!-- Aquí se generarán dinámicamente los alumnos -->
+            </div>
+        </div>
+    </div>
+        <!-- Alumnos que no han entregado -->
+        <div class="card mb-4">
+            <div class="card-header" style="background-color: #F44336; color: white;">
+                <h5 class="mb-0">Alumnos que no han entregado</h5>
+            </div>
+            <div class="card-body">
+                <div id="listaAlumnosSinEntregar" class="list-group">
+                    <!-- Aquí se generarán dinámicamente los alumnos -->
+                </div>
+            </div>
+        </div>
+
+    <!-- Modal para calificar -->
+    <div class="modal fade" id="calificarModal" tabindex="-1" aria-labelledby="calificarModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #2196F3; color: white;">
+                    <h5 class="modal-title" id="calificarModalLabel">Calificar Alumno</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formCalificacion">
+                        <div class="mb-3">
+                            <label for="calificacion" class="form-label">Calificación</label>
+                            <input type="number" class="form-control" id="calificacion" min="0" max="100" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="comentario" class="form-label">Comentario</label>
+                            <textarea class="form-control" id="comentario" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar Calificación</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Respuesta del alumno -->
+    <div class="modal fade" id="respuestaModal" tabindex="-1" aria-labelledby="respuestaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #2196F3; color: white;">
+                    <h5 class="modal-title" id="respuestaModalLabel">Respuesta del Alumno</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="respuesta-alumno">
+                        <!-- Aquí se muestra la respuesta del alumno -->
+                        <p><strong>Respuesta recibida :</strong></p>
+                        <pre id="texto-respuesta">Texto de la respuesta del alumno.</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para mostrar la respuesta del alumno y abrir el modal -->
+<script>
+            function verRespuesta(alumnoActividadId) {
+        // Buscar al alumno en la lista de entregados
+        let alumno = actividadesData.entregados.find(a => a.alumnoActividadId === alumnoActividadId);
+
+        let respuesta = alumno ? alumno.entrega.respuesta || "Sin respuesta." : "No se encontró la respuesta.";
+
+        // Convertir URLs en enlaces
+        respuesta = convertirUrlsEnEnlaces(respuesta);
+
+        // Insertar la respuesta en el modal (con innerHTML para interpretar los enlaces)
+        document.getElementById('texto-respuesta').innerHTML = respuesta;
+
+        // Mostrar el modal
+        $('#respuestaModal').modal('show');
+    }
+
+    function abrirModalCalificar(alumnoId) {
+        // Aquí se puede cargar la información del alumno para calificarlo
+        // Esto es solo un ejemplo de abrir el modal para calificar
+        $('#calificarModal').modal('show');
+    }
+
+    // Enviar calificación y comentario
+    document.getElementById("formCalificacion").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const calificacion = document.getElementById("calificacion").value;
+        const comentario = document.getElementById("comentario").value;
+
+        // Aquí enviarías la calificación y el comentario al servidor para guardarlos
+        console.log(`Calificación: ${calificacion}, Comentario: ${comentario}`);
+
+        // Cerrar el modal después de guardar la calificación
+        $('#calificarModal').modal('hide');
+    });
+</script>
+
+@section Scripts {
+    <!--Incluye un archivo JavaScript específico para manejar las funcionalidades relacionadas con los grupos de materias.-->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/Docente/Grupos/DetalleActividad.js"></script>
+
+
+}

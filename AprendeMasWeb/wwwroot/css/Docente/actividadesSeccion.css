@@ -1,5 +1,75 @@
-﻿/* Estilos para los avisos */
-.aviso-item {
+﻿/* Estilos del Modal crear actividad*/
+.modal {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.fecha-hora {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+    .fecha-hora div {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+.btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    background-color: #ccc;
+    color: black;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Estilo para las actividades */
+.actividad-item {
     border: 1px solid #007bff;
     border-radius: 8px;
     padding: 20px;
@@ -9,12 +79,12 @@
     transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
-    .aviso-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
-    }
+.actividad-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
+}
 
-.aviso-header {
+.actividad-header {
     display: flex;
     align-items: center;
     width: 100%;
@@ -22,42 +92,41 @@
     gap: 15px;
 }
 
-
-.aviso-icono {
+.icono {
     font-size: 30px;
     color: #007bff;
     margin-right: 15px;
 }
 
-.aviso-info {
+.info {
     flex-grow: 1;
 }
 
-    .aviso-info strong {
+    .info strong {
         font-size: 24px;
         font-weight: bold;
         color: #333;
     }
 
-.aviso-fecha-publicado {
+.fecha-publicado {
     font-size: 14px;
     color: #888;
 }
 
-.aviso-fecha-entrega {
+.fecha-entrega {
     font-size: 14px;
     text-align: right;
     color: #555;
 }
 
-.aviso-puntaje {
+.puntaje {
     font-size: 16px;
     font-weight: bold;
     color: #d35400;
     margin-top: 10px;
 }
 
-.aviso-descripcion {
+.actividad-descripcion {
     font-size: 16px;
     color: #444;
     margin-top: 15px;
@@ -68,17 +137,17 @@
     transition: max-height 0.3s ease, opacity 0.3s ease;
 }
 
-    .aviso-descripcion.visible {
-        max-height: 500px; /* Se ajusta según el contenido */
-        opacity: 1;
-    }
-/* Clase explícita para ocultar */
-.aviso-descripcion.oculto {
-    max-height: 0;
-    opacity: 0;
+.actividad-descripcion.visible {
+    max-height: 500px; /* Se ajusta según el contenido */
+    opacity: 1;
 }
 
-.aviso-ver-completo {
+    /* Clase explícita para ocultar */
+    .actividad-descripcion.oculto {
+        max-height: 0;
+        opacity: 0;
+    }
+.ver-completo {
     font-size: 14px;
     color: #007bff;
     cursor: pointer;
@@ -87,19 +156,19 @@
     transition: color 0.3s ease;
 }
 
-    .aviso-ver-completo:hover {
-        color: #0056b3;
-    }
+.ver-completo:hover {
+    color: #0056b3;
+}
 
 /* Estilos para los botones Editar, Eliminar e Ir a Actividades */
-.aviso-botones-container {
+.botones-container {
     display: flex;
     flex-direction: column;
     gap: 12px;
     margin-top: 15px;
 }
 
-.aviso-editar-btn, .aviso-eliminar-btn, .aviso-btn-ir-aviso{
+.editar-btn, .eliminar-btn, .btn-ir-actividades {
     padding: 12px 20px;
     border: none;
     border-radius: 5px;
@@ -109,38 +178,38 @@
     font-size: 16px;
 }
 
-.aviso-editar-btn {
+.editar-btn {
     background-color: #f39c12;
     color: white;
 }
 
-.aviso-eliminar-btn {
+.eliminar-btn {
     background-color: #e74c3c;
     color: white;
 }
 
-.aviso-btn-ir-aviso {
+.btn-ir-actividades {
     background-color: #1abc9c;
     color: white;
 }
 
-.aviso-editar-btn:hover {
+.editar-btn:hover {
     background-color: #e67e22;
     transform: scale(1.05);
 }
 
-.aviso-eliminar-btn:hover {
+.eliminar-btn:hover {
     background-color: #c0392b;
     transform: scale(1.05);
 }
 
-.aviso-btn-ir-aviso:hover {
+.btn-ir-actividades:hover {
     background-color: #16a085;
     transform: scale(1.05);
 }
 
 /* Mejorar la visibilidad del contenedor de actividades */
-#listaDeAvisosDeMateria {
+#listaActividadesDeMateria {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -148,7 +217,7 @@
 }
 
 /* Mejorar el fondo de la página de actividades */
-.aviso-item:before {
+.actividad-item:before {
     content: "";
     position: absolute;
     top: 0;

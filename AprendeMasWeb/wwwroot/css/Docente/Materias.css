@@ -1,4 +1,8 @@
-﻿/*Estilos modales*/
+﻿
+/*Apartir de aqui se acomoda estilos*/
+
+
+/*Estilos modales*/
 .modal-title {
     background: linear-gradient(135deg, #007bff 50%, #0056b3 100%); /* Fondo azul degradado */
     color: white; /* Letras blancas */
@@ -164,15 +168,7 @@
 
 
 
-/* Contenedor principal */
-.materia-container {
-    width: 100%;
-    max-width: 100%;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-}
+
 
 /* Encabezado de la materia */
 .materia-header {
@@ -193,49 +189,6 @@
         margin-left: 10px;
         cursor: pointer;
     }
-
-/* Navegación */
-.materia-nav {
-    display: flex;
-    justify-content: space-around;
-    background: #eee;
-    padding: 10px;
-}
-
-.tab-button {
-    background: none;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: 0.3s;
-    color: black;
-}
-
-    .tab-button:hover {
-        background: rgba(0, 0, 0, 0.1);
-    }
-
-    .tab-button.active {
-        border-bottom: 3px solid #d63384;
-        font-weight: bold;
-    }
-
-/* Contenido dinámico 
-.materia-content {
-    padding: 20px;
-    min-height: 150px;
-    text-align: center;
-}*/
-.materia-content {
-    padding: 20px;
-    width:100%;
-    min-height: auto; /* Dejar que crezca dinámicamente */
-    text-align: left; /* Alinear el contenido a la izquierda */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
 
 
 /* Estilos de la card */
@@ -341,3 +294,6 @@
     .materia-card-link-unique:hover::after {
         background-color: white;
     }
+
+
+

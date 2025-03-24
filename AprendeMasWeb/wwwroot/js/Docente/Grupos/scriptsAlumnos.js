@@ -1,36 +1,10 @@
-// Obtener el ID del docente almacenado en localStorage
-docenteIdGlobal = localStorage.getItem("docenteId");
-materiaIdGlobal = localStorage.getItem("materiaIdSeleccionada");
-grupoIdGlobal = localStorage.getItem("grupoIdSeleccionado");
-// Esperar a que el DOM esté completamente cargado antes de ejecutar el código
+﻿// Esperar a que el DOM esté completamente cargado antes de ejecutar el código
 document.addEventListener("DOMContentLoaded", function () {
 
-    
-    // Verificar si se tienen ambos IDs antes de hacer la petición
-    if (materiaIdGlobal && docenteIdGlobal) {
-        fetch(`/api/DetallesMateriaApi/ObtenerDetallesMateria/${materiaIdGlobal}/${docenteIdGlobal}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Error en la respuesta de la API");
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log("Datos recibidos:", data);
-
-                if (data.nombreMateria && data.codigoAcceso && data.codigoColor) {
-                    document.getElementById("materiaNombre").innerText = data.nombreMateria;
-                    document.getElementById("codigoAcceso").innerText = data.codigoAcceso;
-                    document.querySelector(".materia-header").style.backgroundColor = data.codigoColor;
-                } else {
-                    console.error("No se encontraron datos válidos para esta materia.");
-                }
-            })
-            .catch(error => console.error("Error al obtener los datos de la materia:", error));
-    }
-
     // Cargar alumnos asignados a la materia
-    cargarAlumnosAsignados(materiaIdGlobal);
+    cargarAlumnosAsignados();
+
+    //Cargar actividades a la materia
     //delegacion de evento 
     document.addEventListener("click", async function (event) {
         if (event.target.id === "btnAsignarAlumno") {
@@ -82,8 +56,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-   
-    // 🔹 Funcionalidad de búsqueda de alumnos en tiempo real (sugerencias de correo)
+
+
+    // Funcionalidad de búsqueda de alumnos en tiempo real (sugerencias de correo)
     const inputBuscar = document.getElementById("buscarAlumno");
     const listaSugerencias = document.getElementById("sugerenciasAlumnos");
     let indexSugerenciaSeleccionada = -1;
@@ -170,9 +145,11 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+
 });
 
 
+//Carga los alumnos a la materia y los muestra en el div
 async function cargarAlumnosAsignados(materiaIdGlobal) {
     try {
         // Hacer la petición al servidor
@@ -188,7 +165,6 @@ async function cargarAlumnosAsignados(materiaIdGlobal) {
         // Seleccionar el contenedor donde se mostrará la lista
         const contenedor = document.getElementById("listaAlumnosAsignados");
         contenedor.innerHTML = ""; // Limpiar contenido anterior
-
         // Verificar si hay alumnos
         if (alumnos.length === 0) {
             contenedor.innerHTML = `<p class="text-muted">No hay alumnos asignados a esta materia.</p>`;
@@ -205,7 +181,7 @@ async function cargarAlumnosAsignados(materiaIdGlobal) {
 
             //  Agregar el nombre del alumno
             const spanNombre = document.createElement("span");
-            spanNombre.textContent = `${alumno.nombre} ${alumno.apellidoPaterno} ${alumno.apellidoMaterno}`;
+            spanNombre.textContent = `${alumno.apellidoPaterno} ${alumno.apellidoMaterno} ${alumno.nombre}`;
             divAlumno.appendChild(spanNombre);
 
             //  Contenedor de botón
@@ -250,27 +226,7 @@ async function cargarAlumnosAsignados(materiaIdGlobal) {
 }
 
 
-// Escuchar el evento de clic en #contenedor-dinamico
-document.getElementById("contenedor-dinamico").addEventListener("click", async function (event) {
-    // Verifica si el clic fue en #seccion-alumnos
-    if (event.target.id === "seccion-alumnos") {
-        // Obtener el materiaId, por ejemplo, desde un atributo data-* en #seccion-alumnos
-        cargarAlumnosAsignados(materiaIdGlobal);
-    }
-});
-
-// ✅ Función para cambiar la sección mostrada en la interfaz
-function cambiarSeccion(seccion) {
-    document.querySelectorAll('.seccion').forEach(div => div.style.display = 'none');
-    const seccionMostrar = document.getElementById(`seccion-${seccion}`);
-    if (seccionMostrar) {
-        seccionMostrar.style.display = 'block';
-    }
-    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`button[onclick="cambiarSeccion('${seccion}')"]`).classList.add('active');
-}
-
-
+//Elimina Alumno del grupo
 async function eliminardelgrupo(alumnoMateriaId) {
     try {
         const confirmacion = await Swal.fire({

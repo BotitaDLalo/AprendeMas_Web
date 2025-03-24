@@ -229,5 +229,44 @@ namespace AprendeMasWeb.Controllers.WEB
             await _signInManager.SignOutAsync(); // Cierra la sesión del usuario
             return RedirectToAction("IniciarSesion", "Cuenta"); // Redirige a la vista de inicio de sesión
         }
-    }
+
+		[HttpGet]
+		public IActionResult IniciarSesionGoogle()
+		{
+			var redirectUrl = Url.Action("GoogleResponse", "Cuenta");
+			var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
+			return Challenge(properties, "Google");
+		}
+
+		[HttpGet]
+		public async Task<IActionResult> GoogleResponse()
+		{
+			var info = await _signInManager.GetExternalLoginInfoAsync();
+			if (info == null)
+			{
+				return RedirectToAction("IniciarSesion");
+			}
+
+			var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+
+			if (string.IsNullOrEmpty(email))
+			{
+				return RedirectToAction("IniciarSesion"); // Manejo de error si no se obtiene el correo.
+			}
+
+			var user = await _userManager.FindByEmailAsync(email);
+
+			if (user == null)
+			{
+                
+				TempData["GoogleEmail"] = email;
+				return RedirectToAction("Registrar", "Usuarios"); // Redirigir a la vista de registro
+			}
+
+			// Si el usuario ya existe, redirigir al login con el correo llenado automáticamente
+			return RedirectToAction("IniciarSesion", new { email = email });
+		}
+
+
+	}
 }

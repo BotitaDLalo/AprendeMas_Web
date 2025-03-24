@@ -1,6 +1,8 @@
 ﻿// Se importa el espacio de nombres para acceder a la base de datos y los controladores
 using AprendeMasWeb.Data;
+using AprendeMasWeb.Models;
 using AprendeMasWeb.Models.DBModels;
+using Google;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -148,10 +150,14 @@ namespace AprendeMasWeb.Controllers.WEB
                         a.ApellidoPaterno,
                         a.ApellidoMaterno
                     })
+                .OrderBy(a => a.ApellidoPaterno) // Ordena por apellido paterno
+                .ThenBy(a => a.ApellidoMaterno)  // Si hay empate en el apellido paterno, ordena por el apellido materno
+                .ThenBy(a => a.Nombre)           // Si hay empate en el apellido materno, ordena por el nombre
                 .ToListAsync();
             return Ok(alumnos);
         }
 
+        //Eliminar a un alumno de la materia.
         [HttpDelete("EliminarAlumnoDeMateria/{idEnlace}")]
         public async Task<IActionResult> EliminarAlumnoDeMateria(int idEnlace)
         {
@@ -178,5 +184,190 @@ namespace AprendeMasWeb.Controllers.WEB
                 return StatusCode(500, new { mensaje = "Error al eliminar al alumno.", error = ex.Message });
             }
         }
+
+        // Controlador api que crea actividades y asigna a los alumnos
+        [HttpPost("CrearActividad")]
+        public async Task<IActionResult> CrearActividad([FromBody] Actividades actividadDto)
+        {
+            if (actividadDto == null)
+            {
+                return BadRequest(new { mensaje = "Datos inválidos." });
+            }
+
+            // Validar que la fecha límite sea en el futuro
+            if (actividadDto.FechaLimite <= DateTime.Now)
+            {
+                return BadRequest(new { mensaje = "La fecha límite debe ser en el futuro." });
+            }
+
+            // Verificar que la materia exista en la base de datos
+            var materiaExiste = await _context.tbMaterias.AnyAsync(m => m.MateriaId == actividadDto.MateriaId);
+            if (!materiaExiste)
+            {
+                return BadRequest(new { mensaje = "La materia especificada no existe." });
+            }
+
+            // Verificar que el tipo de actividad exista en la base de datos
+            var tipoActividadExiste = await _context.cTiposActividades.AnyAsync(t => t.TipoActividadId == actividadDto.TipoActividadId);
+            if (!tipoActividadExiste)
+            {
+                return BadRequest(new { mensaje = "El tipo de actividad especificado no existe." });
+            }
+
+            try
+            {
+                // Crear la nueva actividad
+                var nuevaActividad = new Actividades
+                {
+                    NombreActividad = actividadDto.NombreActividad,
+                    Descripcion = actividadDto.Descripcion,
+                    FechaCreacion = DateTime.Now,
+                    FechaLimite = actividadDto.FechaLimite,
+                    TipoActividadId = actividadDto.TipoActividadId,
+                    Puntaje = actividadDto.Puntaje,
+                    MateriaId = actividadDto.MateriaId
+                };
+
+                _context.tbActividades.Add(nuevaActividad);
+                await _context.SaveChangesAsync(); // Guarda la actividad y genera el ID
+
+                // Obtener los alumnos que pertenecen a la materia
+                var alumnosMateria = await _context.tbAlumnosMaterias
+                    .Where(am => am.MateriaId == actividadDto.MateriaId)
+                    .Select(am => am.AlumnoId)
+                    .ToListAsync();
+
+                // Crear registros en la tabla AlumnoActividad para cada alumno
+                foreach (var alumnoId in alumnosMateria)
+                {
+                    var alumnoActividad = new AlumnosActividades
+                    {
+                        ActividadId = nuevaActividad.ActividadId,
+                        AlumnoId = alumnoId,
+                        FechaEntrega = DateTime.Now, // Asignar la fecha de creación como la fecha de entrega Despues se actualiza cuando el alumno lo entrega
+                        EstatusEntrega = false // Inicialmente no entregado
+                    };
+
+                    _context.tbAlumnosActividades.Add(alumnoActividad);
+                }
+
+                // Guardar los cambios en la tabla AlumnoActividad
+                await _context.SaveChangesAsync();
+
+                return Ok(new { mensaje = "Actividad creada y asignada a los alumnos con éxito", actividadId = nuevaActividad.ActividadId });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al crear la actividad", error = ex.Message });
+            }
+        }
+
+
+
+        //Controlador que obtiene  todo lo de actividades que pertecenen a esa materia
+        [HttpGet("ObtenerActividadesPorMateria/{materiaId}")]
+        public async Task<IActionResult> ObtenerActividadesPorMateria(int materiaId)
+        {
+            try
+            {
+                var actividades = await _context.tbActividades
+                .Where(a => a.MateriaId == materiaId)
+                .Select(a => new
+                 {
+                     a.ActividadId,  
+                     a.NombreActividad,
+                     a.Descripcion,
+                     a.FechaCreacion,
+                     a.FechaLimite,
+                     a.Puntaje
+                })
+                .ToListAsync();
+                if (actividades == null || actividades.Count == 0)
+                {
+                    return NotFound(new { mensaje = "No hay actividades registradas para esta materia." });
+                }
+
+                return Ok(actividades);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al obtener las actividades", error = ex.Message });
+            }
+        }
+
+
+            [HttpDelete("EliminarActividad/{id}")]
+            public async Task<IActionResult> EliminarActividad(int id)
+            {
+                // Buscar el registro en la tabla materiasActividades con el ID recibido
+                var Actividad = await _context.tbActividades
+                    .FirstOrDefaultAsync(a => a.ActividadId == id);
+
+                if (Actividad == null)
+                {
+                    return NotFound("No se encontró el registro en Actividades.");
+                }
+
+                // Eliminar el registro de materiasActividades primero
+                _context.tbActividades.Remove(Actividad);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Actividad eliminada correctamente." });
+            }
+
+        //Controlador para crear un aviso
+        [HttpPost("CrearAviso")]
+        public async Task<IActionResult> CrearAviso([FromBody] Avisos avisos)
+        {
+            if(avisos == null)
+            {
+                return BadRequest(new { mensaje = "Datos Invalidos." });
+            }
+            try
+            {
+                var nuevoAviso = new Avisos
+                {
+                    DocenteId = avisos.DocenteId,
+                    Titulo = avisos.Titulo,
+                    Descripcion = avisos.Descripcion,
+                    GrupoId = avisos.GrupoId,
+                    MateriaId = avisos.MateriaId,
+                    FechaCreacion = DateTime.Now
+                };
+                _context.tbAvisos.Add(nuevoAviso);
+                await _context.SaveChangesAsync();
+                return Ok(new { mensaje = "Aviso creado con éxito"});
+
+            }catch(Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al crear el aviso", error = ex.Message });
+            }
+        }
+
+        //Controlador para obtener avisos
+        [HttpGet("ObtenerAvisos")]
+        public async Task<IActionResult> ObtenerAvisos([FromQuery] int IdMateria)
+        {
+            try
+            {
+                var avisos = await _context.tbAvisos
+                    .Where(a => a.MateriaId == IdMateria)
+                    .Select(a => new
+                    {
+                        a.AvisoId,
+                        a.Titulo,
+                        a.Descripcion,
+                        a.FechaCreacion
+                    })
+                    .ToListAsync();
+
+                return Ok(avisos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al obtener los avisos", error = ex.Message });
+            }
+        }
+
     }
 }

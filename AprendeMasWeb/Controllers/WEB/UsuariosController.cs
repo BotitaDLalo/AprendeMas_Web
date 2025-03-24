@@ -1,4 +1,4 @@
-﻿using AprendeMasWeb.Data;
+using AprendeMasWeb.Data;
 using AprendeMasWeb.Models.DBModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -33,21 +33,16 @@ namespace AprendeMasWeb.Controllers.WEB
         {
             return View();
         }
+		[HttpGet]
+		public IActionResult Registrar()
+		{
+			ViewBag.GoogleEmail = TempData["GoogleEmail"] as string;
+			return View();
+		}
 
-        public IActionResult RestablecerContraseña()
-        {
-            return View();
-        }
 
-        public IActionResult VerificarCodigo()
-        {
-            var email = HttpContext.Session.GetString(Recursos.SessionKeys.Email);
-            ViewBag.Email = email;
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Registrar(UsuarioRegistro usuario)
+		[HttpPost]
+        public async Task<IActionResult> Registrar(string nombre, string apellidoPaterno, string apellidoMaterno, string email, string password, string role)
         {
             if (!ModelState.IsValid)
                 return View();

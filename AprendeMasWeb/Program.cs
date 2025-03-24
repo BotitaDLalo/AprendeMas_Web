@@ -15,11 +15,11 @@ var builder = WebApplication.CreateBuilder(args);
 var jwtKey = builder.Configuration["jwt:SecretKey"];
 var jwt = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey ?? throw new ArgumentNullException(jwtKey, "Token no configurado")));
 
-//// Configura Firebase
+// Configura Firebase
 var firebaseCredentialPath = builder.Configuration["Firebase:CredentialPath"];
 if (string.IsNullOrEmpty(firebaseCredentialPath))
 {
-    throw new InvalidOperationException("La ruta del archivo de credenciales de Firebase no está configurada.");
+    throw new InvalidOperationException("La ruta del archivo de credenciales de Firebase no estï¿½ configurada.");
 }
 
 FirebaseApp.Create(new AppOptions()
@@ -27,11 +27,18 @@ FirebaseApp.Create(new AppOptions()
     Credential = GoogleCredential.FromFile(firebaseCredentialPath),
 });
 
+builder.Services.AddAuthentication()
+	.AddGoogle(googleOptions =>
+	{
+		googleOptions.ClientId = "1036601032338-grtcli283ijj9988up3hp9rbhs9qlolg.apps.googleusercontent.com";
+		googleOptions.ClientSecret = "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";
+		googleOptions.CallbackPath = "/signin-google";
+	});
 // Agregar el servicio de sesiones
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(20); // Tiempo de expiración de la sesión
-    options.Cookie.HttpOnly = true; // La cookie de sesión solo es accesible desde el servidor
+    options.IdleTimeout = TimeSpan.FromMinutes(20); // Tiempo de expiraciï¿½n de la sesiï¿½n
+    options.Cookie.HttpOnly = true; // La cookie de sesiï¿½n solo es accesible desde el servidor
     options.Cookie.IsEssential = true; // Marcar la cookie como esencial
 });
 
