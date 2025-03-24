@@ -154,7 +154,7 @@ p, body {
 
 .container-cards {
     display: flex;
-    flex-wrap: wrap;
+/*    flex-wrap: wrap;*/
     gap: 15px;
     justify-content: flex-start;
 }
