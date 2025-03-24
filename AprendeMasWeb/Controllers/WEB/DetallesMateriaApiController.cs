@@ -187,7 +187,7 @@ namespace AprendeMasWeb.Controllers.WEB
 
         // Controlador api que crea actividades y asigna a los alumnos
         [HttpPost("CrearActividad")]
-        public async Task<IActionResult> CrearActividad([FromBody] Actividades actividadDto)
+        public async Task<IActionResult> CrearActividad([FromBody] tbActividades actividadDto)
         {
             if (actividadDto == null)
             {
@@ -217,7 +217,7 @@ namespace AprendeMasWeb.Controllers.WEB
             try
             {
                 // Crear la nueva actividad
-                var nuevaActividad = new Actividades
+                var nuevaActividad = new tbActividades
                 {
                     NombreActividad = actividadDto.NombreActividad,
                     Descripcion = actividadDto.Descripcion,
@@ -240,7 +240,7 @@ namespace AprendeMasWeb.Controllers.WEB
                 // Crear registros en la tabla AlumnoActividad para cada alumno
                 foreach (var alumnoId in alumnosMateria)
                 {
-                    var alumnoActividad = new AlumnosActividades
+                    var alumnoActividad = new tbAlumnosActividades
                     {
                         ActividadId = nuevaActividad.ActividadId,
                         AlumnoId = alumnoId,
@@ -317,7 +317,7 @@ namespace AprendeMasWeb.Controllers.WEB
 
         //Controlador para crear un aviso
         [HttpPost("CrearAviso")]
-        public async Task<IActionResult> CrearAviso([FromBody] Avisos avisos)
+        public async Task<IActionResult> CrearAviso([FromBody] tbAvisos avisos)
         {
             if(avisos == null)
             {
@@ -325,7 +325,7 @@ namespace AprendeMasWeb.Controllers.WEB
             }
             try
             {
-                var nuevoAviso = new Avisos
+                var nuevoAviso = new tbAvisos
                 {
                     DocenteId = avisos.DocenteId,
                     Titulo = avisos.Titulo,

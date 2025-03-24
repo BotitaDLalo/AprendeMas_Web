@@ -41,8 +41,8 @@ namespace AprendeMasWeb.Controllers.WEB
 		}
 
 
-		[HttpPost]
-        public async Task<IActionResult> Registrar(string nombre, string apellidoPaterno, string apellidoMaterno, string email, string password, string role)
+        [HttpPost]
+        public async Task<IActionResult> Registrar(UsuarioRegistro usuario)
         {
             if (!ModelState.IsValid)
                 return View();

@@ -157,7 +157,7 @@ namespace AprendeMasWeb.Controllers.WEB
             return Ok(new { mensaje = "Materia actualizada correctamente." });
         }*/
         [HttpPut("ActualizarMateria/{materiaId}")]
-        public async Task<IActionResult> ActualizarMateria(int materiaId, [FromBody] Materias materiaDto)
+        public async Task<IActionResult> ActualizarMateria(int materiaId, [FromBody] tbMaterias materiaDto)
         {
             var materiaExistente = await _context.tbMaterias.FindAsync(materiaId);
 
