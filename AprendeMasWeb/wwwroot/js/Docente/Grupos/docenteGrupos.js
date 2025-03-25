@@ -343,62 +343,6 @@ async function handleCardClick(grupoId) {
             if (materias.length === 0) {
                 materiasContainer.innerHTML = "<p>Aún no hay materias registradas para este grupo.</p>";
             } else {
-//                materiasContainer.innerHTML = `
-//                    <div class="container-cards">
-//                        ${materias.map(materia => `
-//                            <div class="card card-custom" style="border-radius: 10px;">
-//                                <div class="card-header-custom" style="background-color: ${materia.codigoColor || '#000'};">
-//                                    <div class="d-flex justify-content-between align-items-center">
-//                                        <span class="text-dark">${materia.nombreMateria}</span>
-//                                        <div class="dropdown">
-//                                            <button class="btn btn-link p-0 text-dark" data-bs-toggle="dropdown" aria-expanded="false">
-//                                                <i class="fas fa-ellipsis-v"></i>
-//                                            </button>
-//                                            <ul class="dropdown-menu dropdown-menu-end">
-//                                                <li><a class="dropdown-item" href="#" onclick="editarMateria(${materia.materiaId},'${materia.nombreMateria}','${materia.descripcion}')">Editar</a></li>
-//                                                <li><a class="dropdown-item" href="#" onclick="eliminarMateria(${materia.materiaId})">Eliminar</a></li>
-//                                            </ul>
-//                                        </div>
-//                                    </div>
-//                                </div>
-
-
-//                                <div class="card-body card-body-custom">
-//    <p class="card-text">
-//        ${materia.actividadesRecientes.length > 0
-//                            ? materia.actividadesRecientes.map((actividad, index) => {
-//                                    const fechaFormateada = new Date(actividad.fechaCreacion).toLocaleDateString('es-ES', {
-//                                        day: '2-digit',
-//                                        month: '2-digit',
-//                                        year: 'numeric'
-//                                    });
-//                                    return `
-//                    <div class="actividad-item">
-//                        <a href="#" class="actividad-link" data-id="${actividad.actividadId}">
-//                            ${actividad.nombreActividad}
-//                        </a>
-//                        <p class="actividad-fecha">Asignada: ${fechaFormateada}</p>
-//                    </div>
-//                `;
-//                                }).join('')
-//                                : "<p class='sin-actividades'>Sin actividades recientes</p>"
-//        }
-//    </p>
-//</div>
-
-
-
-//                                <div class="card-footer card-footer-custom">
-//                                    <button class="btn btn-sm btn-primary" onclick="irAMateria(${materia.materiaId})">Ver Materia</button>
-//                                    <div class="icon-container">
-//                                        <img class="icon-action" src="https://cdn-icons-png.flaticon.com/512/1828/1828817.png" alt="Ver Actividades" title="Ver Actividades" onclick="irAMateria(${materia.materiaId}, 'actividades')">
-//                                        <img class="icon-action" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Ver Integrantes" title="Ver Integrantes" onclick="irAMateria(${materia.materiaId}, 'alumnos')">
-//                                    </div>
-//                                </div>
-//                            </div>
-//                        `).join('')}
-//                    </div>
-//                `;
                 const rowContainer = document.createElement("div");
                 rowContainer.classList.add("row", "g-3");
 

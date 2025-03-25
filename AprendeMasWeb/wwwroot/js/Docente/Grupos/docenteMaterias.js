@@ -261,8 +261,6 @@ async function cargarMateriasSinGrupo() {
 }
 
 
-
-
 //Funcionalidades de los iconos de las Card de la materia
 function verActividades(MateriaId) {
     alert(`Ver actividades del grupo ID: ${MateriaId}`); // Muestra una alerta con el ID de la materia
