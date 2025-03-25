@@ -234,9 +234,9 @@ async function cargarGrupos() {
 
             // Añadir items al dropdown
             const dropdownItems = [
-                //{ text: "Editar", action: () => console.log("Opción 1 seleccionada") },
                 { text: "Eliminar", action: () => eliminarGrupo(grupo.grupoId) },
-                //{ text: "Desactivar", action: () => console.log("Opción 3 seleccionada") }
+                { text: "Aviso Grupal", action: () => crearAvisoGrupal(grupo.grupoId) },
+                { text: "Desactivar", action: () => console.log("Opción 3 seleccionada") }
             ];
 
             dropdownItems.forEach(item => {
@@ -577,6 +577,54 @@ function agregarMateriaAlGrupo(id) {
     alert("Agregar Materia Al Grupo " + id); // Muestra una alerta indicando que el grupo será desactivado
 }
 
+
 function crearAvisoGrupal(id) {
-    alert("Crear aviso al grupo " + id);
+    Swal.fire({
+        title: "Crear Aviso",
+        html:
+            '<input id="tituloAviso" class="swal2-input" placeholder="Título del aviso">' +
+            '<textarea id="descripcionAviso" class="swal2-textarea" placeholder="Descripción del aviso"></textarea>',
+        showCancelButton: true,
+        confirmButtonText: "Crear",
+        cancelButtonText: "Cancelar",
+        preConfirm: () => {
+            const titulo = document.getElementById("tituloAviso").value.trim();
+            const descripcion = document.getElementById("descripcionAviso").value.trim();
+
+            if (!titulo || !descripcion) {
+                Swal.showValidationMessage("Debes completar todos los campos");
+                return false;
+            }
+            return { titulo, descripcion };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const datos = {
+                GrupoId: id,
+                Titulo: result.value.titulo,
+                Descripcion: result.value.descripcion,
+                DocenteId: docenteIdGlobal
+            };
+
+            fetch("/api/DetallesMateriaApi/CrearAvisoPorGrupo", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(datos)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.mensaje) {
+                        Swal.fire("Éxito", data.mensaje, "success");
+                    } else {
+                        Swal.fire("Error", "No se pudo crear el aviso", "error");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al enviar el aviso:", error);
+                    Swal.fire("Error", "Ocurrió un error al crear el aviso", "error");
+                });
+        }
+    });
 }

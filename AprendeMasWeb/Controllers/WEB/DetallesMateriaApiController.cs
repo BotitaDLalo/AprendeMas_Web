@@ -315,7 +315,7 @@ namespace AprendeMasWeb.Controllers.WEB
                 return Ok(new { message = "Actividad eliminada correctamente." });
             }
 
-        //Controlador para crear un aviso
+        //Controlador para crear un aviso funciona desde dentro de la materia
         [HttpPost("CrearAviso")]
         public async Task<IActionResult> CrearAviso([FromBody] tbAvisos avisos)
         {
@@ -343,6 +343,57 @@ namespace AprendeMasWeb.Controllers.WEB
                 return StatusCode(500, new { mensaje = "Error al crear el aviso", error = ex.Message });
             }
         }
+
+        //Crea aviso cuando pues se crea un aviso desde el grupo
+        [HttpPost("CrearAvisoPorGrupo")]
+        public async Task<IActionResult> CrearAvisoPorGrupo([FromBody] tbAvisos datos)
+        {
+            if (datos == null || datos.GrupoId == null || string.IsNullOrWhiteSpace(datos.Titulo) || string.IsNullOrWhiteSpace(datos.Descripcion))
+            {
+                return BadRequest(new { mensaje = "Datos inválidos." });
+            }
+
+            try
+            {
+                int? grupoId = datos.GrupoId;
+                string titulo = datos.Titulo;
+                string descripcion = datos.Descripcion;
+
+                // Buscar todas las materias asociadas a ese GrupoId en la tabla GruposYMaterias
+                var materiasRelacionadas = await _context.tbGruposMaterias
+                    .Where(gm => gm.GrupoId == grupoId)
+                    .Select(gm => gm.MateriaId)
+                    .ToListAsync();
+
+                if (!materiasRelacionadas.Any())
+                {
+                    return NotFound(new { mensaje = "No se encontraron materias asociadas a este grupo." });
+                }
+
+                // Crear un aviso para cada materia relacionada con el grupo
+                var avisos = materiasRelacionadas.Select(materiaId => new tbAvisos
+                {
+                    DocenteId = datos.DocenteId, // Asegurar que venga en los datos
+                    Titulo = titulo,
+                    Descripcion = descripcion,
+                    GrupoId = grupoId,
+                    MateriaId = materiaId,
+                    FechaCreacion = DateTime.Now
+                }).ToList();
+
+                _context.tbAvisos.AddRange(avisos);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { mensaje = "Avisos creados con éxito", cantidad = avisos.Count });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al crear los avisos", error = ex.Message });
+            }
+        }
+
+
+
 
         //Controlador para eliminar un aviso
         [HttpDelete("EliminarAviso/{id}")]
@@ -376,7 +427,7 @@ namespace AprendeMasWeb.Controllers.WEB
         }
 
 
-        //Controlador para obtener avisos
+        //Controlador para obtener avisos para la vista
         [HttpGet("ObtenerAvisos")]
         public async Task<IActionResult> ObtenerAvisos([FromQuery] int IdMateria)
         {
@@ -400,6 +451,57 @@ namespace AprendeMasWeb.Controllers.WEB
                 return StatusCode(500, new { mensaje = "Error al obtener los avisos", error = ex.Message });
             }
         }
+
+        //Controlador para obtener informacion de un aviso para despeus editar
+        [HttpGet("ObtenerAvisoPorId")]
+        public async Task<IActionResult> ObtenerAvisoPorId([FromQuery] int avisoId)
+        {
+            try
+            {
+                var aviso = await _context.tbAvisos
+                    .Where(a => a.AvisoId == avisoId)
+                    .Select(a => new
+                    {
+                        a.AvisoId,
+                        a.Titulo,
+                        a.Descripcion
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (aviso == null)
+                    return NotFound(new { mensaje = "Aviso no encontrado" });
+
+                return Ok(aviso);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al obtener el aviso", error = ex.Message });
+            }
+        }
+
+        //Editar aviso
+        [HttpPut("EditarAviso")]
+        public async Task<IActionResult> EditarAviso([FromBody] tbAvisos model)
+        {
+            try
+            {
+                var aviso = await _context.tbAvisos.FindAsync(model.AvisoId);
+                if (aviso == null)
+                    return NotFound(new { mensaje = "Aviso no encontrado" });
+
+                aviso.Titulo = model.Titulo;
+                aviso.Descripcion = model.Descripcion;
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new { mensaje = "Aviso actualizado correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al actualizar el aviso", error = ex.Message });
+            }
+        }
+
 
 
 
