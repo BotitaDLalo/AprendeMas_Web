@@ -40,6 +40,12 @@ namespace AprendeMasWeb.Controllers.WEB
 			return View();
 		}
 
+        public IActionResult VerificarCodigo()
+        {
+            var email = HttpContext.Session.GetString(Recursos.SessionKeys.Email);
+            ViewBag.Email = email;
+            return View();
+        }
 
         [HttpPost]
         public async Task<IActionResult> Registrar(UsuarioRegistro usuario)
