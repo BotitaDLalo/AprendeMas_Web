@@ -92,121 +92,172 @@ async function cargarMaterias() {
 
 // Cargar materias que fueron creadas sin un grupo a la vista principal.
 async function cargarMateriasSinGrupo() {
-    const response = await fetch(`/api/MateriasApi/ObtenerMateriasSinGrupo/${docenteIdGlobal}`) // Hace una solicitud GET para obtener las materias sin grupo usando el DocenteId global
-    if (response.ok) { // Si la respuesta es exitosa
-        const materiasSinGrupo = await response.json(); // Convierte la respuesta a formato JSON
-        const listaMateriasSinGrupo = document.getElementById("listaMateriasSinGrupo"); // Obtiene el elemento donde se mostrarán las materias sin grupo
+    const response = await fetch(`/api/MateriasApi/ObtenerMateriasSinGrupo/${docenteIdGlobal}`);
+    if (response.ok) {
+        const materiasSinGrupo = await response.json();
+        const listaMateriasSinGrupo = document.getElementById("listaMateriasSinGrupo");
 
-        if (materiasSinGrupo.length === 0) { // Si no hay materias sin grupo
-            listaMateriasSinGrupo.innerHTML = "<p>No hay materias registradas.</p>"; // Muestra un mensaje indicando que no hay materias
-            return; // Sale de la función
+        // Limpiar contenido anterior y crear el contenedor con Bootstrap Grid
+        listaMateriasSinGrupo.innerHTML = "";
+        const rowContainer = document.createElement("div");
+        rowContainer.classList.add("row", "g-3"); // "g-3" agrega un pequeño espacio entre las filas
+
+        if (materiasSinGrupo.length === 0) {
+            const mensaje = document.createElement("p");
+            mensaje.classList.add("text-center", "text-muted");
+            mensaje.textContent = "No hay materias registradas.";
+            listaMateriasSinGrupo.appendChild(mensaje);
+            return;
         }
 
-        // Asegurar que todas las cards estén dentro de un solo contenedor
-        listaMateriasSinGrupo.innerHTML = `
-            <div class="container-cards">
-                ${materiasSinGrupo.map(materiaSinGrupo => `
-                    <div class="card card-custom" style=" border-radius: 10px; /* Define el radio de las esquinas */">
-                        <div class="card-header-custom" style="background-color: ${materiaSinGrupo.codigoColor || '#000'};  ">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-dark">${materiaSinGrupo.nombreMateria}</span> <!-- Muestra el nombre de la materia -->
-                                <div class="dropdown">
-                                    <button class="btn btn-link p-0 text-dark" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li><a class="dropdown-item" href="#" onclick="editarMateria(${materiaSinGrupo.materiaId},'${materiaSinGrupo.nombreMateria}','${materiaSinGrupo.descripcion}')">Editar</a></li> <!-- Opción para editar materia -->
-                                        <li><a class="dropdown-item" href="#" onclick="eliminarMateria(${materiaSinGrupo.materiaId})">Eliminar</a></li> <!-- Opción para eliminar materia -->
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+        materiasSinGrupo.forEach(materia => {
+            const col = document.createElement("div");
+            col.classList.add("col-md-3"); // Ajusta el tamaño de la tarjeta en la fila
 
-                       <div class="card-body card-body-custom">
-    <p class="card-text">
-        ${materiaSinGrupo.actividadesRecientes.length > 0
-                        ? materiaSinGrupo.actividadesRecientes.map((actividad, index) => {
-                            const fechaFormateada = new Date(actividad.fechaCreacion).toLocaleDateString('es-ES', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric'
-                            });
-                            return `
-                    <div class="actividad-item">
-                        <a href="#" class="actividad-link" data-id="${actividad.actividadId}">
-                            ${actividad.nombreActividad}
-                        </a>
-                        <p class="actividad-fecha">Asignada: ${fechaFormateada}</p>
-                    </div>
-                `;
-                        }).join('')
-                        : "<p class='sin-actividades'>Sin actividades recientes</p>"
-        }
-    </p>
-</div>
+            const card = document.createElement("div");
+            card.classList.add("card", "bg-light", "mb-3", "shadow-sm");
+            card.style.maxWidth = "100%";
 
+            // Header
+            // Crear el header
+            const header = document.createElement("div");
+            header.classList.add("card-header", "bg-primary", "text-white", "fs-4");
+            header.style.display = "flex";
+            header.style.justifyContent = "space-between";
+            header.textContent = materia.nombreMateria;
 
+            // Crear el dropdown
+            const dropdown = document.createElement("div");
+            dropdown.classList.add("dropdown");
 
+            const button = document.createElement("button");
+            button.classList.add("btn", "btn-link", "p-0", "text-white");
+            button.setAttribute("data-bs-toggle", "dropdown");
+            button.setAttribute("aria-expanded", "false");
 
-                        <div class="card-footer card-footer-custom">
-                            <button class="btn btn-sm btn-primary" onclick="irAMateria(${materiaSinGrupo.materiaId})">Ver Materia</button> <!-- Botón para ver los detalles de la materia -->
-                            <div class="icon-container">
-                                <img class="icon-action" src="https://cdn-icons-png.flaticon.com/512/1828/1828817.png" alt="Ver Actividades" title="Ver Actividades" onclick="irAMateria(${materiaSinGrupo.materiaId}, 'actividades')"> <!-- Icono para ver actividades -->
-                                <img class="icon-action" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Ver Integrantes" title="Ver Integrantes" onclick="irAMateria(${materiaSinGrupo.materiaId}, 'alumnos')"> <!-- Icono para ver los integrantes -->
-                            </div>
-                        </div>
-                    </div>
-                `).join('')} <!-- Muestra todas las materias sin grupo como tarjetas dinámicas -->
-            </div>
-        `;
-    } else {
-        let timerInterval; // Variable para almacenar el intervalo del temporizador
+            const icon = document.createElement("i");
+            icon.classList.add("fas", "fa-ellipsis-v");
+            button.appendChild(icon);
 
-        Swal.fire({
-            title: "Error al cargar materias sin grupo asignado.", // Título de la alerta
-            html: "Se reintentará automáticamente en: <b></b>.", // Mensaje con temporizador dinámico
-            timer: 4000, // Tiempo en milisegundos antes de que la alerta se cierre automáticamente
-            timerProgressBar: true, // Muestra una barra de progreso indicando el tiempo restante
-            allowOutsideClick: false, // Evita que el usuario cierre la alerta haciendo clic fuera de ella
-            showCancelButton: true, // Muestra un botón de cancelar
-            cancelButtonText: "Cerrar sesión", // Texto del botón de cancelar
+            const ul = document.createElement("ul");
+            ul.classList.add("dropdown-menu", "dropdown-menu-end");
 
-            didOpen: () => {
-                // Se ejecuta cuando la alerta se abre
-                Swal.showLoading(); // Muestra un indicador de carga
-                const timer = Swal.getPopup().querySelector("b"); // Obtiene el elemento <b> para mostrar el tiempo restante
-                timerInterval = setInterval(() => {
-                    timer.textContent = `${Math.floor(Swal.getTimerLeft() / 1000)} segundos`; // Actualiza el temporizador en segundos
-                }, 100); // Actualiza el temporizador cada 100ms
-            },
+            const editLi = document.createElement("li");
+            const editLink = document.createElement("a");
+            editLink.classList.add("dropdown-item");
+            editLink.href = "#";
+            editLink.onclick = () => editarMateria(materia.materiaId);
+            editLink.textContent = "Editar";
+            editLi.appendChild(editLink);
 
-            willClose: () => {
-                // Se ejecuta cuando la alerta está a punto de cerrarse
-                clearInterval(timerInterval); // Detiene la actualización del temporizador
-            }
+            const deleteLi = document.createElement("li");
+            const deleteLink = document.createElement("a");
+            deleteLink.classList.add("dropdown-item");
+            deleteLink.href = "#";
+            deleteLink.onclick = () => eliminarMateria(materia.materiaId);
+            deleteLink.textContent = "Eliminar";
+            deleteLi.appendChild(deleteLink);
 
-        }).then((result) => {
-            // Se ejecuta cuando la alerta se cierra manualmente o por el temporizador
-            if (result.dismiss === Swal.DismissReason.timer) {
-                // Si la alerta se cierra automáticamente por el temporizador
-                console.log("Reintentando cargar las materias sin grupo.");
-                if (intentosAcceder < 6) {
-                    inicializar(); // Llama a la función inicializar para reintentar la carga
-                    intentosAcceder++;
-                } else {
-                    AlertaCierreSesion();
-                }
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
-                // Si el usuario hace clic en "Cerrar sesión"
-                console.log("El usuario decidió cerrar sesión.");
-                cerrarSesion(); // Llama a la función para cerrar sesión
-            }
+            const deactivateLi = document.createElement("li");
+            const deactivateLink = document.createElement("a");
+            deactivateLink.classList.add("dropdown-item");
+            deactivateLink.href = "#";
+            deactivateLink.onclick = () => desactivarMateria(materia.materiaId);
+            deactivateLink.textContent = "Desactivar";
+            deactivateLi.appendChild(deactivateLink);
+
+            // Añadir los elementos al menú desplegable
+            ul.appendChild(editLi);
+            ul.appendChild(deleteLi);
+            ul.appendChild(deactivateLi);
+
+            // Añadir el botón y el menú al dropdown
+            dropdown.appendChild(button);
+            dropdown.appendChild(ul);
+
+            // Añadir el dropdown al header
+            header.appendChild(dropdown);
+
+            // Body
+            const body = document.createElement("div");
+            body.classList.add("card-body");
+
+            const title = document.createElement("h5");
+            title.classList.add("card-title");
+
+            const description = document.createElement("p");
+            description.classList.add("card-text");
+            description.textContent = materia.descripcion || "Sin descripción";
+
+            body.appendChild(title);
+            body.appendChild(description);
+
+            // Footer
+            const footer = document.createElement("div");
+            footer.classList.add("card-footer", "d-flex", "justify-content-between", "align-items-center");
+
+            const btnVerMateria = document.createElement("button");
+            btnVerMateria.classList.add("btn", "btn-sm", "btn-primary");
+            btnVerMateria.textContent = "Ver Materia";
+            btnVerMateria.onclick = () => irAMateria(materia.materiaId);
+
+            // Contenedor de iconos
+            const iconContainer = document.createElement("div");
+            iconContainer.classList.add("d-flex", "gap-2");
+
+            const icons = [
+                { src: "https://cdn-icons-png.flaticon.com/512/1828/1828817.png", title: "Ver Actividades", onclick: () => verActividades(materia.materiaId) },
+                { src: "https://cdn-icons-png.flaticon.com/512/847/847969.png", title: "Ver Integrantes", onclick: () => verIntegrantes(materia.materiaId) },
+                { src: "https://cdn-icons-png.flaticon.com/512/535/535285.png", title: "Destacar Materia", onclick: () => destacarMateria(materia.materiaId) }
+            ];
+
+            icons.forEach(({ src, title, onclick }) => {
+                const img = document.createElement("img");
+                img.classList.add("icon-action");
+                img.src = src;
+                img.alt = title;
+                img.title = title;
+                img.onclick = onclick;
+                iconContainer.appendChild(img);
+            });
+
+            footer.appendChild(btnVerMateria);
+            footer.appendChild(iconContainer);
+
+            // Construcción de la card
+            card.appendChild(header);
+            card.appendChild(body);
+            card.appendChild(footer);
+            col.appendChild(card);
+
+            // Agregar la columna al contenedor de la fila
+            rowContainer.appendChild(col);
         });
 
+        // Agregar todas las tarjetas dentro del contenedor de filas
+        listaMateriasSinGrupo.appendChild(rowContainer);
+
+    } else {
+        Swal.fire({
+            title: "Error al cargar materias",
+            html: "Reintentando en <b></b> segundos...",
+            timer: 4000,
+            timerProgressBar: true,
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+                const timer = Swal.getPopup().querySelector("b");
+                let interval = setInterval(() => {
+                    timer.textContent = `${Math.floor(Swal.getTimerLeft() / 1000)}`;
+                }, 100);
+            },
+            willClose: () => clearInterval(timerInterval)
+        }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.timer) {
+                cargarMateriasSinGrupo();
+            }
+        });
     }
-    document.getElementById('materiasModal').addEventListener('hidden.bs.modal', function () {
-        cargarMateriasSinGrupo(); // Vuelve a cargar las materias sin grupo cuando se cierra el modal
-    });
 }
 
 
