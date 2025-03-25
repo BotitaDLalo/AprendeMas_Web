@@ -88,6 +88,9 @@
                 </div>
                 <div class="modal-body">
                     <form id="formCalificacion">
+                        <!-- Input oculto para almacenar el entregaId -->
+                        <input type="hidden" id="entregaId">
+
                         <div class="mb-3">
                             <label for="calificacion" class="form-label">Calificación</label>
                             <input type="number" class="form-control" id="calificacion" min="0" max="100" required>
@@ -102,6 +105,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- Respuesta del alumno -->
     <div class="modal fade" id="respuestaModal" tabindex="-1" aria-labelledby="respuestaModalLabel" aria-hidden="true">
@@ -141,25 +145,68 @@
         $('#respuestaModal').modal('show');
     }
 
-    function abrirModalCalificar(alumnoId) {
-        // Aquí se puede cargar la información del alumno para calificarlo
-        // Esto es solo un ejemplo de abrir el modal para calificar
+        function abrirModalCalificar(entregaId, puntajeMaximo) {
+        document.getElementById("entregaId").value = entregaId;  // Guardar entregaId en un input oculto
+        document.getElementById("puntajeMaximo").textContent = puntajeMaximo; // Mostrar puntaje máximo
+        document.getElementById("calificacion").setAttribute("max", puntajeMaximo); // Restringir input de calificación
+
         $('#calificarModal').modal('show');
     }
 
-    // Enviar calificación y comentario
-    document.getElementById("formCalificacion").addEventListener("submit", function(event) {
+
+        document.getElementById("formCalificacion").addEventListener("submit", async function(event) {
         event.preventDefault();
 
-        const calificacion = document.getElementById("calificacion").value;
+        const entregaId = document.getElementById("entregaId").value;
+        const calificacion = parseFloat(document.getElementById("calificacion").value);
         const comentario = document.getElementById("comentario").value;
+        const puntajeMaximo = parseFloat(document.getElementById("puntajeMaximo").textContent);
 
-        // Aquí enviarías la calificación y el comentario al servidor para guardarlos
-        console.log(`Calificación: ${calificacion}, Comentario: ${comentario}`);
+        if (calificacion > puntajeMaximo || calificacion < 0) {
+            Swal.fire({
+                title: "Error",
+                text: `La calificación debe estar entre 0 y ${puntajeMaximo}.`,
+                icon: "error",
+                confirmButtonColor: "#d33",
+            });
+            return;
+        }
 
-        // Cerrar el modal después de guardar la calificación
-        $('#calificarModal').modal('hide');
+        // Enviar los datos al backend
+        try {
+            const response = await fetch("/api/EvaluarActividadesApi/RegistrarCalificacion", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    entregaId: entregaId,
+                    calificacion: calificacion,
+                    comentario: comentario
+                })
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.mensaje || "Error al registrar calificación");
+            }
+
+            Swal.fire({
+                title: "Éxito",
+                text: "Calificación guardada correctamente.",
+                icon: "success",
+                timer: 2500
+            });
+
+            $('#calificarModal').modal('hide');
+        } catch (error) {
+            Swal.fire({
+                title: "Error",
+                text: error.message,
+                icon: "error",
+                confirmButtonColor: "#d33",
+            });
+        }
     });
+
 </script>
 
 @section Scripts {

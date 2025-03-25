@@ -4,6 +4,7 @@ let docenteIdGlobal = localStorage.getItem("docenteId");
 let materiaIdGlobal = localStorage.getItem("materiaIdSeleccionada");
 let grupoIdGlobal = localStorage.getItem("grupoIdSeleccionado");
 let actividadIdGlobal = localStorage.getItem("actividadSeleccionada");
+let puntajeMaximo = null;
 // Esperar a que el DOM esté completamente cargado antes de ejecutar el código
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -28,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     document.getElementById("tipoActividad").innerText = data.tipoActividad || "No disponible";
                     document.getElementById("puntajeMaximo").innerText = data.puntaje || "0";
-
+                    puntajeMaximo = data.puntaje; //Se guarda puntaje maximo para poder usarla como limite
                     document.getElementById("alumnosEntregados").innerText = data.alumnosEntregados || "0 de 0";
                     document.getElementById("actividadesCalificadas").innerText = data.actividadesCalificadas || "0 de 0";
                 } else {
@@ -141,7 +142,7 @@ function renderizarAlumnos(data) {
                 </div>
                 <span class="badge bg-success">Entregado</span>
                 <button class="btn btn-primary btn-sm" onclick="verRespuesta(${alumno.alumnoActividadId})">Ver Respuesta</button>
-                <button class="btn btn-warning btn-sm" onclick="abrirModalCalificar(${alumno.alumnoActividadId})">Calificar</button>
+                <button class="btn btn-warning btn-sm" onclick="abrirModalCalificar(${alumno.entrega.entregaId}, ${puntajeMaximo})">Calificar</button>
                 <p class="mb-1" style="color: #777;">Calificado el: ${fechaCalificacion}</p>
             </div>
         `;

@@ -154,11 +154,128 @@ namespace AprendeMasWeb.Controllers.WEB
             });
         }
 
+        //Si un alumno es agregado a la materia 
+        [HttpPost("AsignarActividadesPendientes")]
+        public async Task<IActionResult> AsignarActividadesPendientes([FromBody] int alumnoId)
+        {
+            try
+            {
+                // Verificar si el alumno existe
+                var alumnoExiste = await _context.tbAlumnos.AnyAsync(a => a.AlumnoId == alumnoId);
+                if (!alumnoExiste)
+                {
+                    return BadRequest(new { mensaje = "El alumno no existe." });
+                }
+
+                // Obtener la materia del alumno
+                var materiasAlumno = await _context.tbAlumnosMaterias
+                    .Where(am => am.AlumnoId == alumnoId)
+                    .Select(am => am.MateriaId)
+                    .ToListAsync();
+
+                if (!materiasAlumno.Any())
+                {
+                    return BadRequest(new { mensaje = "El alumno no está inscrito en ninguna materia." });
+                }
+
+                // Buscar actividades que no tiene asignadas en esas materias
+                var actividadesPendientes = await _context.tbActividades
+                    .Where(a => materiasAlumno.Contains(a.MateriaId) &&
+                                !_context.tbAlumnosActividades.Any(aa => aa.AlumnoId == alumnoId && aa.ActividadId == a.ActividadId))
+                    .ToListAsync();
+
+                // Asignar cada actividad pendiente al alumno
+                foreach (var actividad in actividadesPendientes)
+                {
+                    var nuevaRelacion = new AlumnosActividades
+                    {
+                        ActividadId = actividad.ActividadId,
+                        AlumnoId = alumnoId,
+                        FechaEntrega = DateTime.Now, // Se actualiza cuando entregue
+                        EstatusEntrega = false
+                    };
+
+                    _context.tbAlumnosActividades.Add(nuevaRelacion);
+                }
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new { mensaje = "Actividades asignadas al nuevo alumno." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al asignar actividades.", error = ex.Message });
+            }
+        }
+
+        // Controlador para registrar o actualizar una calificación
+        [HttpPost("RegistrarCalificacion")]
+        public async Task<IActionResult> RegistrarCalificacion([FromBody] CalificacionDto calificacionDto)
+        {
+            if (calificacionDto == null)
+            {
+                return BadRequest(new { mensaje = "Datos inválidos." });
+            }
+
+            // Verificar si la entrega existe en la tabla correcta
+            var entregaExiste = await _context.tbEntregablesAlumno.AnyAsync(e => e.EntregaId == calificacionDto.EntregaId);
+            if (!entregaExiste)
+            {
+                return BadRequest(new { mensaje = "La entrega especificada no existe." });
+            }
+
+            try
+            {
+                // Buscar si ya existe una calificación para esta entrega
+                var calificacionExistente = await _context.tbCalificaciones
+                    .FirstOrDefaultAsync(c => c.EntregaId == calificacionDto.EntregaId);
+
+                if (calificacionExistente != null)
+                {
+                    // Si ya existe, actualizar los datos
+                    calificacionExistente.Calificacion = calificacionDto.Calificacion;
+                    calificacionExistente.Comentarios = calificacionDto.Comentario;
+                    calificacionExistente.FechaCalificacionAsignada = DateTime.Now;
+
+                    _context.tbCalificaciones.Update(calificacionExistente);
+                }
+                else
+                {
+                    // Si no existe, crear una nueva calificación
+                    var nuevaCalificacion = new Calificaciones
+                    {
+                        EntregaId = calificacionDto.EntregaId,
+                        FechaCalificacionAsignada = DateTime.Now,
+                        Comentarios = calificacionDto.Comentario,
+                        Calificacion = calificacionDto.Calificacion
+                    };
+
+                    _context.tbCalificaciones.Add(nuevaCalificacion);
+                }
+
+                await _context.SaveChangesAsync();
+                return Ok(new { mensaje = "Calificación guardada correctamente." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al registrar la calificación.", error = ex.Message });
+            }
+        }
+
+
 
 
     }
 
 }
+
+public class CalificacionDto
+{
+    public int EntregaId { get; set; }
+    public int Calificacion { get; set; }
+    public string? Comentario { get; set; }
+}
+
 
 
 // Modelo de request para recibir los datos
