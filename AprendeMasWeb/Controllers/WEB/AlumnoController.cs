@@ -47,18 +47,37 @@ namespace AprendeMasWeb.Controllers.WEB
             var grupos = await _context.tbAlumnosGrupos
                 .Where(ag => ag.AlumnoId == alumnoId)
                 .Include(ag => ag.Grupos)
-                .Select(ag => new { Id = ag.Grupos.GrupoId, Nombre = ag.Grupos.NombreGrupo, esGrupo = true })
+                .Select(ag => new
+                {
+                    Id = ag.Grupos.GrupoId,
+                    Nombre = ag.Grupos.NombreGrupo,
+                    esGrupo = true,
+                    Materias = _context.tbGruposMaterias
+                        .Where(gm => gm.GrupoId == ag.Grupos.GrupoId)
+                        .Select(gm => new
+                        {
+                            Id = gm.MateriaId,
+                            Nombre = gm.Materias.NombreMateria
+                        }).ToList()
+                })
                 .ToListAsync();
 
             var materias = await _context.tbAlumnosMaterias
                 .Where(am => am.AlumnoId == alumnoId)
                 .Include(am => am.Materias)
-                .Select(am => new { Id = am.Materias.MateriaId, Nombre = am.Materias.NombreMateria, esGrupo = false })
+                .Select(am => new
+                {
+                    Id = am.Materias.MateriaId,
+                    Nombre = am.Materias.NombreMateria,
+                    esGrupo = false,
+                    Materias = (List<object>)null // Se agrega esta línea para hacer el tipo compatible
+                })
                 .ToListAsync();
 
-            var clases = grupos.Concat(materias);
+            var clases = grupos.Cast<object>().Concat(materias.Cast<object>()).ToList();
             return Ok(clases);
         }
+
 
 
 
@@ -172,4 +191,6 @@ namespace AprendeMasWeb.Controllers.WEB
             return View();
         }
     }
+
+
 }

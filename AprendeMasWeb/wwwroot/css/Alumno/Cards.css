@@ -1,8 +1,47 @@
-﻿/* Contenedor de todas las cards */
+﻿
+
+
+
+.materias-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(303px, 1fr)); /* Ajusta el tamaño de los cuadrados */
+    gap: 30px;
+    margin-top: 10px;
+    padding: 24px;
+}
+
+.materia-card {
+    background: #f8f9fa; /* Color de fondo */
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+    .materia-card:hover {
+        transform: scale(1.05);
+        background: #e9ecef;
+    }
+
+.materia-nombre {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+
+
+
+
+
+
+/* Contenedor de todas las cards */
 .card-wrapper {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columnas por fila */
-    gap: 20px; /* Espacio entre las cards */
+    grid-template-columns: repeat(1, 1fr); /* 3 columnas por fila */
+    gap: 15px; /* Espacio entre las cards */
     margin: 20px; /* Espacio alrededor del contenedor */
 }
 
@@ -70,6 +109,8 @@
     display: flex; /* Usamos flexbox para alinear los elementos */
     align-items: center; /* Alinea la imagen y el texto verticalmente */
     cursor: pointer;
+    max-width: 500px; /* El ancho máximo será 500px */
+    width: 100%; /* El ancho será el 100% hasta llegar a 500px */
 }
 
 .iconos-nav2 {
