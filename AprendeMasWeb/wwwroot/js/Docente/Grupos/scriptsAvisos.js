@@ -158,3 +158,60 @@ function renderizarAvisos(avisos) {
     });
 }
 
+async function eliminarAviso(avisoId) {
+    // Mostrar una confirmación antes de proceder con la eliminación
+    const confirmacion = await Swal.fire({
+        title: '¿Estás seguro de eliminar este aviso?',
+        text: "¡Esta acción no se puede deshacer!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    });
+
+    // Si el usuario confirma la eliminación, proceder con la solicitud DELETE
+    if (confirmacion.isConfirmed) {
+        try {
+            // Hacer la solicitud DELETE para eliminar el aviso
+            const response = await fetch(`/api/DetallesMateriaApi/EliminarAviso/${avisoId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            // Verificar si la respuesta fue exitosa
+            if (response.ok) {
+                // Mostrar mensaje de éxito
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Aviso eliminado con éxito',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                cargarAvisosDeMateria(); // Recargar los avisos después de eliminar
+            } else {
+                // Si la respuesta no es exitosa, mostrar un error
+                const errorData = await response.json();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al eliminar el aviso',
+                    text: errorData.mensaje,
+                    showConfirmButton: true
+                });
+            }
+        } catch (error) {
+            // En caso de error en la solicitud
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al conectar con el servidor',
+                text: 'Por favor, intente nuevamente.',
+                showConfirmButton: true
+            });
+        }
+    }
+}
+
+

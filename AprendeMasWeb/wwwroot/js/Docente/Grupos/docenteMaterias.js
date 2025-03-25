@@ -119,7 +119,6 @@ async function cargarMateriasSinGrupo() {
             card.style.maxWidth = "100%";
 
             // Header
-            // Crear el header
             const header = document.createElement("div");
             header.classList.add("card-header", "bg-primary", "text-white", "fs-4");
             header.style.display = "flex";
@@ -158,18 +157,9 @@ async function cargarMateriasSinGrupo() {
             deleteLink.textContent = "Eliminar";
             deleteLi.appendChild(deleteLink);
 
-            const deactivateLi = document.createElement("li");
-            const deactivateLink = document.createElement("a");
-            deactivateLink.classList.add("dropdown-item");
-            deactivateLink.href = "#";
-            deactivateLink.onclick = () => desactivarMateria(materia.materiaId);
-            deactivateLink.textContent = "Desactivar";
-            deactivateLi.appendChild(deactivateLink);
-
             // Añadir los elementos al menú desplegable
             ul.appendChild(editLi);
             ul.appendChild(deleteLi);
-            ul.appendChild(deactivateLi);
 
             // Añadir el botón y el menú al dropdown
             dropdown.appendChild(button);
@@ -192,6 +182,40 @@ async function cargarMateriasSinGrupo() {
             body.appendChild(title);
             body.appendChild(description);
 
+            // Actividades Recientes - Crear una sección para las actividades
+            if (materia.actividadesRecientes && materia.actividadesRecientes.length > 0) {
+                const actividadesContainer = document.createElement("div");
+                actividadesContainer.classList.add("mt-3"); // Margen superior para separar las actividades
+
+                materia.actividadesRecientes.forEach(actividad => {
+                    const actividadItem = document.createElement("div");
+                    actividadItem.classList.add("actividad-item");
+
+                    const fechaFormateada = new Date(actividad.fechaCreacion).toLocaleDateString('es-ES', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+
+                    const actividadLink = document.createElement("a");
+                    actividadLink.href = "#";
+                    actividadLink.classList.add("actividad-link");
+                    actividadLink.textContent = actividad.nombreActividad;
+                    actividadLink.setAttribute("data-id", actividad.actividadId);
+
+                    const actividadFecha = document.createElement("p");
+                    actividadFecha.classList.add("actividad-fecha");
+                    actividadFecha.textContent = `Asignada: ${fechaFormateada}`;
+
+                    actividadItem.appendChild(actividadLink);
+                    actividadItem.appendChild(actividadFecha);
+
+                    actividadesContainer.appendChild(actividadItem);
+                });
+
+                body.appendChild(actividadesContainer); // Agregar actividades al cuerpo de la tarjeta
+            }
+
             // Footer
             const footer = document.createElement("div");
             footer.classList.add("card-footer", "d-flex", "justify-content-between", "align-items-center");
@@ -201,28 +225,7 @@ async function cargarMateriasSinGrupo() {
             btnVerMateria.textContent = "Ver Materia";
             btnVerMateria.onclick = () => irAMateria(materia.materiaId);
 
-            // Contenedor de iconos
-            const iconContainer = document.createElement("div");
-            iconContainer.classList.add("d-flex", "gap-2");
-
-            const icons = [
-                { src: "https://cdn-icons-png.flaticon.com/512/1828/1828817.png", title: "Ver Actividades", onclick: () => verActividades(materia.materiaId) },
-                { src: "https://cdn-icons-png.flaticon.com/512/847/847969.png", title: "Ver Integrantes", onclick: () => verIntegrantes(materia.materiaId) },
-                { src: "https://cdn-icons-png.flaticon.com/512/535/535285.png", title: "Destacar Materia", onclick: () => destacarMateria(materia.materiaId) }
-            ];
-
-            icons.forEach(({ src, title, onclick }) => {
-                const img = document.createElement("img");
-                img.classList.add("icon-action");
-                img.src = src;
-                img.alt = title;
-                img.title = title;
-                img.onclick = onclick;
-                iconContainer.appendChild(img);
-            });
-
             footer.appendChild(btnVerMateria);
-            footer.appendChild(iconContainer);
 
             // Construcción de la card
             card.appendChild(header);
@@ -247,7 +250,7 @@ async function cargarMateriasSinGrupo() {
             didOpen: () => {
                 Swal.showLoading();
                 const timer = Swal.getPopup().querySelector("b");
-                let interval = setInterval(() => {
+                let timerInterval = setInterval(() => {
                     timer.textContent = `${Math.floor(Swal.getTimerLeft() / 1000)}`;
                 }, 100);
             },
@@ -261,16 +264,6 @@ async function cargarMateriasSinGrupo() {
 }
 
 
-//Funcionalidades de los iconos de las Card de la materia
-function verActividades(MateriaId) {
-    alert(`Ver actividades del grupo ID: ${MateriaId}`); // Muestra una alerta con el ID de la materia
-    // Aquí puedes redirigir o cargar las actividades relacionadas con el grupo
-}
-
-function verIntegrantes(MateriaId) {
-    alert(`Ver integrantes del grupo ID: ${MateriaId}`); // Muestra una alerta con el ID de la materia
-    // Aquí puedes abrir un modal o redirigir para mostrar los integrantes
-}
 
 
 //Funcion para editar nombre y descripcion de una materia. Sin funcionar aun.

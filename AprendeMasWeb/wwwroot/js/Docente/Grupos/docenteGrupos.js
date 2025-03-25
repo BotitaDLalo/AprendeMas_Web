@@ -355,7 +355,6 @@ async function handleCardClick(grupoId) {
                     card.style.maxWidth = "100%";
 
                     // Header
-                    // Crear el header
                     const header = document.createElement("div");
                     header.classList.add("card-header", "bg-primary", "text-white", "fs-4");
                     header.style.display = "flex";
@@ -394,18 +393,9 @@ async function handleCardClick(grupoId) {
                     deleteLink.textContent = "Eliminar";
                     deleteLi.appendChild(deleteLink);
 
-                    const deactivateLi = document.createElement("li");
-                    const deactivateLink = document.createElement("a");
-                    deactivateLink.classList.add("dropdown-item");
-                    deactivateLink.href = "#";
-                    deactivateLink.onclick = () => desactivarMateria(materia.materiaId);
-                    deactivateLink.textContent = "Desactivar";
-                    deactivateLi.appendChild(deactivateLink);
-
                     // Añadir los elementos al menú desplegable
                     ul.appendChild(editLi);
                     ul.appendChild(deleteLi);
-                    ul.appendChild(deactivateLi);
 
                     // Añadir el botón y el menú al dropdown
                     dropdown.appendChild(button);
@@ -424,9 +414,43 @@ async function handleCardClick(grupoId) {
                     const description = document.createElement("p");
                     description.classList.add("card-text");
                     description.textContent = materia.descripcion || "Sin descripción";
-
+                    
                     body.appendChild(title);
                     body.appendChild(description);
+
+                    // Actividades Recientes - Crear una sección para las actividades
+                    if (materia.actividadesRecientes && materia.actividadesRecientes.length > 0) {
+                        const actividadesContainer = document.createElement("div");
+                        actividadesContainer.classList.add("mt-3"); // Margen superior para separar las actividades
+
+                        materia.actividadesRecientes.forEach(actividad => {
+                            const actividadItem = document.createElement("div");
+                            actividadItem.classList.add("actividad-item");
+
+                            const fechaFormateada = new Date(actividad.fechaCreacion).toLocaleDateString('es-ES', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric'
+                            });
+
+                            const actividadLink = document.createElement("a");
+                            actividadLink.href = "#";
+                            actividadLink.classList.add("actividad-link");
+                            actividadLink.textContent = actividad.nombreActividad;
+                            actividadLink.setAttribute("data-id", actividad.actividadId);
+
+                            const actividadFecha = document.createElement("p");
+                            actividadFecha.classList.add("actividad-fecha");
+                            actividadFecha.textContent = `Asignada: ${fechaFormateada}`;
+
+                            actividadItem.appendChild(actividadLink);
+                            actividadItem.appendChild(actividadFecha);
+
+                            actividadesContainer.appendChild(actividadItem);
+                        });
+
+                        body.appendChild(actividadesContainer); // Agregar actividades al cuerpo de la tarjeta
+                    }
 
                     // Footer
                     const footer = document.createElement("div");
@@ -442,9 +466,8 @@ async function handleCardClick(grupoId) {
                     iconContainer.classList.add("d-flex", "gap-2");
 
                     const icons = [
-                        { src: "https://cdn-icons-png.flaticon.com/512/1828/1828817.png", title: "Ver Actividades", onclick: () => verActividades(materia.materiaId) },
-                        { src: "https://cdn-icons-png.flaticon.com/512/847/847969.png", title: "Ver Integrantes", onclick: () => verIntegrantes(materia.materiaId) },
-                        { src: "https://cdn-icons-png.flaticon.com/512/535/535285.png", title: "Destacar Materia", onclick: () => destacarMateria(materia.materiaId) }
+                        { src: "https://cdn-icons-png.flaticon.com/512/1828/1828817.png", title: "Ver Actividades", onclick: () => irAMateria(materia.materiaId, 'actividades') },
+                        { src: "https://cdn-icons-png.flaticon.com/512/847/847969.png", title: "Ver Integrantes", onclick: () => irAMateria(materia.materiaId, 'alumnos') },
                     ];
 
                     icons.forEach(({ src, title, onclick }) => {
@@ -483,6 +506,7 @@ async function handleCardClick(grupoId) {
         }
     }
 }
+
 
 
 

@@ -344,6 +344,38 @@ namespace AprendeMasWeb.Controllers.WEB
             }
         }
 
+        //Controlador para eliminar un aviso
+        [HttpDelete("EliminarAviso/{id}")]
+        public async Task<IActionResult> EliminarAviso(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest(new { mensaje = "ID de aviso inválido." });
+            }
+            try
+            {
+                // Buscar el aviso por su ID
+                var aviso = await _context.tbAvisos.FindAsync(id);
+
+                // Si no se encuentra el aviso
+                if (aviso == null)
+                {
+                    return NotFound(new { mensaje = "Aviso no encontrado." });
+                }
+
+                // Eliminar el aviso
+                _context.tbAvisos.Remove(aviso);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { mensaje = "Aviso eliminado con éxito" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al eliminar el aviso", error = ex.Message });
+            }
+        }
+
+
         //Controlador para obtener avisos
         [HttpGet("ObtenerAvisos")]
         public async Task<IActionResult> ObtenerAvisos([FromQuery] int IdMateria)
@@ -368,6 +400,8 @@ namespace AprendeMasWeb.Controllers.WEB
                 return StatusCode(500, new { mensaje = "Error al obtener los avisos", error = ex.Message });
             }
         }
+
+
 
     }
 }
