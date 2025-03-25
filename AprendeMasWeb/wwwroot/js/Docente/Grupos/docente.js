@@ -103,7 +103,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-function verActividad(id) {
-    alert("Actividad seleccionada con ID:" + id);
-    // Aquí se redirigira a la actividad seleccionada pasando como parametros a la actividad.
+function verActividad(actividadIdSeleccionada, materiaId) {
+    localStorage.setItem("materiaIdSeleccionada", materiaId);
+    //guardar el id de la materia para acceder a la materia en la que se entro y usarla en otro script
+    localStorage.setItem("actividadSeleccionada", actividadIdSeleccionada);
+    // Redirige a la página de detalles de la materia
+    window.open(`/Docente/EvaluarActividades`, '_blank'); //Aqui lleva en la url el id de la actividadSeleccionada
 }
