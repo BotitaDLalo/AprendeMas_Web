@@ -31,7 +31,7 @@
 		</div>
 		<form asp-action="IniciarSesion" asp-controller="Cuenta" method="post">
 			<div class="input-box">
-				<input type="text" class="input-field" id="email" name="email" autocomplete="off" required>
+				<input type="text" class="input-field" id="email" name="email" required value="@Context.Request.Query["email"]" />
 				<label for="email">Correo electrónico</label>
 			</div>
 			<div class="input-box">
@@ -56,11 +56,12 @@
 			<hr>
 			<p class="or-text">O</p>
 		</div>
-		<div class="social-sign-in">
-			<button class="input-google">
-				<img src="https://img.icons8.com/ios11/512/7950F2/google-logo.png" alt="">
-				<p>Iniciar Sesión Con Google</p>
-			</button>
+
+		<div class="form-groups">
+			<a asp-controller="Cuenta" asp-action="IniciarSesionGoogle" class="btn btn-google">
+				<img src="https://img.icons8.com/ios11/512/7950F2/google-logo.png" alt="Google logo" class="google-icon" />
+				Inicio de sesión con Google
+			</a>
 		</div>
 	</div>
 </body>

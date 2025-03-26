@@ -4,6 +4,41 @@
 /* POPPINS FONT */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
 
+
+/*Boton de Google*/
+.btn-google {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #cdb8e97f;
+    color: white;
+    font-size: 15px;
+    padding: 11px 115px;
+    border: 2px solid #888;
+    border-radius: 115px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+    .btn-google:hover {
+        background-color: #cdb8e9cc;
+    }
+
+.google-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+
+.form-groups a {
+    color: #5115a9;
+    text-decoration: none;
+}
+
+
+
+
 * {
     margin: 0;
     padding: 0;
