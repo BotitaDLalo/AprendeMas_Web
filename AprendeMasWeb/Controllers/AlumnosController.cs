@@ -18,6 +18,8 @@ namespace AprendeMasWeb.Controllers
         private readonly UserManager<IdentityUser> _userManager = userManager;
 
 
+        /////////////WEB////////////
+
         // Endpoint para unirse a una clase con código de acceso
         [HttpPost("UnirseAClase")]
         public async Task<IActionResult> UnirseAClase([FromBody] UnirseAClaseRequest request)
@@ -77,6 +79,9 @@ namespace AprendeMasWeb.Controllers
 
             return NotFound(new { mensaje = "Código de acceso no válido" });
         }
+
+        /////////////Termina WEB////////////
+
 
         [HttpPost("UnirseAClaseM")]
         public async Task<IActionResult> UnirseAClaseM([FromBody] UnirseAClaseRequest request)

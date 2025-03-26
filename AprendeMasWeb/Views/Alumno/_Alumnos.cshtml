@@ -1,4 +1,30 @@
-﻿<div class="alert alert-info">
-    <h4>Alumnos</h4>
-    <p>Aquí aparecerán los avisos del grupo o materia.</p>
+﻿@model List<dynamic>  // o la clase de tipo correcto si es necesario
+
+<div class="alert alert-info">
+    <h4>Alumnos Inscritos</h4>
+
+    @if (Model == null || !Model.Any())
+    {
+        <p>@ViewBag.Mensaje</p>
+    }
+    else
+    {
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre Completo</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var alumno in Model)
+                {
+                    <tr>
+                        <td>@alumno.AlumnoId</td>
+                        <td>@alumno.NombreCompleto</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </div>
