@@ -6,39 +6,39 @@ using System.Linq;
 
 namespace AprendeMasWeb.Controllers.WEB
 {
-	[Authorize(Roles = "Alumno")] // Restringir acceso solo a usuarios con rol Alumno
-	public class AlumnoController : Controller
-	{
-		private readonly DataContext _context;
+    [Authorize(Roles = "Alumno")] // Restringir acceso solo a usuarios con rol Alumno
+    public class AlumnoController : Controller
+    {
+        private readonly DataContext _context;
 
-		public AlumnoController(DataContext context)
-		{
-			_context = context;
-		}
+        public AlumnoController(DataContext context)
+        {
+            _context = context;
+        }
 
-		// Acción para mostrar la vista principal del alumno
-		public async Task<IActionResult> Index(int alumnoId)
-		{
-			var grupos = await _context.tbAlumnosGrupos
-				.Where(ag => ag.AlumnoId == alumnoId)
-				.Include(ag => ag.Grupos)
-				.Select(ag => ag.Grupos)
-				.ToListAsync();
+        // Acción para mostrar la vista principal del alumno
+        public async Task<IActionResult> Index(int alumnoId)
+        {
+            var grupos = await _context.tbAlumnosGrupos
+                .Where(ag => ag.AlumnoId == alumnoId)
+                .Include(ag => ag.Grupos)
+                .Select(ag => ag.Grupos)
+                .ToListAsync();
 
-			var materias = await _context.tbAlumnosMaterias
-				.Where(am => am.AlumnoId == alumnoId)
-				.Include(am => am.Materias)
-				.Select(am => am.Materias)
-				.ToListAsync();
+            var materias = await _context.tbAlumnosMaterias
+                .Where(am => am.AlumnoId == alumnoId)
+                .Include(am => am.Materias)
+                .Select(am => am.Materias)
+                .ToListAsync();
 
-			var clases = new
-			{
-				Grupos = grupos,
-				Materias = materias
-			};
+            var clases = new
+            {
+                Grupos = grupos,
+                Materias = materias
+            };
 
-			return View(clases);
-		}
+            return View(clases);
+        }
 
         // API para obtener las clases del alumno en formato JSON
         [HttpGet("api/Alumno/Clases/{alumnoId}")]
@@ -47,24 +47,43 @@ namespace AprendeMasWeb.Controllers.WEB
             var grupos = await _context.tbAlumnosGrupos
                 .Where(ag => ag.AlumnoId == alumnoId)
                 .Include(ag => ag.Grupos)
-                .Select(ag => new { Id = ag.Grupos.GrupoId, Nombre = ag.Grupos.NombreGrupo, esGrupo = true })
+                .Select(ag => new
+                {
+                    Id = ag.Grupos.GrupoId,
+                    Nombre = ag.Grupos.NombreGrupo,
+                    esGrupo = true,
+                    Materias = _context.tbGruposMaterias
+                        .Where(gm => gm.GrupoId == ag.Grupos.GrupoId)
+                        .Select(gm => new
+                        {
+                            Id = gm.MateriaId,
+                            Nombre = gm.Materias.NombreMateria
+                        }).ToList()
+                })
                 .ToListAsync();
 
             var materias = await _context.tbAlumnosMaterias
                 .Where(am => am.AlumnoId == alumnoId)
                 .Include(am => am.Materias)
-                .Select(am => new { Id = am.Materias.MateriaId, Nombre = am.Materias.NombreMateria, esGrupo = false })
+                .Select(am => new
+                {
+                    Id = am.Materias.MateriaId,
+                    Nombre = am.Materias.NombreMateria,
+                    esGrupo = false,
+                    Materias = (List<object>)null // Se agrega esta línea para hacer el tipo compatible
+                })
                 .ToListAsync();
 
-            var clases = grupos.Concat(materias);
+            var clases = grupos.Cast<object>().Concat(materias.Cast<object>()).ToList();
             return Ok(clases);
         }
 
 
 
 
+
         public async Task<IActionResult> Clase(string tipo, string nombre)
-		{
+        {
             if (string.IsNullOrEmpty(tipo) || string.IsNullOrEmpty(nombre))
             {
                 return BadRequest("Parámetros inválidos.");
@@ -92,84 +111,171 @@ namespace AprendeMasWeb.Controllers.WEB
         //      }
 
         public IActionResult DetalleMateria()
-		{
-			return View();
-		}
-
-		public IActionResult DetalleGrupo()
-		{
-			return View();
-		}
-
-		public async Task<IActionResult> Avisos(int alumnoId)
-		{
-			var avisos = await _context.tbAvisos
-				.Where(a => _context.tbAlumnosGrupos.Any(ag => ag.AlumnoId == alumnoId && ag.GrupoId == a.GrupoId)
-						 || _context.tbAlumnosMaterias.Any(am => am.AlumnoId == alumnoId && am.MateriaId == a.MateriaId))
-				.ToListAsync();
-
-			return PartialView("_Avisos", avisos);
-		}
-
-
-        [AllowAnonymous] // Permitir acceso sin autenticación
-        [HttpGet("api/Alumno/Avisos/{alumnoId}")]
-        public async Task<IActionResult> ObtenerAvisos(int alumnoId)
         {
-            var avisos = await _context.tbAvisos
-                .Where(a => _context.tbAlumnosGrupos.Any(ag => ag.AlumnoId == alumnoId && ag.GrupoId == a.GrupoId)
-                         || _context.tbAlumnosMaterias.Any(am => am.AlumnoId == alumnoId && am.MateriaId == a.MateriaId))
-                .Select(a => new
-                {
-                    a.AvisoId,
-                    a.Titulo,
-                    a.Descripcion,
-                    a.FechaCreacion
-                })
+            return View();
+        }
+
+        public IActionResult DetalleGrupo()
+        {
+            return View();
+        }
+
+
+
+        public async Task<IActionResult> Avisos(int alumnoId, int? materiaId)
+        {
+            var query = _context.tbAvisos.AsQueryable();
+
+            if (materiaId.HasValue)
+            {
+                query = query.Where(a => a.MateriaId == materiaId.Value);
+            }
+            else
+            {
+                query = query.Where(a => _context.tbAlumnosGrupos.Any(ag => ag.AlumnoId == alumnoId && ag.GrupoId == a.GrupoId)
+                                     || _context.tbAlumnosMaterias.Any(am => am.AlumnoId == alumnoId && am.MateriaId == a.MateriaId));
+            }
+
+            var avisos = await query.ToListAsync();
+
+            return PartialView("_Avisos", avisos);
+        }
+
+
+        [AllowAnonymous]
+        [HttpGet("api/Alumno/Avisos/{alumnoId}/{materiaId?}")]
+        public async Task<IActionResult> ObtenerAvisos(int alumnoId, int? materiaId)
+        {
+            var grupoIds = await _context.tbAlumnosGrupos
+                .Where(ag => ag.AlumnoId == alumnoId)
+                .Select(ag => ag.GrupoId)
                 .ToListAsync();
+
+            var materiaIds = await _context.tbAlumnosMaterias
+                .Where(am => am.AlumnoId == alumnoId)
+                .Select(am => am.MateriaId)
+                .ToListAsync();
+
+            // Filtrado de avisos
+            var avisosQuery = _context.tbAvisos.AsQueryable();
+
+            if (materiaId.HasValue)
+            {
+                avisosQuery = avisosQuery.Where(a => a.MateriaId == materiaId);
+            }
+            else
+            {
+                avisosQuery = avisosQuery.Where(a => grupoIds.Contains(a.GrupoId.GetValueOrDefault()) ||
+                                                     materiaIds.Contains(a.MateriaId.GetValueOrDefault()));
+            }
+
+            var avisos = await avisosQuery.Select(a => new
+            {
+                a.AvisoId,
+                a.Titulo,
+                a.Descripcion,
+                a.FechaCreacion
+            }).ToListAsync();
 
             if (!avisos.Any())
             {
-                return NotFound("No hay avisos para este alumno.");
+                return NotFound(new { mensaje = "No hay avisos para este alumno." });
             }
 
             return Ok(avisos);
+
+        }
+
+
+
+        public IActionResult Actividades()
+        {
+            return PartialView("_Actividades");
+        }
+
+        public async Task<IActionResult> Alumnos(int materiaId)
+        {
+            var inscritos = await _context.tbAlumnosMaterias
+                .Where(am => am.MateriaId == materiaId)
+                .ToListAsync();
+
+            // Agregar log para verificar el contenido de inscritos
+            Console.WriteLine($"Alumnos inscritos en la materia {materiaId}: {inscritos.Count}");
+
+            if (inscritos == null || !inscritos.Any())
+            {
+                ViewBag.Mensaje = "No hay alumnos inscritos en esta materia.";
+                return PartialView("_Alumnos", new List<dynamic>());
+            }
+
+            var alumnos = await _context.tbAlumnosMaterias
+                .Where(am => am.MateriaId == materiaId)
+                .Include(am => am.Alumnos)
+                .Select(am => new
+                {
+                    am.Alumnos.AlumnoId,
+                    NombreCompleto = $"{am.Alumnos.Nombre} {am.Alumnos.ApellidoPaterno} {am.Alumnos.ApellidoMaterno}"
+                })
+                .ToListAsync();
+
+            Console.WriteLine($"Alumnos encontrados: {alumnos.Count}");
+
+            return PartialView("_Alumnos", alumnos);
         }
 
 
 
 
-        public IActionResult Actividades()
-		{
-			return PartialView("_Actividades");
-		}
+        [AllowAnonymous]
+        [HttpGet("api/Alumno/Alumnos/{materiaId}")]
+        public async Task<IActionResult> ObtenerAlumnos(int materiaId)
+        {
 
-		public IActionResult Alumnos()
-		{
-			return PartialView("_Alumnos");
-		}
-
-		public IActionResult Calificaciones()
-		{
-			return PartialView("_Calificaciones");
-		}
-
+            var alumnos = await (from am in _context.tbAlumnosMaterias
+                                 join a in _context.tbAlumnos on am.AlumnoId equals a.AlumnoId
+                                 where am.MateriaId == materiaId
+                                 select new
+                                 {
+                                     a.AlumnoId,
+                                     NombreCompleto = $"{a.Nombre} {a.ApellidoPaterno} {a.ApellidoMaterno}"
+                                 }).ToListAsync();
 
 
+            if (!alumnos.Any())
+            {
+                return NotFound(new { mensaje = "No hay alumnos inscritos en esta materia." });
+            }
+
+            return Ok(alumnos);
+        }
 
 
-		public IActionResult Perfil()
+        public IActionResult Calificaciones()
+        {
+            return PartialView("_Calificaciones");
+        }
+
+
+
+
+
+        public IActionResult Perfil()
         {
             // Lógica para mostrar el perfil del alumno
             return View();
         }
 
-       
+
 
         public IActionResult Materia()
         {
             // Lógica para mostrar las actividades del alumno
             return View();
         }
+
+
     }
+
+
+
 }
