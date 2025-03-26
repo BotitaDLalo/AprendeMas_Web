@@ -107,28 +107,7 @@ namespace AprendeMasWeb.Controllers.WEB
             // Retorna una respuesta exitosa con un mensaje
             return Ok(new { mensaje = "Materias asociadas correctamente." });
         }
-        /*
-        [HttpGet("ObtenerMateriasPorGrupo/{grupoId}")]
-        public async Task<IActionResult> ObtenerMateriasPorGrupo(int grupoId)
-        {
-            var materiasIds = await _context.tbGruposMaterias
-                .Where(gm => gm.GrupoId == grupoId)
-                .Select(gm => gm.MateriaId)
-                .ToListAsync();
-
-            var materias = await _context.tbMaterias
-                .Where(m => materiasIds.Contains(m.MateriaId))
-                .Select(m => new
-                {
-                    m.MateriaId,
-                    m.NombreMateria,
-                    m.Descripcion,
-                    m.CodigoColor
-                })
-                .ToListAsync();
-
-            return Ok(materias);
-        }*/
+        
 
         [HttpGet("ObtenerMateriasPorGrupo/{grupoId}")]
         public async Task<IActionResult> ObtenerMateriasPorGrupo(int grupoId)
@@ -233,7 +212,7 @@ namespace AprendeMasWeb.Controllers.WEB
             return Ok(new { mensaje = "Grupo, materias, actividades y avisos eliminados correctamente" });
         }
 
-
+       
     }
 }
 

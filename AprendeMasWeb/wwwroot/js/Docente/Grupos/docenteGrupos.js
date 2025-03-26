@@ -236,7 +236,9 @@ async function cargarGrupos() {
             const dropdownItems = [
                 { text: "Eliminar", action: () => eliminarGrupo(grupo.grupoId) },
                 { text: "Aviso Grupal", action: () => crearAvisoGrupal(grupo.grupoId) },
-                { text: "Desactivar", action: () => console.log("Opción 3 seleccionada") }
+                { text: "Crear Materia", action: () => crearMateria(grupo.grupoId) }
+                //{ text: "Editar Grupo", action: () => editarGrupo(grupo.grupoId) }
+
             ];
 
             dropdownItems.forEach(item => {
@@ -511,9 +513,6 @@ async function handleCardClick(grupoId) {
 
 
 //Funciones de contenedor de grupo
-function editarGrupo(id) {
-    alert("Editar grupo " + id); // Muestra una alerta indicando que el grupo será editado
-}
 
 async function eliminarGrupo(grupoId) {
     Swal.fire({
@@ -628,3 +627,4 @@ function crearAvisoGrupal(id) {
         }
     });
 }
+
