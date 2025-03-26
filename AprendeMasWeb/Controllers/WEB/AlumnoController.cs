@@ -193,6 +193,35 @@ namespace AprendeMasWeb.Controllers.WEB
             return PartialView("_Actividades");
         }
 
+        [AllowAnonymous]
+        [HttpGet("api/Alumno/Actividades/{materiaId}")]
+        public async Task<IActionResult> ObtenerActividades(int materiaId)
+        {
+            var actividades = await _context.tbActividades
+                .Where(a => a.MateriaId == materiaId)
+                .OrderByDescending(a => a.FechaCreacion) // Ordenar por fecha de creación, las más recientes primero
+                .Select(a => new
+                {
+                    a.ActividadId,
+                    a.NombreActividad,
+                    a.Descripcion,
+                    a.FechaCreacion,
+                    a.FechaLimite,
+                    a.Puntaje,
+                    TipoActividad = a.TiposActividades != null ? a.TiposActividades.Nombre : "Sin tipo"
+                })
+                .ToListAsync();
+
+            if (!actividades.Any())
+            {
+                return NotFound(new { mensaje = "No hay actividades registradas para esta materia." });
+            }
+
+            return Ok(actividades);
+        }
+
+
+
         public async Task<IActionResult> Alumnos(int materiaId)
         {
             var inscritos = await _context.tbAlumnosMaterias

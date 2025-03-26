@@ -11,11 +11,20 @@
             if (data.length > 0) {
                 data.forEach(function (aviso) {
                     avisosHtml += `
-                        <li class="list-group-item">
-                            <h5 class="mb-1">${aviso.titulo}</h5>
-                            <p class="mb-1">${aviso.descripcion}</p>
-                            <small class="text-muted">Publicado el ${new Date(aviso.fechaCreacion).toLocaleString()}</small>
-                        </li>`;
+                    <br>
+                    <br>
+                        <li class="list-group-item1 d-flex align-items-start">
+    <img class="iconos-nav4" src="/Iconos/PERFIL-26.svg" alt="Icono de Grupo" />
+    <div>
+         <h5 class="mb-1">Docente.Nom</h5>
+        <small class="text-muted">Publicado el ${new Date(aviso.fechaCreacion).toLocaleString()}</small>
+        <br>
+        <br>
+        <h5 class="mb-1">${aviso.titulo}</h5>
+        <p class="mb-1">${aviso.descripcion}</p>
+    </div>
+</li>
+`;
                 });
             } else {
                 avisosHtml = '<li class="list-group-item text-warning">No hay avisos disponibles.</li>';
