@@ -16,6 +16,7 @@ var jwtKey = builder.Configuration["jwt:SecretKey"];
 var jwt = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey ?? throw new ArgumentNullException(jwtKey, "Token no configurado")));
 
 // Configura Firebase
+
 var firebaseCredentialPath = builder.Configuration["Firebase:CredentialPath"];
 if (string.IsNullOrEmpty(firebaseCredentialPath))
 {
