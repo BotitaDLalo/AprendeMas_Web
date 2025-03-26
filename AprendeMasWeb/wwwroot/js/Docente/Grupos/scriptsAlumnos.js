@@ -1,11 +1,6 @@
-﻿// Esperar a que el DOM esté completamente cargado antes de ejecutar el código
-document.addEventListener("DOMContentLoaded", function () {
-
-    // Cargar alumnos asignados a la materia
+﻿document.addEventListener("DOMContentLoaded", function () {
     cargarAlumnosAsignados();
 
-    //Cargar actividades a la materia
-    //delegacion de evento 
     document.addEventListener("click", async function (event) {
         if (event.target.id === "btnAsignarAlumno") {
             const correo = document.getElementById("buscarAlumno").value.trim();
@@ -13,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 Swal.fire({
                     position: "top-end",
                     icon: "question",
-                    title: "Ingrese un correo valido.",
+                    title: "Ingrese un correo válido.",
                     showConfirmButton: false,
                     timer: 2500
                 });
@@ -56,12 +51,21 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-
-
-    // Funcionalidad de búsqueda de alumnos en tiempo real (sugerencias de correo)
     const inputBuscar = document.getElementById("buscarAlumno");
     const listaSugerencias = document.getElementById("sugerenciasAlumnos");
     let indexSugerenciaSeleccionada = -1;
+    let alumnosAsignados = [];
+
+    async function obtenerAlumnosAsignados() {
+        try {
+            const response = await fetch(`/api/DetallesMateriaApi/ObtenerAlumnosPorMateria/${materiaIdGlobal}`);
+            if (!response.ok) throw new Error("No se pudieron cargar los alumnos.");
+            const alumnos = await response.json();
+            alumnosAsignados = alumnos.map(a => a.email);
+        } catch (error) {
+            console.error("Error al obtener alumnos asignados:", error);
+        }
+    }
 
     if (inputBuscar) {
         inputBuscar.addEventListener("input", async function () {
@@ -72,18 +76,22 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             try {
-                const response = await fetch(`/api/DetallesMateriaApi/BuscarAlumnosPorCorreo?query=${query}`);
+                await obtenerAlumnosAsignados();
+                const response = await fetch(`/api/DetallesMateriaApi/BuscarAlumnosPorCorreo?query=${query}&materiaId=${materiaIdGlobal}`);
+
                 if (!response.ok) throw new Error("Error al buscar alumnos");
 
                 const alumnos = await response.json();
                 listaSugerencias.innerHTML = "";
 
-                if (alumnos.length === 0) {
+                const alumnosFiltrados = alumnos.filter(alumno => !alumnosAsignados.includes(alumno.email));
+
+                if (alumnosFiltrados.length === 0) {
                     listaSugerencias.innerHTML = `<li class="list-group-item text-muted">No se encontraron resultados</li>`;
                     return;
                 }
 
-                alumnos.forEach((alumno, index) => {
+                alumnosFiltrados.forEach((alumno, index) => {
                     const li = document.createElement("li");
                     li.classList.add("list-group-item", "list-group-item-action");
                     li.textContent = `${alumno.nombre} ${alumno.apellidoPaterno} ${alumno.apellidoMaterno} - ${alumno.email}`;
@@ -105,7 +113,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        // Navegación con teclas en las sugerencias
         inputBuscar.addEventListener("keydown", function (e) {
             const sugerencias = listaSugerencias.getElementsByTagName("li");
 
@@ -130,6 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
         });
+
         function actualizarSugerencias() {
             const sugerencias = listaSugerencias.getElementsByTagName("li");
             for (let i = 0; i < sugerencias.length; i++) {
@@ -139,14 +147,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 sugerencias[indexSugerenciaSeleccionada].classList.add("active");
             }
         }
+
         document.addEventListener("click", function (event) {
             if (!inputBuscar.contains(event.target) && !listaSugerencias.contains(event.target)) {
                 listaSugerencias.innerHTML = "";
             }
         });
     }
-
 });
+
+
 
 
 //Carga los alumnos a la materia y los muestra en el div
@@ -224,7 +234,6 @@ async function cargarAlumnosAsignados(materiaIdGlobal) {
         console.error("Error al cargar alumnos:", error);
     }
 }
-
 
 //Elimina Alumno del grupo
 async function eliminardelgrupo(alumnoMateriaId) {

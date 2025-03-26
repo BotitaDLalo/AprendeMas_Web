@@ -54,25 +54,27 @@ namespace AprendeMasWeb.Controllers.WEB
         }
 
         [HttpGet("BuscarAlumnosPorCorreo")]
-        public async Task<IActionResult> BuscarAlumnosPorCorreo(string query)
+        public async Task<IActionResult> BuscarAlumnosPorCorreo(string query, int materiaId)
         {
             if (string.IsNullOrWhiteSpace(query))
             {
                 return BadRequest("El criterio de búsqueda no puede estar vacío.");
             }
 
-            // Buscar usuarios que coincidan con el correo ingresado o cualquier parte de nombre o apellido
+            // Buscar usuarios que coincidan con el correo ingresado
             var usuarios = await _context.Users
-                .Where(u => u.Email.Contains(query)) // Buscar por correo
+                .Where(u => u.Email.Contains(query))
                 .Select(u => new { u.Id, u.Email })
                 .ToListAsync();
 
-            // Buscar alumnos registrados que coincidan con el correo o nombre completo (nombre, apellidos)
+            // Buscar alumnos registrados que coincidan con el criterio
             var alumnosConCorreo = await _context.tbAlumnos
-                .Where(a => a.Nombre.Contains(query) || // Buscar por nombre
-                            a.ApellidoPaterno.Contains(query) || // Buscar por apellido paterno
-                            a.ApellidoMaterno.Contains(query) || // Buscar por apellido materno
-                            usuarios.Select(u => u.Id).Contains(a.UserId)) // Buscar por correo
+                .Where(a => (a.Nombre.Contains(query) ||
+                             a.ApellidoPaterno.Contains(query) ||
+                             a.ApellidoMaterno.Contains(query) ||
+                             usuarios.Select(u => u.Id).Contains(a.UserId)) &&
+                             !_context.tbAlumnosMaterias
+                                .Any(am => am.AlumnoId == a.AlumnoId && am.MateriaId == materiaId)) // Excluir alumnos ya asignados
                 .Select(a => new
                 {
                     a.IdentityUser.Email,
@@ -84,6 +86,7 @@ namespace AprendeMasWeb.Controllers.WEB
 
             return Ok(alumnosConCorreo);
         }
+
 
         //controlador para unir materia con alumno
 
