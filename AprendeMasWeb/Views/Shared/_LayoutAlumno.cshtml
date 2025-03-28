@@ -143,6 +143,48 @@
 
 
 @* 	Modales *@
+	<div id="modal-evento">
+    <div class="modal-content">
+        <span id="cerrar-modal" class="close">&times;</span>
+        <h2>Eventos del <span id="fecha-seleccionada"></span></h2>
+
+        <div id="lista-eventos">
+            <!-- Aquí se mostrarán los eventos del día -->
+        </div>
+
+        <button id="agregar-evento">Agregar Evento</button>
+
+        <div id="formulario-evento" style="display: none;">
+            <label for="titulo">Título:</label>
+            <input type="text" id="titulo">
+
+            <label for="descripcion">Descripción:</label>
+            <textarea id="descripcion"></textarea>
+
+            <label for="fecha-inicio">Fecha Inicio:</label>
+				<input type="datetime-local" id="fecha-inicio">
+
+            <label for="fecha-final">Fecha Final:</label>
+				<input type="datetime-local" id="fecha-final">
+
+            <label for="color">Color:</label>
+            <select id="color">
+                <option value="azul">Azul</option>
+                <option value="gris">Gris</option>
+            </select>
+			<br><br>
+            <button id="guardar-evento">Guardar</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
 	<footer class="custom-footer">
 		<div class="footer-container">
 			<!-- Logo alineado a la izquierda -->

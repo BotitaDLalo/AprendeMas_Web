@@ -123,6 +123,10 @@ function agregarCardClase(clase) {
 
     const etiqueta = clase.esGrupo ? "Grupo" : "Materia";
 
+   
+
+
+
     card.innerHTML = `
     
         <p class="card-etiqueta">
@@ -170,6 +174,7 @@ function agregarCardClase(clase) {
         clase.materias.forEach(materia => {
             let materiaCard = document.createElement("div");
             materiaCard.classList.add("materia-card");
+
 
             materiaCard.innerHTML = `
                 <div class="card-container1">

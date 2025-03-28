@@ -28,7 +28,8 @@ namespace AprendeMasWeb.Data
         public DbSet<cTiposActividades> cTiposActividades { get; set; }
         public DbSet<tbAvisos> tbAvisos { get; set; }
         public DbSet<tbEventosAgenda> tbEventosAgenda { get; set; }
-        public DbSet<tbEventosGrupos> tbEventosGrupos { get; set; }
+		public DbSet<EventosAgendaAlumno> tbEventosAgendaAlumno { get; set; }
+		public DbSet<tbEventosGrupos> tbEventosGrupos { get; set; }
         public DbSet<tbEventosMaterias> tbEventosMaterias { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -158,10 +159,16 @@ namespace AprendeMasWeb.Data
                 .WithMany(a => a.EventosAgendas)
                 .HasForeignKey(a => a.DocenteId)
                 .OnDelete(DeleteBehavior.Cascade);
-            #endregion
+			#endregion
 
-            #region Eventos grupos
-            modelBuilder.Entity<tbEventosGrupos>()
+			modelBuilder.Entity<EventosAgendaAlumno>()
+			.HasOne(e => e.Alumno)
+			.WithMany()
+			.HasForeignKey(e => e.AlumnoId)
+			.OnDelete(DeleteBehavior.Cascade);
+
+			#region Eventos grupos
+			modelBuilder.Entity<tbEventosGrupos>()
                 .HasOne(a => a.Grupos)
                 .WithMany(a => a.EventosGrupos)
                 .HasForeignKey(a => a.GrupoId)
