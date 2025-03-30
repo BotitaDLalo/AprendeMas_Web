@@ -8,8 +8,8 @@
 
     // Inicializar Flatpickr con formato MX y en español
     flatpickr(input, {
-        inline: true,
-        dateFormat: "d/m/Y", // Formato MX: día/mes/año
+        enableTime: false,
+        dateFormat: "Y-m-d",  // Formato correcto YYYY-MM-DD
         locale: "es", // Idioma español
         defaultDate: new Date(),
     });
