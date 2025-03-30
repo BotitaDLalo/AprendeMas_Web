@@ -2,17 +2,51 @@
     const icono = document.getElementById("calendario-icono");
     const panel = document.getElementById("calendario-panel");
     const input = document.getElementById("calendario-input");
+    let fechasConEventos = [];
+    let calendario; // Variable para almacenar la instancia de Flatpickr
 
     // Cargar idioma español
     flatpickr.localize(flatpickr.l10ns.es);
 
-    // Inicializar Flatpickr con formato MX y en español
-    flatpickr(input, {
-        enableTime: false,
-        dateFormat: "Y-m-d",  // Formato correcto YYYY-MM-DD
-        locale: "es", // Idioma español
-        defaultDate: new Date(),
-    });
+    // Función para inicializar Flatpickr
+    function inicializarCalendario() {
+        fetch("/api/EventosAgendaAlumno/alumno/1")
+            .then(response => response.json())
+            .then(data => {
+                fechasConEventos = data.map(evento => evento.fechaInicio.split("T")[0]);
+
+                // Si el calendario ya existe, lo destruye antes de crear uno nuevo
+                if (calendario) {
+                    calendario.destroy();
+                }
+
+                // Inicializar Flatpickr
+                calendario = flatpickr(input, {
+                    inline: true,
+                    dateFormat: "Y-m-d",
+                    locale: "es",
+                    defaultDate: new Date(),
+                    onChange: function (selectedDates, dateStr) {
+                        document.getElementById("modal-evento").style.display = "flex";
+                        document.getElementById("fecha-seleccionada").textContent = dateStr;
+                        cargarEventos(dateStr);
+                    },
+                    onDayCreate: function (dObj, dStr, fp, dayElem) {
+                        let fechaDia = dayElem.dateObj.toISOString().split("T")[0];
+
+                        if (fechasConEventos.includes(fechaDia)) {
+                            dayElem.style.backgroundColor = "#FFA500"; // Color anaranjado
+                            dayElem.style.color = "white";
+                            dayElem.style.borderRadius = "50%";
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error("Error obteniendo eventos:", error));
+    }
+
+    // Llamar a la función para inicializar el calendario
+    inicializarCalendario();
 
     // Toggle para mostrar/ocultar el calendario
     icono.addEventListener("click", function (event) {
@@ -26,25 +60,18 @@
             panel.classList.remove("mostrar");
         }
     });
-});
 
-document.addEventListener("DOMContentLoaded", function () {
-    flatpickr("#calendario-input", {
-        onChange: function (selectedDates, dateStr) {
-            document.getElementById("modal-evento").style.display = "flex";
-            document.getElementById("fecha-seleccionada").textContent = dateStr;
-            cargarEventos(dateStr);
-        }
-    });
-
+    // Evento para cerrar el modal
     document.getElementById("cerrar-modal").addEventListener("click", function () {
         document.getElementById("modal-evento").style.display = "none";
     });
 
+    // Evento para agregar un nuevo evento
     document.getElementById("agregar-evento").addEventListener("click", function () {
         document.getElementById("formulario-evento").style.display = "block";
     });
 
+    // Evento para guardar un nuevo evento
     document.getElementById("guardar-evento").addEventListener("click", function () {
         let evento = {
             AlumnoId: 1, // Reemplazar con el ID real del alumno
@@ -62,24 +89,43 @@ document.addEventListener("DOMContentLoaded", function () {
         }).then(response => response.json())
             .then(data => {
                 console.log("Evento guardado:", data);
+
+                // Limpiar los campos del formulario
+                document.getElementById("fecha-inicio").value = "";
+                document.getElementById("fecha-final").value = "";
+                document.getElementById("titulo").value = "";
+                document.getElementById("descripcion").value = "";
+                document.getElementById("color").value = "#000000"; // Color por defecto
+
+                // Ocultar el formulario y el modal
                 document.getElementById("formulario-evento").style.display = "none";
-                cargarEventos(evento.FechaInicio);
+                document.getElementById("modal-evento").style.display = "none"; // Cierra el modal de eventos
+
+                // Mostrar alerta de éxito con SweetAlert
+                Swal.fire({
+                    icon: "success",
+                    title: "Evento guardado",
+                    text: "El evento se ha guardado correctamente.",
+                    confirmButtonColor: "#007bff"
+                });
+
+                // Recargar el calendario para que se actualicen las fechas con eventos
+                inicializarCalendario();
             })
             .catch(error => console.error("Error:", error));
     });
 
+    // Función para cargar eventos en el modal
     function cargarEventos(fecha) {
         let alumnoId = 1; // Reemplazar con el ID real del alumno
 
         fetch(`/api/EventosAgendaAlumno/alumno/${alumnoId}`)
             .then(response => response.json())
             .then(data => {
-                console.log("Eventos recibidos:", data); // Verificar la estructura de la respuesta
-
                 let eventosDelDia = data.filter(evento => {
-                    if (!evento.fechaInicio) return false; // Validar que tenga fechaInicio
-                    let fechaEvento = evento.fechaInicio.split("T")[0]; // Extraer solo YYYY-MM-DD
-                    return fechaEvento === fecha; // Comparar con la fecha seleccionada
+                    if (!evento.fechaInicio) return false;
+                    let fechaEvento = evento.fechaInicio.split("T")[0];
+                    return fechaEvento === fecha;
                 });
 
                 let listaEventos = document.getElementById("lista-eventos");
@@ -95,14 +141,14 @@ document.addEventListener("DOMContentLoaded", function () {
                         item.style.cursor = "pointer";
                         item.addEventListener("click", function () {
                             Swal.fire({
-                                icon: "info", // Icono informativo
+                                icon: "info",
                                 title: "Detalles del Evento",
                                 html: `
-        <b>Título:</b> ${evento.titulo} <br>
-        <b>Descripción:</b> ${evento.descripcion} <br>
-        <b>Inicio:</b> ${evento.fechaInicio} <br>
-        <b>Final:</b> ${evento.fechaFinal}
-    `,
+                                <b>Título:</b> ${evento.titulo} <br>
+                                <b>Descripción:</b> ${evento.descripcion} <br>
+                                <b>Inicio:</b> ${evento.fechaInicio} <br>
+                                <b>Final:</b> ${evento.fechaFinal}
+                            `,
                                 position: "center",
                                 confirmButtonText: "Aceptar",
                                 confirmButtonColor: "#007bff"
@@ -114,24 +160,4 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => console.error("Error cargando eventos:", error));
     }
-
-});
-
-
-document.addEventListener("DOMContentLoaded", function () {
-    fetch("/api/EventosAgendaAlumno/alumno/1")
-        .then(response => response.json())
-        .then(data => {
-            let fechasConEventos = data.map(evento => evento.FechaInicio.split("T")[0]);
-
-            flatpickr("#calendario-input", {
-                enable: fechasConEventos,
-                onChange: function (selectedDates, dateStr) {
-                    document.getElementById("modal-evento").style.display = "flex";
-                    document.getElementById("fecha-seleccionada").textContent = dateStr;
-                    cargarEventos(dateStr);
-                }
-            });
-        })
-        .catch(error => console.error("Error obteniendo eventos:", error));
 });
