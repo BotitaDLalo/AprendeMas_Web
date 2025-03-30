@@ -54,25 +54,27 @@ namespace AprendeMasWeb.Controllers.WEB
         }
 
         [HttpGet("BuscarAlumnosPorCorreo")]
-        public async Task<IActionResult> BuscarAlumnosPorCorreo(string query)
+        public async Task<IActionResult> BuscarAlumnosPorCorreo(string query, int materiaId)
         {
             if (string.IsNullOrWhiteSpace(query))
             {
                 return BadRequest("El criterio de búsqueda no puede estar vacío.");
             }
 
-            // Buscar usuarios que coincidan con el correo ingresado o cualquier parte de nombre o apellido
+            // Buscar usuarios que coincidan con el correo ingresado
             var usuarios = await _context.Users
-                .Where(u => u.Email.Contains(query)) // Buscar por correo
+                .Where(u => u.Email.Contains(query))
                 .Select(u => new { u.Id, u.Email })
                 .ToListAsync();
 
-            // Buscar alumnos registrados que coincidan con el correo o nombre completo (nombre, apellidos)
+            // Buscar alumnos registrados que coincidan con el criterio
             var alumnosConCorreo = await _context.tbAlumnos
-                .Where(a => a.Nombre.Contains(query) || // Buscar por nombre
-                            a.ApellidoPaterno.Contains(query) || // Buscar por apellido paterno
-                            a.ApellidoMaterno.Contains(query) || // Buscar por apellido materno
-                            usuarios.Select(u => u.Id).Contains(a.UserId)) // Buscar por correo
+                .Where(a => (a.Nombre.Contains(query) ||
+                             a.ApellidoPaterno.Contains(query) ||
+                             a.ApellidoMaterno.Contains(query) ||
+                             usuarios.Select(u => u.Id).Contains(a.UserId)) &&
+                             !_context.tbAlumnosMaterias
+                                .Any(am => am.AlumnoId == a.AlumnoId && am.MateriaId == materiaId)) // Excluir alumnos ya asignados
                 .Select(a => new
                 {
                     a.IdentityUser.Email,
@@ -84,6 +86,7 @@ namespace AprendeMasWeb.Controllers.WEB
 
             return Ok(alumnosConCorreo);
         }
+
 
         //controlador para unir materia con alumno
 
@@ -168,7 +171,7 @@ namespace AprendeMasWeb.Controllers.WEB
                     .FirstOrDefaultAsync(am => am.AlumnoMateriaId == idEnlace);
 
                 //Si no se encuentra se retorna un error
-                if(alumnoMateria == null)
+                if (alumnoMateria == null)
                 {
                     return NotFound(new { mensaje = "No se encontro el alumno en la materia" });
                 }
@@ -179,7 +182,7 @@ namespace AprendeMasWeb.Controllers.WEB
 
                 return Ok(new { mensaje = "Alumno eliminado de la materia correctamente." });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return StatusCode(500, new { mensaje = "Error al eliminar al alumno.", error = ex.Message });
             }
@@ -273,13 +276,13 @@ namespace AprendeMasWeb.Controllers.WEB
                 var actividades = await _context.tbActividades
                 .Where(a => a.MateriaId == materiaId)
                 .Select(a => new
-                 {
-                     a.ActividadId,  
-                     a.NombreActividad,
-                     a.Descripcion,
-                     a.FechaCreacion,
-                     a.FechaLimite,
-                     a.Puntaje
+                {
+                    a.ActividadId,
+                    a.NombreActividad,
+                    a.Descripcion,
+                    a.FechaCreacion,
+                    a.FechaLimite,
+                    a.Puntaje
                 })
                 .ToListAsync();
                 if (actividades == null || actividades.Count == 0)
@@ -296,30 +299,67 @@ namespace AprendeMasWeb.Controllers.WEB
         }
 
 
-            [HttpDelete("EliminarActividad/{id}")]
-            public async Task<IActionResult> EliminarActividad(int id)
-            {
-                // Buscar el registro en la tabla materiasActividades con el ID recibido
-                var Actividad = await _context.tbActividades
-                    .FirstOrDefaultAsync(a => a.ActividadId == id);
+        [HttpDelete("EliminarActividad/{id}")]
+        public async Task<IActionResult> EliminarActividad(int id)
+        {
+            // Buscar la actividad en la tabla tbActividades
+            var actividad = await _context.tbActividades
+                .FirstOrDefaultAsync(a => a.ActividadId == id);
 
-                if (Actividad == null)
+            if (actividad == null)
+            {
+                return NotFound("No se encontró el registro en Actividades.");
+            }
+
+            // Buscar registros en la tabla alumnosActividades relacionados con la actividad
+            var alumnosActividades = await _context.tbAlumnosActividades
+                .Where(aa => aa.ActividadId == id)
+                .ToListAsync();
+
+            foreach (var alumnoActividad in alumnosActividades)
+            {
+                int alumnoActividadId = alumnoActividad.AlumnoActividadId;
+
+                // Buscar registros en la tabla entregablesAlumno relacionados con alumnoActividadId
+                var entregables = await _context.tbEntregablesAlumno
+                    .Where(e => e.AlumnoActividadId == alumnoActividadId)
+                    .ToListAsync();
+
+                foreach (var entrega in entregables)
                 {
-                    return NotFound("No se encontró el registro en Actividades.");
+                    int entregaId = entrega.EntregaId;
+
+                    // Buscar registros en la tabla calificaciones relacionados con entregaId
+                    var calificaciones = await _context.tbCalificaciones
+                        .Where(c => c.EntregaId == entregaId)
+                        .ToListAsync();
+
+                    // Eliminar calificaciones
+                    _context.tbCalificaciones.RemoveRange(calificaciones);
                 }
 
-                // Eliminar el registro de materiasActividades primero
-                _context.tbActividades.Remove(Actividad);
-                await _context.SaveChangesAsync();
-
-                return Ok(new { message = "Actividad eliminada correctamente." });
+                // Eliminar entregables
+                _context.tbEntregablesAlumno.RemoveRange(entregables);
             }
+
+            // Eliminar alumnosActividades
+            _context.tbAlumnosActividades.RemoveRange(alumnosActividades);
+
+            // Finalmente, eliminar la actividad
+            _context.tbActividades.Remove(actividad);
+
+            // Guardar los cambios en la base de datos
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Actividad y registros relacionados eliminados correctamente." });
+        }
+
 
         //Controlador para crear un aviso funciona desde dentro de la materia
         [HttpPost("CrearAviso")]
         public async Task<IActionResult> CrearAviso([FromBody] tbAvisos avisos)
         {
-            if(avisos == null)
+            if (avisos == null)
             {
                 return BadRequest(new { mensaje = "Datos Invalidos." });
             }
@@ -336,9 +376,10 @@ namespace AprendeMasWeb.Controllers.WEB
                 };
                 _context.tbAvisos.Add(nuevoAviso);
                 await _context.SaveChangesAsync();
-                return Ok(new { mensaje = "Aviso creado con éxito"});
+                return Ok(new { mensaje = "Aviso creado con éxito" });
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return StatusCode(500, new { mensaje = "Error al crear el aviso", error = ex.Message });
             }

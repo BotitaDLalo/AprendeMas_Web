@@ -90,6 +90,7 @@ async function cargarMaterias() {
 }
 
 
+
 // Cargar materias que fueron creadas sin un grupo a la vista principal.
 async function cargarMateriasSinGrupo() {
     const response = await fetch(`/api/MateriasApi/ObtenerMateriasSinGrupo/${docenteIdGlobal}`);
@@ -115,7 +116,7 @@ async function cargarMateriasSinGrupo() {
             col.classList.add("col-md-3"); // Ajusta el tamaño de la tarjeta en la fila
 
             const card = document.createElement("div");
-            card.classList.add("card", "bg-light", "mb-3", "shadow-sm");
+            card.classList.add("materia-card", "bg-light", "mb-3", "shadow-sm");
             card.style.maxWidth = "100%";
 
             // Header
@@ -170,13 +171,13 @@ async function cargarMateriasSinGrupo() {
 
             // Body
             const body = document.createElement("div");
-            body.classList.add("card-body");
+            body.classList.add("materia-card-body");
 
             const title = document.createElement("h5");
-            title.classList.add("card-title");
+            title.classList.add("materia-card-title");
 
             const description = document.createElement("p");
-            description.classList.add("card-text");
+            description.classList.add("materia-card-text");
             description.textContent = materia.descripcion || "Sin descripción";
 
             body.appendChild(title);
@@ -225,8 +226,27 @@ async function cargarMateriasSinGrupo() {
             btnVerMateria.textContent = "Ver Materia";
             btnVerMateria.onclick = () => irAMateria(materia.materiaId);
 
-            footer.appendChild(btnVerMateria);
+            // Contenedor de iconos
+            const iconContainer = document.createElement("div");
+            iconContainer.classList.add("d-flex", "gap-2");
 
+            const icons = [
+                { src: "https://cdn-icons-png.flaticon.com/512/1828/1828817.png", title: "Ver Actividades", onclick: () => irAMateria(materia.materiaId, 'actividades') },
+                { src: "https://cdn-icons-png.flaticon.com/512/847/847969.png", title: "Ver Integrantes", onclick: () => irAMateria(materia.materiaId, 'alumnos') },
+            ];
+
+            icons.forEach(({ src, title, onclick }) => {
+                const img = document.createElement("img");
+                img.classList.add("icon-action");
+                img.src = src;
+                img.alt = title;
+                img.title = title;
+                img.onclick = onclick;
+                iconContainer.appendChild(img);
+            });
+
+            footer.appendChild(btnVerMateria);
+            footer.appendChild(iconContainer);
             // Construcción de la card
             card.appendChild(header);
             card.appendChild(body);

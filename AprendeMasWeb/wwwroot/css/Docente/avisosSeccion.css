@@ -72,11 +72,11 @@
         max-height: 500px; /* Se ajusta según el contenido */
         opacity: 1;
     }
-/* Clase explícita para ocultar */
-.aviso-descripcion.oculto {
-    max-height: 0;
-    opacity: 0;
-}
+    /* Clase explícita para ocultar */
+    .aviso-descripcion.oculto {
+        max-height: 0;
+        opacity: 0;
+    }
 
 .aviso-ver-completo {
     font-size: 14px;
@@ -99,7 +99,7 @@
     margin-top: 15px;
 }
 
-.aviso-editar-btn, .aviso-eliminar-btn, .aviso-btn-ir-aviso{
+.aviso-editar-btn, .aviso-eliminar-btn, .aviso-btn-ir-aviso {
     padding: 12px 20px;
     border: none;
     border-radius: 5px;

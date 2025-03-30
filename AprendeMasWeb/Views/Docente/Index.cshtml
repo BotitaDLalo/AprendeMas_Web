@@ -13,16 +13,12 @@
 }
 
 
-<link rel="stylesheet" href="~/css/Docente/docenteGrupoMateria/docenteMaterias.css" />
+<link rel="stylesheet" href="~/css/Docente/Materias.css" />
 
 <!-- Sección del encabezado que contiene el título de la página y un icono -->
 <div class="misCursos-header">
     <h2 class="misCursos-titulo">
         Mis cursos
-        <!-- Icono de filtro para interactuar con los cursos -->
-        <img src="@Url.Content("~/Iconos/FILTRO-26.svg")"
-             alt="ActivIA Logo"
-             class="misCursos-icono">
     </h2>
 
     <!-- Menú desplegable que permite al docente crear o gestionar grupos y materias -->
@@ -38,25 +34,25 @@
     </div>
 </div>
 
-
-
-<br />
-<br />
-<!-- Contenedor que muestra la lista de grupos, los cuales serán manejados por el archivo docente.js -->
-<div id="listaGrupos" class="mt-4">
-    <!-- Aquí se mostrará la lista de grupos que el docente ha creado. Esta parte está controlada por el archivo docente.js -->
+<div class="section-title">
+    <i class="fas fa-users"></i> Grupos Con Materias Registradas
 </div>
 
-<div id="contenedorMaterias"></div>
 
+
+<!-- Contenedor que muestra la lista de grupos, los cuales serán manejados por el archivo docente.js -->
+<div id="listaGrupos" class="mt-4">
+    <!-- Aquí se mostrará la lista de grupos que el docente ha creado. Esta parte está controlada por el archivo docentegrupos.js -->
+</div>
 
 <!-- Separador visual para organizar las secciones -->
 <div class="divider"></div>
 
 <!-- Título que indica que esta sección contiene materias sin grupo asignado -->
 <div class="section-title">
-    Materias sin grupo registrado
+    <i class="fas fa-exclamation-circle"></i> Materias No Vinculadas a un Grupo
 </div>
+
 
 <!-- Contenedor donde se mostrarán las materias que aún no tienen grupo asignado -->
 <div id="listaMateriasSinGrupo" class="mt-4">

@@ -30,8 +30,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("tipoActividad").innerText = data.tipoActividad || "No disponible";
                     document.getElementById("puntajeMaximo").innerText = data.puntaje || "0";
                     puntajeMaximo = data.puntaje; //Se guarda puntaje maximo para poder usarla como limite
-                    document.getElementById("alumnosEntregados").innerText = data.alumnosEntregados || "0 de 0";
-                    document.getElementById("actividadesCalificadas").innerText = data.actividadesCalificadas || "0 de 0";
+                    //document.getElementById("alumnosEntregados").innerText = data.alumnosEntregados || `0 de 0`;
+                    //document.getElementById("actividadesCalificadas").innerText = data.actividadesCalificadas || "0 de 0";
                 } else {
                     console.error("No se encontraron datos válidos para esta actividad.");
                 }

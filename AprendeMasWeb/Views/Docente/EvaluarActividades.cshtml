@@ -45,9 +45,9 @@
                 </div>
                 <div class="row mt-3">
                     <div class="col-md-12">
-                        <strong>Alumnos que han entregado:</strong> <span class="badge bg-success" id="alumnosEntregados">Cargando...</span>
+                        <strong>Alumnos que han entregado:</strong> <span id="alumnosEntregados">Cargando...</span>
                         <br>
-                        <strong>Actividades Calificadas:</strong> <span class="badge bg-primary" id="actividadesCalificadas">Cargando...</span>
+                        <strong>Actividades Calificadas:</strong> <span id="actividadesCalificadas">Cargando...</span>
                     </div>
                 </div>
             </div>
@@ -87,7 +87,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="formCalificacion">
+                    <form id="formCalificacion" autocomplete="off">
                         <!-- Input oculto para almacenar el entregaId -->
                         <input type="hidden" id="entregaId">
 

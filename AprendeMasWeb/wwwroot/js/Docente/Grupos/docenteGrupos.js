@@ -99,13 +99,16 @@ function agregarMateria() {
     materiaDiv.classList.add("materia-item");
 
     materiaDiv.innerHTML = `
-        <input type="text" placeholder="Nombre de la Materia" class="nombreMateria">
-        <input type="text" placeholder="Descripción" class="descripcionMateria">
-        <button type="button" onclick="removerDeLista(this)">❌</button>
+        <div class="materia-fields">
+            <input type="text" placeholder="Nombre de la Materia" class="nombreMateria" />
+            <input type="text" placeholder="Descripción" class="descripcionMateria" />
+        </div>
+        <button type="button" class="btn-remover" onclick="removerDeLista(this)">❌</button>
     `;
 
     materiasContainer.appendChild(materiaDiv);
 }
+
 
 // Remover materia del formulario antes de enviarla
 function removerDeLista(button) {
@@ -115,7 +118,6 @@ function removerDeLista(button) {
 
 
 //Funcion para obtener los grupos de la base de datos y mostrarlos
-
 async function cargarGrupos() {
     const response = await fetch(`/api/GruposApi/ObtenerGrupos/${docenteIdGlobal}`);
     if (response.ok) {
@@ -134,10 +136,11 @@ async function cargarGrupos() {
         grupos.forEach(grupo => {
             // 📌 Tarjeta principal
             const card = document.createElement("div");
-            card.classList.add("card", "bg-primary", "text-white", "mb-3");
+            card.id = `grupo-${grupo.grupoId}`;
+            card.classList.add("grupo-card", "bg-primary", "text-white", "mb-3");
             card.style.cursor = "pointer";
-            card.style.maxWidth = "30em";
-            card.style.height = "6em";
+            card.style.maxWidth = "20em";
+            card.style.height = "5em";
             card.style.display = "block";
             card.style.alignItems = "center";
             card.style.transition = "transform 0.3s ease, box-shadow 0.3s ease";
@@ -162,7 +165,7 @@ async function cargarGrupos() {
 
             // 📌 Contenedor del contenido
             const cardBody = document.createElement("div");
-            cardBody.classList.add("card-body");
+            cardBody.classList.add("grupo-card-body");
             cardBody.style.display = "flex";
             cardBody.style.justifyContent = "space-between";
             cardBody.style.alignItems = "center";
@@ -236,7 +239,7 @@ async function cargarGrupos() {
             const dropdownItems = [
                 { text: "Eliminar", action: () => eliminarGrupo(grupo.grupoId) },
                 { text: "Aviso Grupal", action: () => crearAvisoGrupal(grupo.grupoId) },
-                { text: "Crear Materia", action: () => crearMateria(grupo.grupoId) }
+                // { text: "Crear Materia", action: () => crearMateria(grupo.grupoId) }
                 //{ text: "Editar Grupo", action: () => editarGrupo(grupo.grupoId) }
 
             ];
@@ -317,10 +320,10 @@ async function cargarGrupos() {
 }
 
 
-
-
 // Función para cargar materias de un grupo cuando se hace clic en la card del grupo
 async function handleCardClick(grupoId) {
+    const grupoCard = document.getElementById(`grupo-${grupoId}`);
+
     localStorage.setItem("grupoIdSeleccionado", grupoId); //Se guardar el localstorage el id del grupo seleccionado
 
     // Ocultar todas las materias de otros grupos
@@ -383,9 +386,9 @@ async function handleCardClick(grupoId) {
                     const editLink = document.createElement("a");
                     editLink.classList.add("dropdown-item");
                     editLink.href = "#";
-                    editLink.onclick = () => editarMateria(materia.materiaId);
-                    editLink.textContent = "Editar";
-                    editLi.appendChild(editLink);
+                    //editLink.onclick = () => editarMateria(materia.materiaId);
+                    //editLink.textContent = "Editar";
+                    //editLi.appendChild(editLink);
 
                     const deleteLi = document.createElement("li");
                     const deleteLink = document.createElement("a");
@@ -416,7 +419,7 @@ async function handleCardClick(grupoId) {
                     const description = document.createElement("p");
                     description.classList.add("card-text");
                     description.textContent = materia.descripcion || "Sin descripción";
-                    
+
                     body.appendChild(title);
                     body.appendChild(description);
 
@@ -494,6 +497,7 @@ async function handleCardClick(grupoId) {
                     // Agregar la columna al contenedor de la fila
                     rowContainer.appendChild(col);
                 });
+                grupoCard.insertAdjacentElement("afterend", rowContainer);
                 materiasContainer.appendChild(rowContainer);
             }
             materiasContainer.style.display = "block";
@@ -508,6 +512,7 @@ async function handleCardClick(grupoId) {
         }
     }
 }
+
 
 
 

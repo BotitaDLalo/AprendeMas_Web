@@ -1,8 +1,4 @@
-﻿
-/*Apartir de aqui se acomoda estilos*/
-
-
-/*Estilos modales*/
+﻿/*Estilos modales*/
 .modal-title {
     background: linear-gradient(135deg, #007bff 50%, #0056b3 100%); /* Fondo azul degradado */
     color: white; /* Letras blancas */
@@ -18,37 +14,37 @@
 }
 
 
-/* Figuras blancas animadas */
-.modal-title::before, 
-.modal-title::after {
-    content: "";
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    transition: transform 0.5s ease-in-out;
-}
+    /* Figuras blancas animadas */
+    .modal-title::before,
+    .modal-title::after {
+        content: "";
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transition: transform 0.5s ease-in-out;
+    }
 
-/* Ubicación de las figuras */
-.modal-title::before {
-    top: -10px;
-    left: 10px;
-}
+    /* Ubicación de las figuras */
+    .modal-title::before {
+        top: -10px;
+        left: 10px;
+    }
 
-.modal-title::after {
-    bottom: -10px;
-    right: 10px;
-}
+    .modal-title::after {
+        bottom: -10px;
+        right: 10px;
+    }
 
-/* Efecto de movimiento al pasar el cursor */
-.modal-title:hover::before {
-    transform: translateX(10px) translateY(10px);
-}
+    /* Efecto de movimiento al pasar el cursor */
+    .modal-title:hover::before {
+        transform: translateX(10px) translateY(10px);
+    }
 
-.modal-title:hover::after {
-    transform: translateX(-10px) translateY(-10px);
-}
+    .modal-title:hover::after {
+        transform: translateX(-10px) translateY(-10px);
+    }
 
 
 
@@ -101,17 +97,6 @@
     gap: 0px;
 }
 
-.misCursos-icono {
-    width: 110px;
-    height: auto;
-    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-    cursor: pointer;
-}
-
-    .misCursos-icono:hover {
-        transform: scale(1.1);
-        opacity: 0.8;
-    }
 
 /* Botón CREAR */
 .misCursos-btn-crear {
@@ -165,6 +150,306 @@
     .misCursos-dropdown-item:hover {
         background-color: #f1f1f1;
     }
+
+
+/*Estilo para hacer mas llamativo al crear materias al crear grupo --------------------------------->*/
+/* Contenedor general */
+#listaMaterias {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+}
+
+/* Estilo para cada materia */
+.materia-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+    /* Efecto al pasar el mouse sobre la materia */
+    .materia-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+/* Estilo de los campos de entrada */
+.materia-fields input {
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    width: 100%;
+    max-width: 300px; /* Máximo ancho para que no se salga del modal */
+}
+
+/* Ajuste en tamaño para pantallas más pequeñas */
+@media (max-width: 768px) {
+    .materia-fields input {
+        width: 300px;
+    }
+}
+
+/* Botón de remover */
+.btn-remover {
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2em;
+    transition: background-color 0.3s;
+}
+
+    /* Cambio de color al pasar el mouse */
+    .btn-remover:hover {
+        background-color: #d32f2f;
+    }
+
+
+
+
+/*Css para mejorar visualizacion de las materias para ligar a un grupo ------------------------->*/
+/* Contenedor donde se muestran las materias */
+#materiasLista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espaciado entre las materias */
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto; /* Permite que el contenido se desplace si hay muchas materias */
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo de cada materia */
+.form-check {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .form-check:hover {
+        background-color: #e7f7ff; /* Color de fondo cuando el mouse está sobre el elemento */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+/* Estilo para el checkbox */
+.materia-checkbox {
+    margin-right: 10px;
+    transform: scale(1.3); /* Aumenta el tamaño del checkbox */
+    cursor: pointer;
+}
+
+/* Estilo para la etiqueta del checkbox */
+.materia-label {
+    font-size: 16px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    cursor: pointer;
+}
+
+/* Mensaje cuando no hay materias disponibles */
+#materiasLista p {
+    text-align: center;
+    color: #777;
+    font-size: 16px;
+    padding: 20px;
+}
+
+/*Diseño para las card de materias sin grupo ------------------------------------------------->*/
+/* Contenedor donde se muestran las materias */
+#listaMateriasSinGrupo {
+    padding: 15px;
+    background-color: #f8f9fa;
+}
+
+/* Estilo para cada tarjeta */
+.materia-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Efecto al pasar el mouse sobre la tarjeta */
+.card:hover {
+    transform: translateY(-5px); /* Levantar la tarjeta al pasar el mouse */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Sombra más fuerte */
+}
+
+/* Header de la tarjeta (Materia) */
+.card-header {
+    padding: 15px;
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    font-size: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    /* Dropdown del header */
+    .card-header .dropdown {
+        position: relative;
+    }
+
+/* Body de la tarjeta (Contenido) */
+.materia-card-body {
+    padding: 15px;
+    background-color: #fff;
+}
+
+/* Titulo de la materia */
+.materia-card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Descripción de la materia */
+.materia-card-text {
+    color: #555;
+    font-size: 1rem;
+    margin-top: 10px;
+}
+
+/* Sección de actividades recientes */
+.actividad-item {
+    background-color: #f0f8ff;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.actividad-link {
+    font-weight: bold;
+    color: #007bff;
+    text-decoration: none;
+}
+
+    .actividad-link:hover {
+        text-decoration: underline;
+    }
+
+.actividad-fecha {
+    font-size: 0.8rem;
+    color: #777;
+}
+
+/* Footer de la tarjeta */
+.card-footer {
+    background-color: #f8f9fa;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #ddd;
+}
+
+    /* Botón "Ver Materia" */
+    .card-footer .btn {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+
+/* Hacer que las cards se adapten al tamaño de la pantalla */
+@media (max-width: 767px) {
+    .card {
+        margin-bottom: 15px; /* Espacio entre tarjetas */
+    }
+
+    .card-header {
+        font-size: 1.1rem; /* Ajustar tamaño de fuente en pantallas pequeñas */
+    }
+
+    .card-body {
+        padding: 10px; /* Reducir el padding en pantallas pequeñas */
+    }
+
+    .actividad-item {
+        font-size: 0.85rem; /* Ajustar tamaño de fuente de las actividades */
+    }
+
+    .card-footer .btn {
+        font-size: 0.8rem;
+    }
+}
+
+/* Estilos generales para la tarjeta de actividad */
+.card-body .mt-3 {
+    margin-top: 15px;
+}
+
+/*Estilos para las cards de los grupos -------------------------------------------------------> */
+/* Contenedor de grupos en filas */
+#listaGrupos {
+    display: flex;
+    flex-wrap: wrap; /* Permite que las tarjetas pasen a la siguiente línea si no caben */
+    gap: 0.5em; /* Espacio entre tarjetas */
+    justify-content: flex-start; /* Alinea las tarjetas desde la izquierda */
+    flex-direction: column;
+}
+
+/* Estilos específicos para las tarjetas de grupos */
+.grupo-card {
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    max-width: 15em; /* Reducido de 25em a 15em */
+    height: 4em; /* Reducido de 5em a 4em */
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 0.5em;
+    padding: 0.3em; /* Reducido de 0.5em a 0.3em */
+    margin: 0.3em; /* Reducido de 0.5em a 0.3em */
+    flex-grow: 1; /* Permite que las tarjetas se acomoden en la fila */
+}
+
+/* Ajustar imagen dentro de la tarjeta */
+.grupo-img {
+    max-width: 15%; /* Reducido de 20% a 15% */
+    margin-right: 0.3em; /* Reducido de 0.5em a 0.3em */
+    border-radius: 0.5em;
+}
+
+/* Ajustar la sección de contenido */
+.grupo-card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Diseño responsivo */
+@media (max-width: 768px) {
+    #listaGrupos {
+        justify-content: center; /* Centrar las tarjetas en pantallas pequeñas */
+    }
+}
+
+
+
+/*Apartir de aqui se acomoda estilos --------------------------------------------------------> */
+
+
 
 
 
@@ -294,6 +579,3 @@
     .materia-card-link-unique:hover::after {
         background-color: white;
     }
-
-
-

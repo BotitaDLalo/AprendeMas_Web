@@ -79,10 +79,10 @@
     transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
-.actividad-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
-}
+    .actividad-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
+    }
 
 .actividad-header {
     display: flex;
@@ -137,16 +137,17 @@
     transition: max-height 0.3s ease, opacity 0.3s ease;
 }
 
-.actividad-descripcion.visible {
-    max-height: 500px; /* Se ajusta según el contenido */
-    opacity: 1;
-}
+    .actividad-descripcion.visible {
+        max-height: 500px; /* Se ajusta según el contenido */
+        opacity: 1;
+    }
 
     /* Clase explícita para ocultar */
     .actividad-descripcion.oculto {
         max-height: 0;
         opacity: 0;
     }
+
 .ver-completo {
     font-size: 14px;
     color: #007bff;
@@ -156,9 +157,9 @@
     transition: color 0.3s ease;
 }
 
-.ver-completo:hover {
-    color: #0056b3;
-}
+    .ver-completo:hover {
+        color: #0056b3;
+    }
 
 /* Estilos para los botones Editar, Eliminar e Ir a Actividades */
 .botones-container {
