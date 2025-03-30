@@ -1,4 +1,121 @@
-﻿
+﻿/*Estilo para hacer mas llamativo al crear materias al crear grupo --------------------------------->*/
+/* Contenedor general */
+#listaMaterias {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+}
+
+/* Estilo para cada materia */
+.materia-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+    /* Efecto al pasar el mouse sobre la materia */
+    .materia-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+/* Estilo de los campos de entrada */
+.materia-fields input {
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    width: 100%;
+    max-width: 300px; /* Máximo ancho para que no se salga del modal */
+}
+
+/* Ajuste en tamaño para pantallas más pequeñas */
+@media (max-width: 768px) {
+    .materia-fields input {
+        width: 300px;
+    }
+}
+
+/* Botón de remover */
+.btn-remover {
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2em;
+    transition: background-color 0.3s;
+}
+
+    /* Cambio de color al pasar el mouse */
+    .btn-remover:hover {
+        background-color: #d32f2f;
+    }
+
+
+/*Css para mejorar visualizacion de las materias para ligar a un grupo ------------------------->*/
+/* Contenedor donde se muestran las materias */
+#materiasLista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espaciado entre las materias */
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto; /* Permite que el contenido se desplace si hay muchas materias */
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo de cada materia */
+.form-check {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .form-check:hover {
+        background-color: #e7f7ff; /* Color de fondo cuando el mouse está sobre el elemento */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+/* Estilo para el checkbox */
+.materia-checkbox {
+    margin-right: 10px;
+    transform: scale(1.3); /* Aumenta el tamaño del checkbox */
+    cursor: pointer;
+}
+
+/* Estilo para la etiqueta del checkbox */
+.materia-label {
+    font-size: 16px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    cursor: pointer;
+}
+
+/* Mensaje cuando no hay materias disponibles */
+#materiasLista p {
+    text-align: center;
+    color: #777;
+    font-size: 16px;
+    padding: 20px;
+}
+
+
 /*Apartir de aqui se acomoda estilos*/
 
 

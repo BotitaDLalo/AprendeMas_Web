@@ -99,9 +99,11 @@ function agregarMateria() {
     materiaDiv.classList.add("materia-item");
 
     materiaDiv.innerHTML = `
-        <input type="text" placeholder="Nombre de la Materia" class="nombreMateria">
-        <input type="text" placeholder="Descripción" class="descripcionMateria">
-        <button type="button" onclick="removerDeLista(this)">❌</button>
+        <div class="materia-fields">
+            <input type="text" placeholder="Nombre de la Materia" class="nombreMateria" />
+            <input type="text" placeholder="Descripción" class="descripcionMateria" />
+        </div>
+        <button type="button" class="btn-remover" onclick="removerDeLista(this)">❌</button>
     `;
 
     materiasContainer.appendChild(materiaDiv);

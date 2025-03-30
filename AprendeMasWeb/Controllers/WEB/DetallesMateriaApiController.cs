@@ -299,24 +299,61 @@ namespace AprendeMasWeb.Controllers.WEB
         }
 
 
-            [HttpDelete("EliminarActividad/{id}")]
-            public async Task<IActionResult> EliminarActividad(int id)
-            {
-                // Buscar el registro en la tabla materiasActividades con el ID recibido
-                var Actividad = await _context.tbActividades
-                    .FirstOrDefaultAsync(a => a.ActividadId == id);
+        [HttpDelete("EliminarActividad/{id}")]
+        public async Task<IActionResult> EliminarActividad(int id)
+        {
+            // Buscar la actividad en la tabla tbActividades
+            var actividad = await _context.tbActividades
+                .FirstOrDefaultAsync(a => a.ActividadId == id);
 
-                if (Actividad == null)
+            if (actividad == null)
+            {
+                return NotFound("No se encontró el registro en Actividades.");
+            }
+
+            // Buscar registros en la tabla alumnosActividades relacionados con la actividad
+            var alumnosActividades = await _context.tbAlumnosActividades
+                .Where(aa => aa.ActividadId == id)
+                .ToListAsync();
+
+            foreach (var alumnoActividad in alumnosActividades)
+            {
+                int alumnoActividadId = alumnoActividad.AlumnoActividadId;
+
+                // Buscar registros en la tabla entregablesAlumno relacionados con alumnoActividadId
+                var entregables = await _context.tbEntregablesAlumno
+                    .Where(e => e.AlumnoActividadId == alumnoActividadId)
+                    .ToListAsync();
+
+                foreach (var entrega in entregables)
                 {
-                    return NotFound("No se encontró el registro en Actividades.");
+                    int entregaId = entrega.EntregaId;
+
+                    // Buscar registros en la tabla calificaciones relacionados con entregaId
+                    var calificaciones = await _context.tbCalificaciones
+                        .Where(c => c.EntregaId == entregaId)
+                        .ToListAsync();
+
+                    // Eliminar calificaciones
+                    _context.tbCalificaciones.RemoveRange(calificaciones);
                 }
 
-                // Eliminar el registro de materiasActividades primero
-                _context.tbActividades.Remove(Actividad);
-                await _context.SaveChangesAsync();
-
-                return Ok(new { message = "Actividad eliminada correctamente." });
+                // Eliminar entregables
+                _context.tbEntregablesAlumno.RemoveRange(entregables);
             }
+
+            // Eliminar alumnosActividades
+            _context.tbAlumnosActividades.RemoveRange(alumnosActividades);
+
+            // Finalmente, eliminar la actividad
+            _context.tbActividades.Remove(actividad);
+
+            // Guardar los cambios en la base de datos
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Actividad y registros relacionados eliminados correctamente." });
+        }
+
 
         //Controlador para crear un aviso funciona desde dentro de la materia
         [HttpPost("CrearAviso")]
