@@ -106,14 +106,30 @@ namespace AprendeMasWeb.Controllers.WEB
                 return NotFound(new { mensaje = "La materia no existe" });
             }
 
-            // Obtener y eliminar las actividades directamente asociadas a esta materia
-            var actividades = _context.tbActividades.Where(a => a.MateriaId == id);
+            // Obtener las actividades asociadas a esta materia
+            var actividades = _context.tbActividades.Where(a => a.MateriaId == id).ToList();
+            var actividadIds = actividades.Select(a => a.ActividadId).ToList();
+
+            // Obtener los registros en la tabla alumnosActividades relacionados con estas actividades
+            var alumnosActividades = _context.tbAlumnosActividades.Where(aa => actividadIds.Contains(aa.ActividadId)).ToList();
+            var alumnosActividadIds = alumnosActividades.Select(aa => aa.AlumnoActividadId).ToList();
+
+            // Obtener los entregables relacionados con alumnosActividades
+            var entregables = _context.tbEntregablesAlumno.Where(ea => alumnosActividadIds.Contains(ea.AlumnoActividadId)).ToList();
+            var entregaIds = entregables.Select(ea => ea.EntregaId).ToList();
+
+            // Obtener las calificaciones asociadas a los entregables
+            var calificaciones = _context.tbCalificaciones.Where(c => entregaIds.Contains(c.EntregaId)).ToList();
+
+            // Eliminar en orden inverso para evitar conflictos de claves foráneas
+            _context.tbCalificaciones.RemoveRange(calificaciones);
+            _context.tbEntregablesAlumno.RemoveRange(entregables);
+            _context.tbAlumnosActividades.RemoveRange(alumnosActividades);
             _context.tbActividades.RemoveRange(actividades);
 
-            //Buscar y eliminar los avisos directamente asociadas a esta materia
+            // Obtener y eliminar los avisos directamente asociados a esta materia
             var avisos = _context.tbAvisos.Where(a => a.MateriaId == id);
             _context.tbAvisos.RemoveRange(avisos);
-
 
             // Eliminar las relaciones en la tabla AlumnosMaterias
             var relacionesAlumnos = _context.tbAlumnosMaterias.Where(am => am.MateriaId == id);
@@ -122,7 +138,6 @@ namespace AprendeMasWeb.Controllers.WEB
             // Buscar y eliminar las relaciones de la materia con los grupos
             var relacionMateriaConGrupo = _context.tbGruposMaterias.Where(mg => mg.MateriaId == id);
             _context.tbGruposMaterias.RemoveRange(relacionMateriaConGrupo);
-
 
             // Ahora eliminamos la materia
             _context.tbMaterias.Remove(materia);
@@ -133,53 +148,43 @@ namespace AprendeMasWeb.Controllers.WEB
             return Ok(new { mensaje = "Materia y sus relaciones eliminadas correctamente." });
         }
 
-        /*
-        //Controlador actualiza materia, aun no funciona
-        [HttpPut("ActualizarMateria/{id}")]
-        public async Task<IActionResult> ActualizarMateria(int id, [FromBody] Materias materiaActualizada)
+
+        // Método para obtener los detalles de una materia específica por ID
+        [HttpGet("ObtenerMateria/{id}")]
+        public async Task<IActionResult> ObtenerMateria(int id)
         {
-            // Buscar la materia en la base de datos
             var materia = await _context.tbMaterias.FindAsync(id);
 
-            // Si la materia no existe, devolver un error
             if (materia == null)
             {
-                return NotFound(new { mensaje = "La materia no existe." });
+                return NotFound("La materia no existe.");
             }
 
-            // Actualizar los campos nombreMateria y descripcion
-            materia.NombreMateria = materiaActualizada.NombreMateria;
-            materia.Descripcion = materiaActualizada.Descripcion;
+            return Ok(materia);  // Devuelve la materia encontrada
+        }
 
-            // Guardar los cambios en la base de datos
-            await _context.SaveChangesAsync();
 
-            return Ok(new { mensaje = "Materia actualizada correctamente." });
-        }*/
-        [HttpPut("ActualizarMateria/{materiaId}")]
-        public async Task<IActionResult> ActualizarMateria(int materiaId, [FromBody] tbMaterias materiaDto)
+        //Actualizar Materia
+        [HttpPut("ActualizarMateria")]
+        public async Task<IActionResult> EditarAviso([FromBody] tbMaterias model)
         {
-            var materiaExistente = await _context.tbMaterias.FindAsync(materiaId);
-
-            if (materiaExistente == null)
+            try
             {
-                return NotFound("Materia no encontrada.");
-            }
+                var materia = await _context.tbMaterias.FindAsync(model.MateriaId);
+                if (materia == null)
+                    return NotFound(new { mensaje = "Materia no encontrada" });
 
-            // Solo se actualizan los campos que llegaron
-            if (!string.IsNullOrEmpty(materiaDto.NombreMateria))
+                materia.NombreMateria = model.NombreMateria;
+                materia.Descripcion = model.Descripcion;
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new { mensaje = "Materia actualizada correctamente" });
+            }
+            catch (Exception ex)
             {
-                materiaExistente.NombreMateria = materiaDto.NombreMateria;
+                return StatusCode(500, new { mensaje = "Error al actualizar la materia", error = ex.Message });
             }
-
-            if (!string.IsNullOrEmpty(materiaDto.Descripcion))
-            {
-                materiaExistente.Descripcion = materiaDto.Descripcion;
-            }
-
-            await _context.SaveChangesAsync();
-
-            return Ok(materiaExistente);
         }
 
     }

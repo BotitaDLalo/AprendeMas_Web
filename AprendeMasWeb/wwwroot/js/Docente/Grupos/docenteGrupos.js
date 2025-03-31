@@ -240,7 +240,7 @@ async function cargarGrupos() {
                 { text: "Eliminar", action: () => eliminarGrupo(grupo.grupoId) },
                 { text: "Aviso Grupal", action: () => crearAvisoGrupal(grupo.grupoId) },
                 // { text: "Crear Materia", action: () => crearMateria(grupo.grupoId) }
-                //{ text: "Editar Grupo", action: () => editarGrupo(grupo.grupoId) }
+                { text: "Editar Grupo", action: () => editarGrupo(grupo.grupoId) }
 
             ];
 
@@ -386,9 +386,9 @@ async function handleCardClick(grupoId) {
                     const editLink = document.createElement("a");
                     editLink.classList.add("dropdown-item");
                     editLink.href = "#";
-                    //editLink.onclick = () => editarMateria(materia.materiaId);
-                    //editLink.textContent = "Editar";
-                    //editLi.appendChild(editLink);
+                    editLink.onclick = () => editarMateria(materia.materiaId);
+                    editLink.textContent = "Editar";
+                    editLi.appendChild(editLink);
 
                     const deleteLi = document.createElement("li");
                     const deleteLink = document.createElement("a");
@@ -582,8 +582,74 @@ function agregarMateriaAlGrupo(id) {
 }
 
 
-function crearAvisoGrupal(id) {
-    Swal.fire({
+
+
+// Función para editar nombre y descripción de una materia. Sin funcionar aún.
+async function editarGrupo(grupoId) {
+    // Obtener datos actuales del aviso
+    try {
+        const response = await fetch(`/api/GruposApi/ObtenerGrupo/${grupoId}`);
+        if (!response.ok) throw new Error("No se pudo obtener el grupo.");
+
+        const grupo = await response.json();
+
+        // Mostrar SweetAlert con los datos actuales
+        const { value: formValues } = await Swal.fire({
+            title: "Editar Materia",
+            html: `
+                <input id="swal-grupo" class="swal2-input" placeholder="Título" value="${grupo.nombreGrupo}">
+                <textarea id="swal-descripcionGrupo" class="swal2-textarea" placeholder="Descripción">${grupo.descripcion}</textarea>
+            `,
+            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: "Guardar Cambios",
+            cancelButtonText: "Cancelar",
+            preConfirm: () => {
+                const nombreGrupo = document.getElementById("swal-grupo").value.trim();
+                const descripcionGrupo = document.getElementById("swal-descripcionGrupo").value.trim();
+
+                if (!nombreGrupo || !descripcionGrupo) {
+                    // Validación: Si alguno de los campos está vacío, mostrar mensaje de error
+                    Swal.showValidationMessage("Todos los campos son requeridos.");
+                    return false; // No continuar con la confirmación
+                }
+
+                return { grupo: nombreGrupo, descripcionGrupo };
+            }
+        });
+
+        if (!formValues) return; // Si el usuario cancela, no hacer nada
+
+        // Enviar los cambios al backend
+        const updateResponse = await fetch(`/api/GruposApi/ActualizarGrupo`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                grupoId,
+                nombreGrupo: formValues.grupo,
+                descripcion: formValues.descripcionGrupo,
+                docenteId: docenteIdGlobal
+            })
+        });
+
+        if (!updateResponse.ok) throw new Error("No se pudo actualizar el grupo.");
+
+        Swal.fire("Actualizado", "El grupo ha sido editado correctamente.", "success");
+
+        // Recargar para reflejar los cambios
+        cargarGrupos();
+    }
+    catch (error) {
+        Swal.fire("Error", error.message, "error");
+    }
+}
+
+
+
+async function crearAvisoGrupal(id) {
+    const result = await Swal.fire({
         title: "Crear Aviso",
         html:
             '<input id="tituloAviso" class="swal2-input" placeholder="Título del aviso">' +
@@ -601,35 +667,36 @@ function crearAvisoGrupal(id) {
             }
             return { titulo, descripcion };
         }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const datos = {
-                GrupoId: id,
-                Titulo: result.value.titulo,
-                Descripcion: result.value.descripcion,
-                DocenteId: docenteIdGlobal
-            };
+    });
 
-            fetch("/api/DetallesMateriaApi/CrearAvisoPorGrupo", {
+    if (result.isConfirmed) {
+        const datos = {
+            GrupoId: id,
+            Titulo: result.value.titulo,
+            Descripcion: result.value.descripcion,
+            DocenteId: docenteIdGlobal
+        };
+
+        try {
+            const response = await fetch("/api/DetallesMateriaApi/CrearAvisoPorGrupo", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(datos)
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.mensaje) {
-                        Swal.fire("Éxito", data.mensaje, "success");
-                    } else {
-                        Swal.fire("Error", "No se pudo crear el aviso", "error");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error al enviar el aviso:", error);
-                    Swal.fire("Error", "Ocurrió un error al crear el aviso", "error");
-                });
+            });
+
+            const data = await response.json();
+            if (data.mensaje) {
+                Swal.fire("Éxito", data.mensaje, "success");
+            } else {
+                Swal.fire("Error", "No se pudo crear el aviso", "error");
+            }
+        } catch (error) {
+            console.error("Error al enviar el aviso:", error);
+            Swal.fire("Error", "Ocurrió un error al crear el aviso", "error");
         }
-    });
+    }
 }
+
 

@@ -144,7 +144,7 @@ namespace AprendeMasWeb.Controllers.WEB
             return Ok(materiasConActividades);
         }
 
-
+        //Elimina solo el grupo y deja las materias en apartado materias sin grupo
         [HttpDelete("EliminarGrupo/{grupoId}")]
         public async Task<IActionResult> EliminarGrupo(int grupoId)
         {
@@ -238,6 +238,45 @@ namespace AprendeMasWeb.Controllers.WEB
             await _context.SaveChangesAsync();
 
             return Ok(new { mensaje = "Grupo, materias, actividades y registros relacionados eliminados correctamente" });
+        }
+
+
+        // Método para obtener los detalles de un grupo específica por ID
+        [HttpGet("ObtenerGrupo/{id}")]
+        public async Task<IActionResult> ObtenerMateria(int id)
+        {
+            var grupo = await _context.tbGrupos.FindAsync(id);
+
+            if (grupo == null)
+            {
+                return NotFound("El grupo no existe.");
+            }
+
+            return Ok(grupo);  // Devuelve el grupo encontrado
+        }
+
+
+        //Actualizar Grupo
+        [HttpPut("ActualizarGrupo")]
+        public async Task<IActionResult> EditarAviso([FromBody] tbGrupos model)
+        {
+            try
+            {
+                var grupo = await _context.tbGrupos.FindAsync(model.GrupoId);
+                if (grupo == null)
+                    return NotFound(new { mensaje = "Grupo no encontrado" });
+
+                grupo.NombreGrupo = model.NombreGrupo;
+                grupo.Descripcion = model.Descripcion;
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new { mensaje = "Grupo actualizado correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al actualizar el grupo", error = ex.Message });
+            }
         }
 
 

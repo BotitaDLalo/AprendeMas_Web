@@ -285,70 +285,77 @@ async function cargarMateriasSinGrupo() {
 
 
 
+// Función para editar nombre y descripción de una materia. Sin funcionar aún.
+async function editarMateria(materiaId) {
+    // Obtener datos actuales del aviso
+    try {
+        const response = await fetch(`/api/MateriasApi/ObtenerMateria/${materiaId}`);
+        if (!response.ok) throw new Error("No se pudo obtener la materia.");
 
-//Funcion para editar nombre y descripcion de una materia. Sin funcionar aun.
-async function editarMateria(materiaId, nombreActual, descripcionActual) {
-    const { value: formValues } = await Swal.fire({
-        title: "Editar Materia",
-        html: `
-            <div style="display: flex; flex-direction: column; gap: 10px; text-align: left;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <label for="swal-nombre" style="width: 100px;">Materia</label>
-                    <input id="swal-nombre" class="swal2-input"  placeholder="Nombre" value="${nombreActual}">
-                </div>
-                <div style="display: flex; align-items: center; gap: 5px;">
-                    <label for="swal-descripcion" style="width: 100px;">Descripción</label>
-                    <input id="swal-descripcion" class="swal2-input" placeholder="Descripción" value="${descripcionActual}">
-                </div>
-            </div>
-        `,
-        focusConfirm: false,
-        showCancelButton: true,
-        confirmButtonText: "Guardar",
-        cancelButtonText: "Cancelar",
-        preConfirm: () => {
-            return {
-                NombreMateria: document.getElementById("swal-nombre").value, // Nombre correcto
-                Descripcion: document.getElementById("swal-descripcion").value // Nombre correcto
-            };
-        }
-    });
+        const materia = await response.json();
 
-    if (formValues) {
-        // Enviar los datos al servidor para actualizar la materia
-        const response = await fetch(`/api/MateriasApi/ActualizarMateria/${materiaId}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formValues)
+        // Mostrar SweetAlert con los datos actuales
+        const { value: formValues } = await Swal.fire({
+            title: "Editar Materia",
+            html: `
+                <input id="swal-materia" class="swal2-input" placeholder="Título" value="${materia.nombreMateria}">
+                <textarea id="swal-descripcionMateria" class="swal2-textarea" placeholder="Descripción">${materia.descripcion}</textarea>
+            `,
+            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: "Guardar Cambios",
+            cancelButtonText: "Cancelar",
+            preConfirm: () => {
+                const nombreMateria = document.getElementById("swal-materia").value.trim();
+                const descripcionMateria = document.getElementById("swal-descripcionMateria").value.trim();
+
+                if (!nombreMateria || !descripcionMateria) {
+                    // Validación: Si alguno de los campos está vacío, mostrar mensaje de error
+                    Swal.showValidationMessage("Todos los campos son requeridos.");
+                    return false; // No continuar con la confirmación
+                }
+
+                return { materia: nombreMateria, descripcionMateria };
+            }
         });
 
-        if (response.ok) {
-            Swal.fire({
-                position: "top-end",
-                icon: "success",
-                title: "Materia actualizada correctamente",
-                showConfirmButton: false,
-                timer: 2000
-            });
-            cargarMaterias(); // Recargar la lista de materias
-        } else {
-            Swal.fire({
-                position: "top-end",
-                icon: "error",
-                title: "Error al actualizar la materia",
-                showConfirmButton: false,
-                timer: 2000
-            });
-        }
+        if (!formValues) return; // Si el usuario cancela, no hacer nada
+
+        // Enviar los cambios al backend
+        const updateResponse = await fetch(`/api/MateriasApi/ActualizarMateria`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                materiaId,
+                nombreMateria: formValues.materia,
+                descripcion: formValues.descripcionMateria,
+                docenteId: docenteIdGlobal
+            })
+        });
+
+        if (!updateResponse.ok) throw new Error("No se pudo actualizar la materia.");
+
+        Swal.fire("Actualizado", "La materia ha sido editada correctamente.", "success");
+
+        // Recargar para reflejar los cambios
+        cargarGrupos();
+        cargarMaterias();
+        cargarMateriasSinGrupo();
+    }
+    catch (error) {
+        Swal.fire("Error", error.message, "error");
     }
 }
+
 
 
 
 async function eliminarMateria(MateriaId) {
     const confirmacion = await Swal.fire({
         title: "¿Estás seguro?",
-        text: "No podrás recuperar esta materia después de eliminarla.",
+        text: "No podrás recuperar el contenido de la materia después de eliminarla como:\n- Avisos\n- Actividades\n- Alumnos Registrados\n- Calificaciones.\n",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Sí, eliminar",
@@ -377,7 +384,7 @@ async function eliminarMateria(MateriaId) {
                 await Swal.fire({
                     position: "top-end",
                     icon: "error",
-                    title: resultado.mensaje || "No se pudo eliminar el grupo y sus materias.",
+                    title: resultado.mensaje || "No se pudo eliminar la materia.",
                     showConfirmButton: false,
                     timer: 2000
                 });
