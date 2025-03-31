@@ -214,7 +214,6 @@ async function eliminarAviso(avisoId) {
     }
 }
 
-//Edita un aviso desde su id
 async function editarAviso(avisoId) {
     try {
         // Obtener datos actuales del aviso
@@ -235,10 +234,15 @@ async function editarAviso(avisoId) {
             confirmButtonText: "Guardar Cambios",
             cancelButtonText: "Cancelar",
             preConfirm: () => {
-                return {
-                    titulo: document.getElementById("swal-titulo").value.trim(),
-                    descripcion: document.getElementById("swal-descripcion").value.trim()
-                };
+                const titulo = document.getElementById("swal-titulo").value.trim();
+                const descripcion = document.getElementById("swal-descripcion").value.trim();
+
+                if (!titulo || !descripcion) {
+                    Swal.showValidationMessage("Debes completar todos los campos.");
+                    return false;
+                }
+
+                return { titulo, descripcion };
             }
         });
 

@@ -243,7 +243,7 @@ namespace AprendeMasWeb.Controllers.WEB
 
         // Método para obtener los detalles de un grupo específica por ID
         [HttpGet("ObtenerGrupo/{id}")]
-        public async Task<IActionResult> ObtenerMateria(int id)
+        public async Task<IActionResult> ObtenerGrupo(int id)
         {
             var grupo = await _context.tbGrupos.FindAsync(id);
 
@@ -258,7 +258,7 @@ namespace AprendeMasWeb.Controllers.WEB
 
         //Actualizar Grupo
         [HttpPut("ActualizarGrupo")]
-        public async Task<IActionResult> EditarAviso([FromBody] tbGrupos model)
+        public async Task<IActionResult> ActualizarGrupo([FromBody] tbGrupos model)
         {
             try
             {

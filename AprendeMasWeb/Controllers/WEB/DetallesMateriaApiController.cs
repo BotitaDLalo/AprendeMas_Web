@@ -266,6 +266,49 @@ namespace AprendeMasWeb.Controllers.WEB
         }
 
 
+        // Método para obtener los detalles de una actividad específica por ID
+        [HttpGet("ObtenerActividad/{id}")]
+        public async Task<IActionResult> ObtenerActividad(int id)
+        {
+            var actividad = await _context.tbActividades.FindAsync(id);
+
+            if (actividad == null)
+            {
+                return NotFound("La actividad no existe.");
+            }
+
+            return Ok(actividad);  // Devuelve la materia encontrada
+        }
+
+        [HttpPut("ActualizarActividad")]
+        public async Task<IActionResult> ActualizarActividad([FromBody] tbActividades model)
+        {
+            if (model == null)
+                return BadRequest(new { mensaje = "Datos inválidos" });
+
+            try
+            {
+                var actividad = await _context.tbActividades.FindAsync(model.ActividadId);
+                if (actividad == null)
+                    return NotFound(new { mensaje = "Actividad no encontrada" });
+
+                // Evita sobrescribir con valores nulos
+                actividad.NombreActividad = model.NombreActividad ?? actividad.NombreActividad;
+                actividad.Descripcion = model.Descripcion ?? actividad.Descripcion;
+                actividad.FechaLimite = model.FechaLimite != default ? model.FechaLimite : actividad.FechaLimite;
+                actividad.Puntaje = model.Puntaje != 0 ? model.Puntaje : actividad.Puntaje;
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new { mensaje = "Actividad actualizada correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al actualizar la actividad", error = ex.Message });
+            }
+        }
+
+
 
         //Controlador que obtiene  todo lo de actividades que pertecenen a esa materia
         [HttpGet("ObtenerActividadesPorMateria/{materiaId}")]

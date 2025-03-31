@@ -177,14 +177,81 @@ function renderizarActividades(actividades) {
 }
 
 
+// Función que edita actividades
+async function editarActividad(actividadId) {
+    try {
+        // Obtener datos actuales de la actividad
+        const response = await fetch(`/api/DetallesMateriaApi/ObtenerActividad/${actividadId}`);
+        if (!response.ok) throw new Error("No se pudo obtener la actividad.");
+
+        const actividad = await response.json();
+
+        // Mostrar SweetAlert con los datos actuales
+        const { value: formValues } = await Swal.fire({
+            title: "Editar Actividad",
+            html: `
+               <input id="swal-actividad" class="swal2-input" placeholder="Título" value="${actividad.nombreActividad}">
+               <textarea id="swal-descripcionActividad" class="swal2-textarea" placeholder="Descripción">${actividad.descripcion}</textarea>
+               <input id="swal-fecha" type="datetime-local" class="swal2-input" value="${actividad.fechaLimite}">
+               <input id="swal-puntuacion" type="number" class="swal2-input" placeholder="Puntuación (0-100)" min="0" max="100" value="${actividad.puntaje}">
+            `,
+            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: "Guardar Cambios",
+            cancelButtonText: "Cancelar",
+            preConfirm: () => {
+                const nombreActividad = document.getElementById("swal-actividad").value.trim();
+                const descripcionActividad = document.getElementById("swal-descripcionActividad").value.trim();
+                const fechaActividad = document.getElementById("swal-fecha").value;
+                const puntajeActividad = parseInt(document.getElementById("swal-puntuacion").value, 10) || 0;
+
+                if (!nombreActividad || !descripcionActividad || !fechaActividad) {
+                    Swal.showValidationMessage("Todos los campos son requeridos.");
+                    return false;
+                }
+
+                return { nombreActividad, descripcionActividad, fechaActividad, puntajeActividad };
+            }
+        });
+
+        if (!formValues) return; // Si el usuario cancela, no hacer nada
+
+        // Enviar los cambios al backend
+        const updateResponse = await fetch(`/api/DetallesMateriaApi/ActualizarActividad`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                actividadId,
+                nombreActividad: formValues.nombreActividad,
+                descripcion: formValues.descripcionActividad,
+                fechaLimite: formValues.fechaActividad,
+                puntaje: formValues.puntajeActividad // Aquí corregido
+            })
+        });
+
+        if (!updateResponse.ok) throw new Error("No se pudo actualizar la actividad.");
+
+        Swal.fire("Actualizado", "La actividad ha sido editada correctamente.", "success");
+        cargarActividadesDeMateria();
+    } catch (error) {
+        Swal.fire("Error", error.message, "error");
+    }
+}
+
+
+
+//Funcion para ir a la actividad
 async function IrAActividad(actividadIdSeleccionada) {
     //guardar el id de la materia para acceder a la materia en la que se entro y usarla en otro script
     localStorage.setItem("actividadSeleccionada", actividadIdSeleccionada);
     // Redirige a la página de detalles de la materia
     window.open(`/Docente/EvaluarActividades`, '_blank'); //Aqui lleva en la url el id de la actividadSeleccionada
 }
-// Funciones para manejar los botones
 
+
+//Funcion para eliminar una actividad
 async function eliminarActividad(id) {
     // Confirmación con SweetAlert
     const result = await Swal.fire({

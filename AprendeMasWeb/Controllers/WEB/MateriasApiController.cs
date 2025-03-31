@@ -166,7 +166,7 @@ namespace AprendeMasWeb.Controllers.WEB
 
         //Actualizar Materia
         [HttpPut("ActualizarMateria")]
-        public async Task<IActionResult> EditarAviso([FromBody] tbMaterias model)
+        public async Task<IActionResult> ActualizarMateria([FromBody] tbMaterias model)
         {
             try
             {

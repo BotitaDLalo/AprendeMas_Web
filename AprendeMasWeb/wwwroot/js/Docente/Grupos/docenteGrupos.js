@@ -239,7 +239,7 @@ async function cargarGrupos() {
             const dropdownItems = [
                 { text: "Eliminar", action: () => eliminarGrupo(grupo.grupoId) },
                 { text: "Aviso Grupal", action: () => crearAvisoGrupal(grupo.grupoId) },
-                // { text: "Crear Materia", action: () => crearMateria(grupo.grupoId) }
+                { text: "Crear Materia", action: () => agregarMateriaAlGrupo(grupo.grupoId) },
                 { text: "Editar Grupo", action: () => editarGrupo(grupo.grupoId) }
 
             ];
@@ -577,7 +577,7 @@ async function eliminarGrupo(grupoId) {
 }
 
 
-function agregarMateriaAlGrupo(id) {
+async function agregarMateriaAlGrupo(id) {
     alert("Agregar Materia Al Grupo " + id); // Muestra una alerta indicando que el grupo será desactivado
 }
 
@@ -595,7 +595,7 @@ async function editarGrupo(grupoId) {
 
         // Mostrar SweetAlert con los datos actuales
         const { value: formValues } = await Swal.fire({
-            title: "Editar Materia",
+            title: "Editar Grupo",
             html: `
                 <input id="swal-grupo" class="swal2-input" placeholder="Título" value="${grupo.nombreGrupo}">
                 <textarea id="swal-descripcionGrupo" class="swal2-textarea" placeholder="Descripción">${grupo.descripcion}</textarea>

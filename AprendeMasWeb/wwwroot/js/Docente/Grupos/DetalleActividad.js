@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => {
                 if (data) {
                     document.getElementById("nombreActividad").innerText = data.nombreActividad || "No disponible";
-                    document.getElementById("descripcionActividad").innerText = data.descripcion || "No disponible";
+                    document.getElementById("descripcionActividad").innerHTML = convertirUrlsEnEnlaces(data.descripcion) || "No disponible";
 
                     document.getElementById("fechaCreacion").innerText =
                         data.fechaCreacion ? new Date(data.fechaCreacion).toLocaleDateString("es-ES") : "No disponible";
