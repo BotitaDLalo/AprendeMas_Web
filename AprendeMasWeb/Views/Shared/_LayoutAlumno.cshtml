@@ -178,6 +178,26 @@
     </div>
 </div>
 
+	<div id="modal-editar-evento" class="modal">
+		<div class="modal-content">
+			<h2>Editar Evento</h2>
+			<input type="hidden" id="editar-evento-id">
+			<label>Título:</label>
+			<input type="text" id="editar-titulo">
+			<label>Descripción:</label>
+			<textarea id="editar-descripcion"></textarea>
+			<label>Fecha de inicio:</label>
+			<input type="date" id="editar-fecha-inicio">
+			<label>Fecha de finalización:</label>
+			<input type="date" id="editar-fecha-final">
+			<label>Color:</label>
+			<input type="color" id="editar-color">
+			<br />
+			<button id="guardar-edicion-evento">Guardar Cambios</button>
+			<br />
+			<button onclick="document.getElementById('modal-editar-evento').style.display='none'">Cancelar</button>
+		</div>
+	</div>
 
 
 
