@@ -1,14 +1,24 @@
 ﻿.icono-filtro {
-    width: 90px;
+    width: 110px;
     height: 90px;
     cursor: pointer;
-    margin-left: 8px;
+    margin-left: -21px;
     vertical-align: middle;
 }
+
 
     .icono-filtro:hover {
         opacity: 0.7;
     }
+
+
+.icono-materia {
+    width: 109px; /* Ajusta el tamaño según necesites */
+    height: 94px;
+    margin-right: -4px; /* Sin espacio entre la imagen y el texto */
+    vertical-align: middle;
+    display: inline-block;
+}
 
 .submenu {
     position: absolute;
@@ -35,11 +45,11 @@
     }
 
 .separador {
-    font-size: 1.2em;
+    font-size: 25px;
     font-weight: bold;
     margin-top: 15px;
     padding: 5px;
-    border-bottom: 2px solid #007bff;
+    border-bottom: 4px solid #007bff;
     text-align: center;
 
 }
@@ -233,9 +243,11 @@
 
 /* Título y logo */
 .misCursos-titulo {
+    margin-top: 45px;
     display: flex;
     align-items: center;
     gap: 0px;
+    font-weight: bold;
 }
 
 .misCursos-icono {

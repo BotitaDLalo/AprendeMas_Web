@@ -135,7 +135,9 @@ async function cargarClases() {
         // Agregar encabezado de Grupos con icono de filtro
         if (grupos.length > 0) {
             let etiquetaGrupo = document.createElement("h3");
-            etiquetaGrupo.innerHTML = `Grupos 
+            etiquetaGrupo.innerHTML = `
+            <img src="/Iconos/GRUPO-26.svg" class="icono-materia" alt="Icono de Materias">
+            Grupos
                 <img src="/Iconos/FILTRO-26.svg" class="icono-filtro" onclick="cambiarOrden('grupos')" title="Ordenar por ${ordenActual.grupos === 'nombre' ? 'fecha' : 'nombre'}">`;
             etiquetaGrupo.classList.add("separador");
             contenedor.appendChild(etiquetaGrupo);
@@ -146,7 +148,9 @@ async function cargarClases() {
         // Agregar encabezado de Materias con icono de filtro
         if (materias.length > 0) {
             let etiquetaMateria = document.createElement("h3");
-            etiquetaMateria.innerHTML = `Materias 
+            etiquetaMateria.innerHTML = `
+            <img src="/Iconos/GRUPO-26.svg" class="icono-materia" alt="Icono de Materias">
+            Materias
                 <img src="/Iconos/FILTRO-26.svg" class="icono-filtro" onclick="cambiarOrden('materias')" title="Ordenar por ${ordenActual.materias === 'nombre' ? 'fecha' : 'nombre'}">`;
             etiquetaMateria.classList.add("separador");
             contenedor.appendChild(etiquetaMateria);
