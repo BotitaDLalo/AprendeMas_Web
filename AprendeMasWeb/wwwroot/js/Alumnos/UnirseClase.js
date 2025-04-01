@@ -45,8 +45,9 @@ async function unirseAClase() {
                 text: data.mensaje,
                 position: "center"
             }).then(() => {
+                document.getElementById("codigoAccesoInput").value = ""; // ✅ Limpia el campo de entrada
                 closeModal(); // Cierra el modal (si aplica)
-                cargarClases(); // ✅ Recargar las clases después de unirse
+                cargarClases(); // Recargar las clases después de unirse
             });
 
         } else {
@@ -55,6 +56,8 @@ async function unirseAClase() {
                 title: "Error",
                 text: data.mensaje,
                 position: "center"
+            }).then(() => {
+                document.getElementById("codigoAccesoInput").value = ""; // ✅ Limpia el campo si el código es incorrecto
             });
         }
 
@@ -69,6 +72,35 @@ async function unirseAClase() {
     }
 }
 
+
+document.addEventListener("DOMContentLoaded", async function () {
+    console.log("Cargando clases...");
+    await cargarClases();
+});
+
+// Variables globales para el orden actual
+let ordenActual = {
+    grupos: "nombre", // Puede ser "nombre" o "fecha"
+    materias: "nombre"
+};
+
+// Función para ordenar grupos o materias
+function ordenarClases(lista, tipo) {
+    if (ordenActual[tipo] === "nombre") {
+        return lista.sort((a, b) => a.nombre.localeCompare(b.nombre));
+    } else {
+        /*return lista.sort((a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion));*/
+        // Ordenar por fecha de la más reciente a la más antigua
+        return lista.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
+    }
+}
+
+// Función para cambiar el orden y recargar la vista
+function cambiarOrden(tipo) {
+    ordenActual[tipo] = ordenActual[tipo] === "nombre" ? "fecha" : "nombre";
+    cargarClases(); // Recargar con el nuevo orden
+}
+
 // Cargar clases del alumno
 async function cargarClases() {
     const alumnoId = await obtenerAlumnoId();
@@ -76,7 +108,7 @@ async function cargarClases() {
 
     try {
         const response = await fetch(`/api/Alumno/Clases/${alumnoId}`);
-        const clases = await response.json();
+        let clases = await response.json();
         console.log("Clases recibidas:", clases);
 
         const contenedor = document.getElementById("contenedorClases");
@@ -88,20 +120,46 @@ async function cargarClases() {
         contenedor.innerHTML = ""; // Limpiar contenido previo
 
         if (!clases.length) {
-            console.warn("No hay clases para mostrar.");
             contenedor.innerHTML = "<p>No tienes clases registradas.</p>";
             return;
         }
 
-        clases.forEach(clase => {
-            agregarCardClase(clase);
-        });
+        // Separar en grupos y materias
+        let grupos = clases.filter(clase => clase.esGrupo);
+        let materias = clases.filter(clase => !clase.esGrupo);
+
+        // Ordenar antes de mostrarlas
+        grupos = ordenarClases(grupos, "grupos");
+        materias = ordenarClases(materias, "materias");
+
+        // Agregar encabezado de Grupos con icono de filtro
+        if (grupos.length > 0) {
+            let etiquetaGrupo = document.createElement("h3");
+            etiquetaGrupo.innerHTML = `Grupos 
+                <img src="/Iconos/FILTRO-26.svg" class="icono-filtro" onclick="cambiarOrden('grupos')" title="Ordenar por ${ordenActual.grupos === 'nombre' ? 'fecha' : 'nombre'}">`;
+            etiquetaGrupo.classList.add("separador");
+            contenedor.appendChild(etiquetaGrupo);
+
+            grupos.forEach(clase => agregarCardClase(clase, contenedor));
+        }
+
+        // Agregar encabezado de Materias con icono de filtro
+        if (materias.length > 0) {
+            let etiquetaMateria = document.createElement("h3");
+            etiquetaMateria.innerHTML = `Materias 
+                <img src="/Iconos/FILTRO-26.svg" class="icono-filtro" onclick="cambiarOrden('materias')" title="Ordenar por ${ordenActual.materias === 'nombre' ? 'fecha' : 'nombre'}">`;
+            etiquetaMateria.classList.add("separador");
+            contenedor.appendChild(etiquetaMateria);
+
+            materias.forEach(clase => agregarCardClase(clase, contenedor));
+        }
 
     } catch (error) {
         console.error("Error al cargar las clases:", error);
         alert("Ocurrió un error al cargar las clases.");
     }
 }
+
 
 // Agregar clase a la vista
 function agregarCardClase(clase) {
@@ -232,7 +290,7 @@ async function eliminarClase(id, esGrupo) {
         confirmButtonText: "Sí, eliminar",
         cancelButtonText: "Cancelar"
     });
-
+ 
     if (confirmacion.isConfirmed) {
         try {
             const response = await fetch(`/api/Alumno/EliminarClase/${id}`, {
@@ -254,3 +312,4 @@ async function eliminarClase(id, esGrupo) {
         }
     }
 }
+

@@ -1,4 +1,50 @@
-﻿.menu-container {
+﻿.icono-filtro {
+    width: 90px;
+    height: 90px;
+    cursor: pointer;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+    .icono-filtro:hover {
+        opacity: 0.7;
+    }
+
+.submenu {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    display: none;
+    z-index: 1000;
+}
+
+    .submenu.show-submenu {
+        display: block;
+    }
+
+.submenu-item {
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+    .submenu-item:hover {
+        background: #f0f0f0;
+    }
+
+.separador {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 15px;
+    padding: 5px;
+    border-bottom: 2px solid #007bff;
+    text-align: center;
+
+}
+
+.menu-container {
     position: relative; /* Asegura que el botón se posicione en relación con este contenedor */
     display: inline-block;
 }
