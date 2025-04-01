@@ -65,6 +65,20 @@
 		</div>
 
 	</div>
+
+	@if (TempData["ErrorMensaje"] != null)
+	{
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<script>
+			Swal.fire({
+				icon: 'error',
+				title: 'Error de autenticación',
+				text: decodeURIComponent('@Uri.EscapeDataString(TempData["ErrorMensaje"].ToString())')
+			});
+		</script>
+	}
+
+
 </body>
 
 </html>

@@ -32,7 +32,6 @@ namespace AprendeMasWeb.Controllers.WEB
 
         // Acción HTTP POST para procesar el inicio de sesión
         [HttpPost]
-		[HttpPost]
 		public async Task<IActionResult> IniciarSesion(string email, string password)
 		{
 			if (!ModelState.IsValid)
@@ -41,11 +40,20 @@ namespace AprendeMasWeb.Controllers.WEB
 			var user = await _userManager.FindByEmailAsync(email);
 			if (user == null)
 			{
-				ModelState.AddModelError(string.Empty, "Correo o contraseña incorrectos.");
+				TempData["ErrorMensaje"] = "El correo ingresado no existe.";
 				return View();
 			}
 
 			var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+			if (!result.Succeeded)
+			{
+				TempData["ErrorMensaje"] = "La contraseña es incorrecta.";
+				return View();
+			}
+
+			
+		
+			
 			if (result.Succeeded)
 			{
 				var claims = new List<Claim>
@@ -89,6 +97,8 @@ namespace AprendeMasWeb.Controllers.WEB
 				// Crea una identidad con los claims asignados
 				var claimsIdentity = new ClaimsIdentity(claims, "login");
 				var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+				// Inicia sesión con los claims asignados
 				await _signInManager.SignInWithClaimsAsync(user, isPersistent: false, claims);
 
 				// Redirige según el rol
