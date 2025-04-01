@@ -32,85 +32,88 @@ namespace AprendeMasWeb.Controllers.WEB
 
         // Acción HTTP POST para procesar el inicio de sesión
         [HttpPost]
-        public async Task<IActionResult> IniciarSesion(string email, string password)
-        {
-            if (!ModelState.IsValid) // Verifica si el modelo es válido (evita datos incorrectos o vacíos)
-                return View();
+		[HttpPost]
+		public async Task<IActionResult> IniciarSesion(string email, string password)
+		{
+			if (!ModelState.IsValid)
+				return View();
 
-            var user = await _userManager.FindByEmailAsync(email); // Busca el usuario en la base de datos por su email
-            if (user == null)
-            {
-                ModelState.AddModelError(string.Empty, "Correo o contraseña incorrectos."); // Mensaje de error si no encuentra el usuario
-                return View();
-            }
+			var user = await _userManager.FindByEmailAsync(email);
+			if (user == null)
+			{
+				ModelState.AddModelError(string.Empty, "Correo o contraseña incorrectos.");
+				return View();
+			}
 
-            var result = await _signInManager.CheckPasswordSignInAsync(user, password, false); // Verifica la contraseña
-            if (result.Succeeded) // Si la contraseña es correcta
-            {
-                var claims = new List<Claim> // Lista de claims para almacenar información del usuario
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id) // Guarda el ID del usuario como claim
-                };
+			var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+			if (result.Succeeded)
+			{
+				var claims = new List<Claim>
+		{
+			new Claim(ClaimTypes.NameIdentifier, user.Id)
+		};
 
-                // Verifica si el usuario es un docente
-                var docente = await _context.tbDocentes.FirstOrDefaultAsync(d => d.UserId == user.Id);
-                if (docente != null)
-                {
-                    if (docente.estaAutorizado == null)
-                    {
-                        HttpContext.Session.SetString(Recursos.SessionKeys.Email, email);
-                        return RedirectToAction("VerificarCodigo", "Usuarios");
-                    }
-                    else
-                    {
-                        if (!docente.estaAutorizado.Value)
-                        {
-                            return View();
-                        }
-                        else
-                        {
-                            claims.Add(new Claim("DocenteId", docente.DocenteId.ToString()));
-                        }
-                    }
+				// Verifica si el usuario es Administrador
+				var administrador = await _context.tbAdministradores.FirstOrDefaultAsync(a => a.UserId == user.Id);
+				if (administrador != null)
+				{
+					claims.Add(new Claim("AdministradorId", administrador.AdministradorId.ToString()));
+				}
 
-                }
+				// Verifica si el usuario es Docente
+				var docente = await _context.tbDocentes.FirstOrDefaultAsync(d => d.UserId == user.Id);
+				if (docente != null)
+				{
+					if (docente.estaAutorizado == null)
+					{
+						HttpContext.Session.SetString(Recursos.SessionKeys.Email, email);
+						return RedirectToAction("VerificarCodigo", "Usuarios");
+					}
+					else if (!docente.estaAutorizado.Value)
+					{
+						return View();
+					}
+					else
+					{
+						claims.Add(new Claim("DocenteId", docente.DocenteId.ToString()));
+					}
+				}
 
-                // Verifica si el usuario es un alumno
-                var alumno = await _context.tbAlumnos.FirstOrDefaultAsync(a => a.UserId == user.Id);
-                if (alumno != null)
-                {
-                    claims.Add(new Claim("AlumnoId", alumno.AlumnoId.ToString())); // Agrega el ID del alumno como claim
-                }
+				// Verifica si el usuario es Alumno
+				var alumno = await _context.tbAlumnos.FirstOrDefaultAsync(a => a.UserId == user.Id);
+				if (alumno != null)
+				{
+					claims.Add(new Claim("AlumnoId", alumno.AlumnoId.ToString()));
+				}
 
-                // Crea una identidad basada en los claims
-                var claimsIdentity = new ClaimsIdentity(claims, "login");
-                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+				// Crea una identidad con los claims asignados
+				var claimsIdentity = new ClaimsIdentity(claims, "login");
+				var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+				await _signInManager.SignInWithClaimsAsync(user, isPersistent: false, claims);
 
-                // Inicia sesión con los claims asignados
-                await _signInManager.SignInWithClaimsAsync(user, isPersistent: false, claims);
+				// Redirige según el rol
+				var roles = await _userManager.GetRolesAsync(user);
+				if (roles.Contains("Administrador"))
+				{
+					return RedirectToAction("Index", "Administrador");
+				}
+				else if (roles.Contains("Docente"))
+				{
+					return RedirectToAction("Index", "Docente");
+				}
+				else if (roles.Contains("Alumno"))
+				{
+					return RedirectToAction("Index", "Alumno");
+				}
+			}
 
-                // Redirige al usuario según su rol en el sistema
-                var roles = await _userManager.GetRolesAsync(user);
-                if (roles.Contains("Alumno"))
-                {
-                    return RedirectToAction("Index", "Alumno");
-                }
-                else if (roles.Contains("Docente"))
-                {
-                    return RedirectToAction("Index", "Docente");
-                }
-                else if (roles.Contains("Administrador"))
-                {
-                    return RedirectToAction("Index", "Administrador");
-                }
-            }
-
-            ModelState.AddModelError(string.Empty, "Correo o contraseña incorrectos."); // Mensaje de error si la autenticación falla
-            return View(); // Retorna a la vista de inicio de sesión
-        }
+			ModelState.AddModelError(string.Empty, "Correo o contraseña incorrectos.");
+			return View();
+		}
 
 
-        [HttpPost]
+
+		[HttpPost]
         public async Task<IActionResult> ValidarCodigoAutorizacionDocente([FromBody] ValidarCodigoDocente datos)
         {
             try

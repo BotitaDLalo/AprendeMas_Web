@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using AprendeMasWeb.Recursos;
+using AprendeMasWeb.Models.DBModels;
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtKey = builder.Configuration["jwt:SecretKey"];
@@ -40,6 +41,9 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true; // La cookie de sesi�n solo es accesible desde el servidor
     options.Cookie.IsEssential = true; // Marcar la cookie como esencial
 });
+
+
+
 
 
 // Add services to the container.
@@ -88,6 +92,52 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 });
 
 var app = builder.Build();
+
+
+async Task CrearAdministrador(IServiceProvider serviceProvider)
+{
+	using (var scope = serviceProvider.CreateScope())
+	{
+		var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+		var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+		var context = scope.ServiceProvider.GetRequiredService<DataContext>();
+
+		string email = "admin@aprendemas.com";
+		string password = "Admin123*";
+
+		// Crear el rol de Administrador si no existe
+		if (!await roleManager.RoleExistsAsync("Administrador"))
+		{
+			await roleManager.CreateAsync(new IdentityRole("Administrador"));
+		}
+
+		// Verificar si el usuario ya existe
+		var user = await userManager.FindByEmailAsync(email);
+		if (user == null)
+		{
+			user = new IdentityUser { UserName = email, Email = email, EmailConfirmed = true };
+			var result = await userManager.CreateAsync(user, password);
+			if (result.Succeeded)
+			{
+				await userManager.AddToRoleAsync(user, "Administrador");
+
+				// Registrar en la tabla Administrador
+				var admin = new Administrador
+				{
+					Email = email,
+					UserId = user.Id
+				};
+
+				context.tbAdministradores.Add(admin);
+				await context.SaveChangesAsync();
+			}
+		}
+	}
+}
+
+// Llamar al método después de `var app = builder.Build();`
+await CrearAdministrador(app.Services);
+
 
 // Usar el middleware de sesiones
 

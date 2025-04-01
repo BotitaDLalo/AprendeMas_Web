@@ -22,6 +22,38 @@ namespace AprendeMasWeb.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("AprendeMasWeb.Models.DBModels.Administrador", b =>
+                {
+                    b.Property<int>("AdministradorId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AdministradorId"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("AdministradorId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("tbAdministradores");
+                });
+
             modelBuilder.Entity("AprendeMasWeb.Models.DBModels.EventosAgendaAlumno", b =>
                 {
                     b.Property<int>("EventoAlumnoId")
@@ -734,6 +766,17 @@ namespace AprendeMasWeb.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("AprendeMasWeb.Models.DBModels.Administrador", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("AprendeMasWeb.Models.DBModels.EventosAgendaAlumno", b =>

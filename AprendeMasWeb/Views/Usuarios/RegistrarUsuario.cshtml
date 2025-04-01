@@ -53,6 +53,14 @@
 				<option value="Docente">Docente</option>
 				<option value="Alumno">Alumno</option>
 			</select>
+
+			<div class="input-box">
+				<input type="email" class="input-field" id="email" name="email" required
+					   value="@TempData["GoogleEmail"]" readonly />
+				<label for="email"></label>
+			</div>
+
+
 			<div class="input-box">
 				<input asp-controller="Usuarios" asp-action="VerificarCodigo" type="submit" class="input-submit" value="Registrarse">
 			</div>

@@ -12,8 +12,9 @@ namespace AprendeMasWeb.Data
         {
         }
 
-        // DbSets para las entidades
-        public DbSet<tbUsuariosFcmTokens> tbUsuariosFcmTokens { get; set; }
+		// DbSets para las entidades
+		public DbSet<Administrador> tbAdministradores { get; set; } // Nueva tabla Administrador
+		public DbSet<tbUsuariosFcmTokens> tbUsuariosFcmTokens { get; set; }
         public DbSet<tbAlumnos> tbAlumnos { get; set; }
         public DbSet<tbDocentes> tbDocentes { get; set; }
         public DbSet<tbAlumnosGrupos> tbAlumnosGrupos { get; set; }
@@ -166,6 +167,10 @@ namespace AprendeMasWeb.Data
 			.WithMany()
 			.HasForeignKey(e => e.AlumnoId)
 			.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Administrador>()
+				.HasIndex(a => a.Email)
+				.IsUnique();
 
 			#region Eventos grupos
 			modelBuilder.Entity<tbEventosGrupos>()

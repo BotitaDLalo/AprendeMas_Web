@@ -37,22 +37,44 @@ namespace AprendeMasWeb.Controllers.WEB
 			var info = await _signInManager.GetExternalLoginInfoAsync();
 			if (info == null)
 			{
-				return RedirectToAction("Registrar", "Usuarios");
+				return RedirectToAction("IniciarSesion", "Cuenta");
 			}
 
 			var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+			if (string.IsNullOrEmpty(email))
+			{
+				return RedirectToAction("IniciarSesion", "Cuenta");
+			}
+
 			var existingUser = await _userManager.FindByEmailAsync(email);
 
 			if (existingUser == null)
 			{
-				// Guardamos el email en TempData para usarlo en la vista de registro
+				// Guardamos el email en TempData para autocompletar el registro
 				TempData["GoogleEmail"] = email;
-				return RedirectToAction("Registrar", "Usuarios");
+				return RedirectToAction("ValidarCorreo", "Usuarios");
 			}
 
-			// Si el usuario ya existe, inicia sesión
+			// Obtener los roles del usuario
+			var roles = await _userManager.GetRolesAsync(existingUser);
+
+			// Iniciar sesión
 			await _signInManager.SignInAsync(existingUser, isPersistent: false);
-			return RedirectToAction("IniciarSesion", "Cuenta");
+
+			// Redirigir según el rol del usuario
+			if (roles.Contains("Alumno"))
+			{
+				return RedirectToAction("Index", "Alumno");
+			}
+			else if (roles.Contains("Docente"))
+			{
+				return RedirectToAction("Index", "Docente");
+			}
+			else
+			{
+				// Si el usuario no tiene un rol específico, redirigirlo a una página general
+				return RedirectToAction("IniciarSesion", "Cuenta");
+			}
 		}
 	}
 }
