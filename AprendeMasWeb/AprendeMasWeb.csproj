@@ -11,6 +11,7 @@
     <Content Remove="wwwroot\js\Alumnos\ActividadesM.js" />
     <Content Remove="wwwroot\js\Alumnos\Avisos.js" />
     <Content Remove="wwwroot\js\InicioSesion\Auto-Focus.js" />
+    <Content Remove="wwwroot\js\InicioSesion\PasswordValidaciones.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,6 +23,7 @@
     <_ContentIncludedByDefault Remove="wwwroot\js\Alumnos\ActividadesM.js" />
     <_ContentIncludedByDefault Remove="wwwroot\js\Alumnos\Avisos.js" />
     <_ContentIncludedByDefault Remove="wwwroot\js\InicioSesion\Auto-Focus.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\InicioSesion\PasswordValidaciones.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,6 +57,7 @@
     <None Include="wwwroot\js\Alumnos\Avisos.js" />
     <None Include="wwwroot\js\Docente\IA.js" />
     <None Include="wwwroot\js\InicioSesion\Auto-Focus.js" />
+    <None Include="wwwroot\js\InicioSesion\PasswordValidaciones.js" />
   </ItemGroup>
 
 </Project>

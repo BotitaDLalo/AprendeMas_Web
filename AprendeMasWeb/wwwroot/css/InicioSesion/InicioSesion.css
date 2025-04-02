@@ -56,8 +56,8 @@ body {
 
 .login-box {
     position: relative;
-    width: 470px;
-    height: 580px;
+    width: 574px;
+    height: 766px;
     padding: 10px 30px;
     background: #FFF;
     border: 1px solid #ddd;
@@ -66,12 +66,13 @@ body {
 
 .signin-box {
     position: relative;
-    width: 470px;
-    height: 650px;
+    width: 574px;
+    height: 766px;
     padding: 10px 30px;
     background: #FFF;
     border: 1px solid #ddd;
     border-radius: 10px;
+    margin-bottom: 40px; /* Agrega un espacio de 20px debajo */
 }
 
 .restablecer-box {

@@ -33,6 +33,11 @@ namespace AprendeMasWeb.Controllers.WEB
         {
             return View();
         }
+
+		public IActionResult RestablecerContraseña()
+		{
+			return View();
+		}
 		[HttpGet]
 		public IActionResult Registrar()
 		{
