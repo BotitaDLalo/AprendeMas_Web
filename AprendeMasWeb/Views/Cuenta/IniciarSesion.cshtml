@@ -32,11 +32,11 @@
 		<form asp-action="IniciarSesion" asp-controller="Cuenta" method="post">
 			<div class="input-box">
 				<input type="text" class="input-field" id="email" name="email" required value="@Context.Request.Query["email"]" />
-				<label for="email">Correo electrónico</label>
+				<label for="email"><i class="fa-solid fa-at" style="margin-right: 5px;"></i>Correo electrónico</label>
 			</div>
 			<div class="input-box" style="position: relative;">
 				<input type="password" class="input-field" id="password" name="password" autocomplete="off" required>
-				<label for="password">Contraseña</label>
+				<label for="password"><i class="fa-solid fa-lock" style="margin-right: 5px;"></i>Contraseña</label>
 				<div id="passwordRequirements" class="password-requirements">
 					<span id="length" class="requirement">Mínimo 8 caracteres</span>
 					<span id="uppercase" class="requirement">Una mayúscula</span>
