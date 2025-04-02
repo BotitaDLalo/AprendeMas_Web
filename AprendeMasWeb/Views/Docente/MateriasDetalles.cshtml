@@ -96,11 +96,53 @@
 
         </div>
 
-        <!--contenedor que gestiona las calificaciones-->
+        <!-- Contenedor que gestiona las calificaciones -->
         <div id="seccion-calificaciones" class="seccion" style="display: none;">
-            <h2>Calificaciones</h2>
-            <p>Notas de los estudiantes...</p>
+            <div class="container mt-4">
+                <!-- Encabezado -->
+                <h3 class="text-center mb-3">Consulta de Calificaciones</h3>
+
+                <!-- Contenedor del Select y Botón -->
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <select id="select-actividad" class="form-select w-50">
+                    </select>
+
+                    <button class="btn btn-primary" onclick="consultarCalificaciones()">Consultar Calificaciones</button>
+                </div>
+
+                <!-- Tabla de Calificaciones -->
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover text-center shadow rounded">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th>Nombre del Alumno</th>
+                                <th>Comentario</th>
+                                <th>Calificación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Juan Pérez</td>
+                                <td>Buen desempeño</td>
+                                <td>95</td>
+                            </tr>
+                            <tr>
+                                <td>María López</td>
+                                <td>Necesita mejorar</td>
+                                <td>75</td>
+                            </tr>
+                            <tr>
+                                <td>Carlos García</td>
+                                <td>Excelente trabajo</td>
+                                <td>100</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
+
+
     </div>
 </div>
 
@@ -113,6 +155,7 @@
     <script src="~/js/Docente/Grupos/scriptsAvisos.js"></script>
     <script src="~/js/Docente/Grupos/scriptsActividades.js"></script>
     <script src="~/js/Docente/Grupos/scriptsAlumnos.js"></script>
+    <script src="~/js/Docente/Grupos/scriptsCalificaciones.js"></script>
     <script src="~/js/Docente/Grupos/ActividadIA.js" asp-append-version="true"></script>
     <!-- Incluye un archivo CSS específico para los estilos de las materias. -->
 }

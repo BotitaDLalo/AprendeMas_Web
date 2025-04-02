@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("fechaLimite").innerText =
                         data.fechaLimite ? new Date(data.fechaLimite).toLocaleDateString("es-ES") : "No disponible";
 
-                    document.getElementById("tipoActividad").innerText = data.tipoActividad || "No disponible";
+                    document.getElementById("tipoActividad").innerText = data.tipoActividad || "Actividad";
                     document.getElementById("puntajeMaximo").innerText = data.puntaje || "0";
                     puntajeMaximo = data.puntaje; //Se guarda puntaje maximo para poder usarla como limite
                     //document.getElementById("alumnosEntregados").innerText = data.alumnosEntregados || `0 de 0`;

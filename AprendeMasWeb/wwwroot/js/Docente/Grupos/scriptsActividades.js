@@ -78,6 +78,7 @@ async function registrarActividad() {
         setTimeout(() => {
             document.getElementById("actividadesForm").reset();
             cargarActividadesDeMateria(); // Recargar las actividades
+            cargarActividadesEnSelect(); //Actualiza el select
         }, 2500);
 
     } catch (error) {
@@ -234,7 +235,8 @@ async function editarActividad(actividadId) {
         if (!updateResponse.ok) throw new Error("No se pudo actualizar la actividad.");
 
         Swal.fire("Actualizado", "La actividad ha sido editada correctamente.", "success");
-        cargarActividadesDeMateria();
+        cargarActividadesDeMateria(); //Actualiza la vista
+        cargarActividadesEnSelect(); //Actualiza en select 
     } catch (error) {
         Swal.fire("Error", error.message, "error");
     }

@@ -43,6 +43,43 @@ namespace AprendeMasWeb.Controllers.WEB
             return Ok(new { mensaje = "Materia creada con exito.", materiaId = materia.MateriaId });
         }
 
+
+        // Controlador para crear una nueva materia y asociarla a un grupo ya existente.
+        [HttpPost("AgregarMateriaAlGrupo/{grupoId}")]
+        public async Task<IActionResult> AgregarMateriaAlGrupo(int grupoId, [FromBody] tbMaterias materia)
+        {
+            // Verifica si el modelo enviado es válido
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Datos de materia inválidos.");
+            }
+
+            // Verifica si el grupo existe
+            var grupoExiste = await _context.tbGrupos.AnyAsync(g => g.GrupoId == grupoId);
+            if (!grupoExiste)
+            {
+                return NotFound("El grupo especificado no existe.");
+            }
+
+            // Genera un código de acceso para la materia
+            materia.CodigoAcceso = ObtenerClaveMateria();
+            // Agrega la materia a la base de datos
+            _context.tbMaterias.Add(materia);
+            await _context.SaveChangesAsync(); // Guarda para obtener el ID de la materia generada
+
+            // Crea la relación en la tabla tbGruposMaterias
+            var grupoMateria = new tbGruposMaterias
+            {
+                GrupoId = grupoId,
+                MateriaId = materia.MateriaId
+            };
+
+            _context.tbGruposMaterias.Add(grupoMateria);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = "Materia creada y asociada al grupo con éxito.", materiaId = materia.MateriaId });
+        }
+
         // Método privado que genera una clave aleatoria de 10 caracteres para la materia
         private string ObtenerClaveMateria()
         {
@@ -51,6 +88,8 @@ namespace AprendeMasWeb.Controllers.WEB
             return new string(Enumerable.Range(0, 10).Select(_ => (char)random.Next('A', 'Z')).ToArray());
         }
         
+
+
 
         // Controlador para obtener las materias sin grupo y sus 2 actividades más recientes
         [HttpGet("ObtenerMateriasSinGrupo/{docenteId}")]

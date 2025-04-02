@@ -518,7 +518,6 @@ async function handleCardClick(grupoId) {
 
 
 //Funciones de contenedor de grupo
-
 async function eliminarGrupo(grupoId) {
     Swal.fire({
         title: "¿Qué deseas eliminar?",
@@ -576,10 +575,70 @@ async function eliminarGrupo(grupoId) {
     });
 }
 
-
+//Funcion para agregar al grupo una nueva materia
 async function agregarMateriaAlGrupo(id) {
-    alert("Agregar Materia Al Grupo " + id); // Muestra una alerta indicando que el grupo será desactivado
+    const { value: formValues } = await Swal.fire({
+        title: "Añadir materia al grupo",
+        html:
+            '<input id="swal-nombre" class="swal2-input" placeholder="Nombre de la materia">' +
+            '<input id="swal-descripcion" class="swal2-input" placeholder="Descripción">',
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: "Agregar",
+        preConfirm: () => {
+            return {
+                nombre: document.getElementById("swal-nombre").value.trim(),
+                descripcion: document.getElementById("swal-descripcion").value.trim()
+            };
+        }
+    });
+
+    if (!formValues || !formValues.nombre || !formValues.descripcion) {
+        Swal.fire("Atención", "Debes completar todos los campos.", "warning");
+        return;
+    }
+
+    if (typeof docenteIdGlobal === "undefined") {
+        Swal.fire("Error", "No se ha encontrado el ID del docente.", "error");
+        return;
+    }
+
+    const nuevaMateria = {
+        NombreMateria: formValues.nombre,
+        Descripcion: formValues.descripcion,
+        CodigoColor: "#2196F3",
+        DocenteId: docenteIdGlobal
+    };
+
+    try {
+        const response = await fetch(`/api/MateriasApi/AgregarMateriaAlGrupo/${id}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(nuevaMateria)
+        });
+
+        let data;
+        try {
+            data = await response.json();
+        } catch {
+            data = { mensaje: "Error desconocido en el servidor." };
+        }
+
+        if (response.ok) {
+            Swal.fire("Éxito", "Materia creada y asociada al grupo correctamente", "success");
+            cargarGrupos();
+        } else {
+            Swal.fire("Error", data.mensaje || "Ocurrió un error", "error");
+        }
+    } catch (error) {
+        console.error("Error al agregar la materia:", error);
+        Swal.fire("Error", "Ocurrió un error al intentar agregar la materia.", "error");
+    }
 }
+
+
 
 
 

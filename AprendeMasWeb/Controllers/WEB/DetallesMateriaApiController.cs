@@ -587,6 +587,19 @@ namespace AprendeMasWeb.Controllers.WEB
         }
 
 
+        // Obtener solo ID y Nombre de las actividades por materia
+        [HttpGet("ObtenerActividadParaSelect/{materiaId}")]
+        public async Task<IActionResult> ObtenerActividadesSimples(int materiaId)
+        {
+            var actividades = await _context.tbActividades
+                .Where(a => a.MateriaId == materiaId)
+                .Select(a => new { a.ActividadId, a.NombreActividad }) // Solo ID y Nombre
+                .ToListAsync();
+
+            return Ok(actividades);
+        }
+
+
 
 
     }
