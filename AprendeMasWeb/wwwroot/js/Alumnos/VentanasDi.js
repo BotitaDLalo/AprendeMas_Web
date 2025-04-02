@@ -3,7 +3,7 @@
 
     document.getElementById("avisos-tab").addEventListener("click", () => cargarContenido("avisos", "Avisos"));
     document.getElementById("actividades-tab").addEventListener("click", () => cargarContenido("actividades", "Actividades"));
-    document.getElementById("alumnos-tab").addEventListener("click", () => cargarContenido("alumnos", "Alumnos"));
+   
     document.getElementById("calificaciones-tab").addEventListener("click", () => cargarContenido("calificaciones", "Calificaciones"));
 
     // Cargar Avisos por defecto

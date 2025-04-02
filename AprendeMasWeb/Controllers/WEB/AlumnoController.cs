@@ -222,61 +222,7 @@ namespace AprendeMasWeb.Controllers.WEB
 
 
 
-        public async Task<IActionResult> Alumnos(int materiaId)
-        {
-            var inscritos = await _context.tbAlumnosMaterias
-                .Where(am => am.MateriaId == materiaId)
-                .ToListAsync();
 
-            // Agregar log para verificar el contenido de inscritos
-            Console.WriteLine($"Alumnos inscritos en la materia {materiaId}: {inscritos.Count}");
-
-            if (inscritos == null || !inscritos.Any())
-            {
-                ViewBag.Mensaje = "No hay alumnos inscritos en esta materia.";
-                return PartialView("_Alumnos", new List<dynamic>());
-            }
-
-            var alumnos = await _context.tbAlumnosMaterias
-                .Where(am => am.MateriaId == materiaId)
-                .Include(am => am.Alumnos)
-                .Select(am => new
-                {
-                    am.Alumnos.AlumnoId,
-                    NombreCompleto = $"{am.Alumnos.Nombre} {am.Alumnos.ApellidoPaterno} {am.Alumnos.ApellidoMaterno}"
-                })
-                .ToListAsync();
-
-            Console.WriteLine($"Alumnos encontrados: {alumnos.Count}");
-
-            return PartialView("_Alumnos", alumnos);
-        }
-
-
-
-
-        [AllowAnonymous]
-        [HttpGet("api/Alumno/Alumnos/{materiaId}")]
-        public async Task<IActionResult> ObtenerAlumnos(int materiaId)
-        {
-
-            var alumnos = await (from am in _context.tbAlumnosMaterias
-                                 join a in _context.tbAlumnos on am.AlumnoId equals a.AlumnoId
-                                 where am.MateriaId == materiaId
-                                 select new
-                                 {
-                                     a.AlumnoId,
-                                     NombreCompleto = $"{a.Nombre} {a.ApellidoPaterno} {a.ApellidoMaterno}"
-                                 }).ToListAsync();
-
-
-            if (!alumnos.Any())
-            {
-                return NotFound(new { mensaje = "No hay alumnos inscritos en esta materia." });
-            }
-
-            return Ok(alumnos);
-        }
 
 
         public IActionResult Calificaciones()
@@ -285,23 +231,7 @@ namespace AprendeMasWeb.Controllers.WEB
         }
 
 
-
-
-
-        public IActionResult Perfil()
-        {
-            // Lógica para mostrar el perfil del alumno
-            return View();
-        }
-
-
-
-        public IActionResult Materia()
-        {
-            // Lógica para mostrar las actividades del alumno
-            return View();
-        }
-
+   
 
     }
 
