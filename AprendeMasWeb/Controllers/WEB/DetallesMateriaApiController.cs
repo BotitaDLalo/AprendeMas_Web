@@ -599,6 +599,38 @@ namespace AprendeMasWeb.Controllers.WEB
             return Ok(actividades);
         }
 
+        //Peticion para obtener calificaciones por actividad
+        [HttpGet("ObtenerCalificacionesPorActividad/{actividadId}")]
+        public async Task<IActionResult> ObtenerCalificacionesPorActividad(int actividadId)
+        {
+            // Obtener el puntaje máximo de la actividad
+            var puntajeMaximo = await _context.tbActividades
+                .Where(a => a.ActividadId == actividadId)
+                .Select(a => a.Puntaje)
+                .FirstOrDefaultAsync();
+
+            // Obtener los datos de los alumnos con sus entregas y calificaciones
+            var resultados = await (from aa in _context.tbAlumnosActividades
+                                    where aa.ActividadId == actividadId
+                                    join a in _context.tbAlumnos on aa.AlumnoId equals a.AlumnoId
+                                    join ea in _context.tbEntregablesAlumno on aa.AlumnoActividadId equals ea.AlumnoActividadId into entregas
+                                    from ea in entregas.DefaultIfEmpty()
+                                    join c in _context.tbCalificaciones on ea.EntregaId equals c.EntregaId into calificaciones
+                                    from c in calificaciones.DefaultIfEmpty()
+                                    select new
+                                    {
+                                        AlumnoId = a.AlumnoId,
+                                        NombreCompleto = a.ApellidoPaterno + " " + a.ApellidoMaterno + " " + a.Nombre,
+                                        EstatusEntrega = aa.EstatusEntrega == true ? "Entregado" : "No entregado",
+                                        Comentarios = c != null ? c.Comentarios : "Sin comentario",
+                                        Calificacion = c != null ? c.Calificacion.ToString() : "Sin calificación",
+                                        PuntajeMaximo = puntajeMaximo
+                                    }).ToListAsync();
+
+            return Ok(resultados);
+        }
+
+
 
 
 

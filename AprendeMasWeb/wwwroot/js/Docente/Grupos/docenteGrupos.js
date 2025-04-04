@@ -515,8 +515,6 @@ async function handleCardClick(grupoId) {
 
 
 
-
-
 //Funciones de contenedor de grupo
 async function eliminarGrupo(grupoId) {
     Swal.fire({
