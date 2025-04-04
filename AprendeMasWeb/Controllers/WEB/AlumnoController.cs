@@ -1,4 +1,5 @@
 ﻿using AprendeMasWeb.Data;
+using AprendeMasWeb.Models.DBModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -252,6 +253,45 @@ namespace AprendeMasWeb.Controllers.WEB
 			return Ok(materia);
 		}
 
+		public class EntregaRequest
+		{
+			public int AlumnoId { get; set; }
+			public int ActividadId { get; set; }
+			public string Respuesta { get; set; } = string.Empty;
+		}
+
+		[HttpPost("api/Alumno/EntregarActividad")]
+		public async Task<IActionResult> EntregarActividad([FromBody] EntregaRequest entrega)
+		{
+			// Verifica si ya se entregó
+			var yaExiste = await _context.tbAlumnosActividades
+				.AnyAsync(e => e.AlumnoId == entrega.AlumnoId && e.ActividadId == entrega.ActividadId);
+
+			if (yaExiste)
+				return BadRequest(new { mensaje = "Ya has entregado esta actividad. " + entrega.AlumnoId + "::" + entrega.ActividadId });
+
+			var alumnoActividad = new tbAlumnosActividades
+			{
+				AlumnoId = entrega.AlumnoId,
+				ActividadId = entrega.ActividadId,
+				FechaEntrega = DateTime.Now,
+				EstatusEntrega = true
+			};
+
+			_context.tbAlumnosActividades.Add(alumnoActividad);
+			await _context.SaveChangesAsync();
+
+			var entregable = new tbEntregablesAlumno
+			{
+				AlumnoActividadId = alumnoActividad.AlumnoActividadId,
+				Respuesta = entrega.Respuesta
+			};
+
+			_context.tbEntregablesAlumno.Add(entregable);
+			await _context.SaveChangesAsync();
+
+			return Ok(new { mensaje = "Actividad entregada correctamente." });
+		}
 
 
 
