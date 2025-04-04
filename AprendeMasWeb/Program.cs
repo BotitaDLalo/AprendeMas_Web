@@ -24,7 +24,7 @@ if (string.IsNullOrEmpty(firebaseCredentialPath))
 
 FirebaseApp.Create(new AppOptions()
 {
-    Credential = GoogleCredential.FromFile(firebaseCredentialPath),
+   Credential = GoogleCredential.FromFile(firebaseCredentialPath),
 });
 
 builder.Services.AddAuthentication()
