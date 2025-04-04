@@ -211,31 +211,37 @@ namespace AprendeMasWeb.Controllers.WEB
         }
 
         [AllowAnonymous]
-        [HttpGet("api/Alumno/Actividades/{materiaId}")]
-        public async Task<IActionResult> ObtenerActividades(int materiaId)
+[HttpGet("api/Alumno/Actividades/{materiaId}/{alumnoId}")]
+public async Task<IActionResult> ObtenerActividades(int materiaId, int alumnoId)
+{
+    var actividades = await _context.tbActividades
+        .Where(a => a.MateriaId == materiaId)
+        .OrderByDescending(a => a.FechaCreacion)
+        .Select(a => new
         {
-            var actividades = await _context.tbActividades
-                .Where(a => a.MateriaId == materiaId)
-                .OrderByDescending(a => a.FechaCreacion) // Ordenar por fecha de creación, las más recientes primero
-                .Select(a => new
-                {
-                    a.ActividadId,
-                    a.NombreActividad,
-                    a.Descripcion,
-                    a.FechaCreacion,
-                    a.FechaLimite,
-                    a.Puntaje,
-                    TipoActividad = a.TiposActividades != null ? a.TiposActividades.Nombre : "Sin tipo"
-                })
-                .ToListAsync();
+            a.ActividadId,
+            a.NombreActividad,
+            a.Descripcion,
+            a.FechaCreacion,
+            a.FechaLimite,
+            a.Puntaje,
+            TipoActividad = a.TiposActividades != null ? a.TiposActividades.Nombre : "Sin tipo",
+			Calificacion = _context.tbCalificaciones
+	.Where(c => c.EntregablesAlumno!.AlumnosActividades!.AlumnoId == alumnoId
+			 && c.EntregablesAlumno.AlumnosActividades.ActividadId == a.ActividadId)
+	.Select(c => new { c.Calificacion, c.Comentarios })
+	.FirstOrDefault()
+		})
+        .ToListAsync();
 
-            if (!actividades.Any())
-            {
-                return NotFound(new { mensaje = "No hay actividades registradas para esta materia." });
-            }
+    if (!actividades.Any())
+    {
+        return NotFound(new { mensaje = "No hay actividades registradas para esta materia." });
+    }
 
-            return Ok(actividades);
-        }
+    return Ok(actividades);
+}
+
 
 
 		[AllowAnonymous]

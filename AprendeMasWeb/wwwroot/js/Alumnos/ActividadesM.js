@@ -1,68 +1,69 @@
 ﻿document.addEventListener("DOMContentLoaded", async () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const nombreMateria = urlParams.get("nombre");
+    const urlParams = new URLSearchParams(window.location.search);
+    const nombreMateria = urlParams.get("nombre");
 
-        if (!nombreMateria) {
-            document.getElementById("contenedorActividades").innerHTML = "<p>Materia no válida.</p>";
+    if (!nombreMateria) {
+        document.getElementById("contenedorActividades").innerHTML = "<p>Materia no válida.</p>";
+        return;
+    }
+
+    try {
+        // Obtener el ID de la materia
+        const responseMateria = await fetch(`/api/Materias/ObtenerIdPorNombre?nombre=${encodeURIComponent(nombreMateria)}`);
+        const materia = await responseMateria.json();
+
+        if (!materia.materiaId) {
+            document.getElementById("contenedorActividades").innerHTML = "<p>No se encontró la materia.</p>";
             return;
         }
 
-        try {
-            // Obtener el ID de la materia por nombre
-            const responseMateria = await fetch(`/api/Materias/ObtenerIdPorNombre?nombre=${encodeURIComponent(nombreMateria)}`);
-            const materia = await responseMateria.json();
-
-            if (!materia.materiaId) {
-                document.getElementById("contenedorActividades").innerHTML = "<p>No se encontró la materia.</p>";
-                return;
-            }
-
-            const response = await fetch(`/api/Alumno/Actividades/${materia.materiaId}`);
-            if (!response.ok) {
-                throw new Error('No se pudo obtener las actividades');
-            }
-            const actividades = await response.json();
-
-            if (!Array.isArray(actividades)) {
-                document.getElementById("contenedorActividades").innerHTML = `<p>${actividades.mensaje}</p>`;
-                return;
-            }
-
-            const contenedor = document.getElementById("contenedorActividades");
-            contenedor.innerHTML = "";
-
-            actividades.forEach(a => {
-                const card = `
-    <div class="card mb-3 shadow">
-        <div class="card-body">
-            <h5 class="card-title">${a.nombreActividad}</h5>
-            <p class="card-text">${a.descripcion}</p>
-            <p class="card-text"><strong>Fecha de entrega:</strong> ${new Date(a.fechaLimite).toLocaleDateString()}</p>
-            <p class="card-text"><strong>Puntaje:</strong> ${a.puntaje}</p>
-            <p class="card-text"><strong>Tipo:</strong> ${a.tipoActividad}</p>
-
-            <p id="res-entrega" class="card-text"><strong>Respuesta</strong> </p>
-
-            <button class="btn btn-primary mt-2" onclick="mostrarFormularioEntrega(${a.actividadId})">Entregar Actividad</button>
-
-            <div id="formEntrega-${a.actividadId}" class="mt-3" style="display:none;">
-                <textarea class="form-control mb-2" id="respuesta-${a.actividadId}" placeholder="Escribe tu respuesta..."></textarea>
-                <button class="btn btn-success" onclick="enviarEntrega(${a.actividadId})">Enviar</button>
-            </div>
-
-
-
-        </div>
-    </div>
-`;
-
-                contenedor.innerHTML += card;
-            });
-
-        } catch (error) {
-            console.error("Error al cargar actividades:", error);
-            document.getElementById("contenedorActividades").innerHTML = "<p>Error al cargar actividades.</p>";
+        const response = await fetch(`/api/Alumno/Actividades/${materia.materiaId}/${alumnoIdGlobal}`);
+        if (!response.ok) {
+            throw new Error('No se pudo obtener las actividades');
         }
+        const actividades = await response.json();
+
+        if (!Array.isArray(actividades)) {
+            document.getElementById("contenedorActividades").innerHTML = `<p>${actividades.mensaje}</p>`;
+            return;
+        }
+
+        const contenedor = document.getElementById("contenedorActividades");
+        contenedor.innerHTML = "";
+
+        actividades.forEach(a => {
+            const calificacionHTML = a.calificacion
+                ? `<p class="card-text"><strong>Calificación:</strong> ${a.calificacion.calificacion} </p>
+                   <p class="card-text"><strong>Comentarios:</strong> ${a.calificacion.comentarios || 'Sin comentarios'}</p>`
+                : '<p class="card-text"><strong>Calificación:</strong> No evaluada aún</p>';
+
+            const card = `
+                <div class="card mb-3 shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">${a.nombreActividad}</h5>
+                        <p class="card-text">${a.descripcion}</p>
+                        <p class="card-text"><strong>Fecha de entrega:</strong> ${new Date(a.fechaLimite).toLocaleDateString()}</p>
+                        <p class="card-text"><strong>Puntaje:</strong> ${a.puntaje}</p>
+                        <p class="card-text"><strong>Tipo:</strong> ${a.tipoActividad}</p>
+                        ${calificacionHTML}
+
+                        <button class="btn btn-primary mt-2" onclick="mostrarFormularioEntrega(${a.actividadId})">Entregar Actividad</button>
+
+                        <div id="formEntrega-${a.actividadId}" class="mt-3" style="display:none;">
+                            <textarea class="form-control mb-2" id="respuesta-${a.actividadId}" placeholder="Escribe tu respuesta..."></textarea>
+                            <button class="btn btn-success" onclick="enviarEntrega(${a.actividadId})">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            contenedor.innerHTML += card;
+        });
+
+    } catch (error) {
+        console.error("Error al cargar actividades:", error);
+        document.getElementById("contenedorActividades").innerHTML = "<p>Error al cargar actividades.</p>";
+    }
 });
 
 
