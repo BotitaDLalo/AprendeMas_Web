@@ -53,7 +53,13 @@
             ${calificacionHTML}
             
             <div class="respuesta-entrega">
-                <p id="res-entrega" class="card-text"><strong>Respuesta:</strong> ${a.respuesta || 'No has entregado aún esta actividad.'}</p>
+               <p id="res-entrega" class="card-text">
+  <strong>Respuesta:</strong>
+  <a href="${a.respuesta || '#'}" target="_blank">
+    ${a.respuesta || 'No has entregado aún esta actividad.'}
+  </a>
+</p>
+
                 <button class="btn btn-primary btn-editar" onclick="mostrarFormularioEntrega(${a.actividadId})">
                     ${entregada ? 'Editar Entrega' : 'Entregar Actividad'}
                 </button>
