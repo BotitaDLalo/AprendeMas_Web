@@ -1,22 +1,63 @@
 ﻿document.addEventListener("DOMContentLoaded", function () {
     console.log("Detalle de clase cargado...");
 
-    document.getElementById("avisos-tab").addEventListener("click", () => cargarContenido("avisos", "Avisos"));
-    document.getElementById("actividades-tab").addEventListener("click", () => cargarContenido("actividades", "Actividades"));
-   
-    document.getElementById("calificaciones-tab").addEventListener("click", () => cargarContenido("calificaciones", "Calificaciones"));
+    // Verifica que los elementos existen antes de asignar eventos
+    const avisosTab = document.getElementById("avisos-tab");
+    const actividadesTab = document.getElementById("actividades-tab");
+    const calificacionesTab = document.getElementById("calificaciones-tab");
+
+    if (avisosTab) {
+        avisosTab.addEventListener("click", () => cargarContenido("avisos", "Avisos"));
+    }
+
+    if (actividadesTab) {
+        actividadesTab.addEventListener("click", () => cargarContenido("actividades", "Actividades"));
+    }
+
+    if (calificacionesTab) {
+        calificacionesTab.addEventListener("click", () => cargarContenido("calificaciones", "Calificaciones"));
+    }
 
     // Cargar Avisos por defecto
-    cargarContenido("avisos", "Avisos");
+    if (avisosTab) {
+        cargarContenido("actividades", "Actividades");
+    }
 });
+
 
 function cargarContenido(seccion, nombreVista) {
     console.log(`Cargando ${nombreVista}...`);
 
+    const contenidoDiv = document.getElementById(`contenido${nombreVista}`);
+
+    if (!contenidoDiv) {
+        console.error(`El contenedor contenido${nombreVista} no existe.`);
+        return;
+    }
+
+    // Verifica si ya hay contenido antes de hacer la petición
+    if (contenidoDiv.innerHTML.trim() !== "") {
+        console.log(`${nombreVista} ya está cargado, no se hace nueva petición.`);
+        return;
+    }
+
     fetch(`/Alumno/${nombreVista}`)
         .then(response => response.text())
         .then(html => {
-            document.getElementById(`contenido${nombreVista}`).innerHTML = html;
+            contenidoDiv.innerHTML = html;
         })
         .catch(error => console.error(`Error al cargar ${nombreVista}:`, error));
 }
+
+document.querySelectorAll(".nav-link").forEach(tab => {
+    tab.addEventListener("click", function () {
+        const targetId = this.getAttribute("href").replace("#", "");
+
+        document.querySelectorAll(".tab-pane").forEach(pane => {
+            pane.classList.remove("show", "active");
+        });
+
+        document.getElementById(targetId).classList.add("show", "active");
+        cargarContenido(targetId, targetId.charAt(0).toUpperCase() + targetId.slice(1));
+    });
+});

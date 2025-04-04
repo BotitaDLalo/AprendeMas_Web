@@ -122,70 +122,86 @@ namespace AprendeMasWeb.Controllers.WEB
 
 
 
-        public async Task<IActionResult> Avisos(int alumnoId, int? materiaId)
-        {
-            var query = _context.tbAvisos.AsQueryable();
+		public async Task<IActionResult> Avisos(int alumnoId, int? materiaId)
+		{
+			var query = _context.tbAvisos.AsQueryable();
 
-            if (materiaId.HasValue)
-            {
-                query = query.Where(a => a.MateriaId == materiaId.Value);
-            }
-            else
-            {
-                query = query.Where(a => _context.tbAlumnosGrupos.Any(ag => ag.AlumnoId == alumnoId && ag.GrupoId == a.GrupoId)
-                                     || _context.tbAlumnosMaterias.Any(am => am.AlumnoId == alumnoId && am.MateriaId == a.MateriaId));
-            }
+			if (materiaId.HasValue)
+			{
+				// Filtra solo por la materia seleccionada
+				query = query.Where(a => a.MateriaId == materiaId.Value);
+			}
+			else
+			{
+				// Filtra por las materias y grupos del alumno
+				var grupoIds = await _context.tbAlumnosGrupos
+					.Where(ag => ag.AlumnoId == alumnoId)
+					.Select(ag => ag.GrupoId)
+					.ToListAsync();
 
-            var avisos = await query.ToListAsync();
+				var materiaIds = await _context.tbAlumnosMaterias
+					.Where(am => am.AlumnoId == alumnoId)
+					.Select(am => am.MateriaId)
+					.ToListAsync();
 
-            return PartialView("_Avisos", avisos);
-        }
+				// Usar la propiedad de tipo nullable correctamente
+				query = query.Where(a => grupoIds.Contains(a.GrupoId.GetValueOrDefault()) ||
+										 materiaIds.Contains(a.MateriaId.GetValueOrDefault()));
+			}
+
+			var avisos = await query.ToListAsync();
+
+			return PartialView("_Avisos", avisos);
+		}
 
 
-        [AllowAnonymous]
-        [HttpGet("api/Alumno/Avisos/{alumnoId}/{materiaId?}")]
-        public async Task<IActionResult> ObtenerAvisos(int alumnoId, int? materiaId)
-        {
-            var grupoIds = await _context.tbAlumnosGrupos
-                .Where(ag => ag.AlumnoId == alumnoId)
-                .Select(ag => ag.GrupoId)
-                .ToListAsync();
+		[AllowAnonymous]
+		[HttpGet("api/Alumno/Avisos/{alumnoId}/{materiaId?}")]
+		public async Task<IActionResult> ObtenerAvisos(int alumnoId, int? materiaId)
+		{
+			var query = _context.tbAvisos.AsQueryable();
 
-            var materiaIds = await _context.tbAlumnosMaterias
-                .Where(am => am.AlumnoId == alumnoId)
-                .Select(am => am.MateriaId)
-                .ToListAsync();
+			if (materiaId.HasValue) // Si se selecciona una materia, filtrar solo por ella
+			{
+				query = query.Where(a => a.MateriaId == materiaId.Value);
+			}
+			else
+			{
+				var grupoIds = await _context.tbAlumnosGrupos
+					.Where(ag => ag.AlumnoId == alumnoId)
+					.Select(ag => ag.GrupoId)
+					.ToListAsync();
 
-            // Filtrado de avisos
-            var avisosQuery = _context.tbAvisos.AsQueryable();
+				var materiaIds = await _context.tbAlumnosMaterias
+					.Where(am => am.AlumnoId == alumnoId)
+					.Select(am => am.MateriaId)
+					.ToListAsync();
 
-            if (materiaId.HasValue)
-            {
-                avisosQuery = avisosQuery.Where(a => a.MateriaId == materiaId);
-            }
-            else
-            {
-                avisosQuery = avisosQuery.Where(a => grupoIds.Contains(a.GrupoId.GetValueOrDefault()) ||
-                                                     materiaIds.Contains(a.MateriaId.GetValueOrDefault()));
-            }
+				query = query.Where(a => grupoIds.Contains(a.GrupoId.GetValueOrDefault()) ||
+										 materiaIds.Contains(a.MateriaId.GetValueOrDefault()));
+			}
 
-            var avisos = await avisosQuery.Select(a => new
-            {
-                a.AvisoId,
-                a.Titulo,
-                a.Descripcion,
-                a.FechaCreacion
-            }).ToListAsync();
+			var avisos = await query
+				.Include(a => a.Docentes) // Asegurar la relación con Docentes
+				.Select(a => new
+				{
+					a.AvisoId,
+					a.Titulo,
+					a.Descripcion,
+					a.FechaCreacion,
+					DocenteNombre = a.Docentes != null
+						? a.Docentes.Nombre + " " + a.Docentes.ApellidoPaterno + " " + a.Docentes.ApellidoMaterno
+						: "Desconocido"
+				})
+				.ToListAsync();
 
-            if (!avisos.Any())
-            {
-                return NotFound(new { mensaje = "No hay avisos para este alumno." });
-            }
+			if (!avisos.Any())
+			{
+				return NotFound(new { mensaje = "No hay avisos para esta materia." });
+			}
 
-            return Ok(avisos);
-
-        }
-
+			return Ok(avisos);
+		}
 
 
         public IActionResult Actividades()
@@ -221,11 +237,27 @@ namespace AprendeMasWeb.Controllers.WEB
         }
 
 
+		[AllowAnonymous]
+		[HttpGet("api/Materias/ObtenerIdPorNombre")]
+		public async Task<IActionResult> ObtenerIdPorNombre(string nombre)
+		{
+			var materia = await _context.tbMaterias
+				.Where(m => m.NombreMateria == nombre)
+				.Select(m => new { materiaId = m.MateriaId })
+				.FirstOrDefaultAsync();
+
+			if (materia == null)
+				return NotFound(new { mensaje = "Materia no encontrada." });
+
+			return Ok(materia);
+		}
 
 
 
 
-        public IActionResult Calificaciones()
+
+
+		public IActionResult Calificaciones()
         {
             return PartialView("_Calificaciones");
         }
