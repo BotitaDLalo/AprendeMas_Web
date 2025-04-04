@@ -303,11 +303,7 @@ public async Task<IActionResult> ObtenerActividades(int materiaId, int alumnoId)
 
 
 
-		public IActionResult Calificaciones()
-        {
-            return PartialView("_Calificaciones");
-        }
-
+	
 
    
 

@@ -4,7 +4,7 @@
     // Verifica que los elementos existen antes de asignar eventos
     const avisosTab = document.getElementById("avisos-tab");
     const actividadesTab = document.getElementById("actividades-tab");
-    const calificacionesTab = document.getElementById("calificaciones-tab");
+  
 
     if (avisosTab) {
         avisosTab.addEventListener("click", () => cargarContenido("avisos", "Avisos"));
@@ -14,9 +14,7 @@
         actividadesTab.addEventListener("click", () => cargarContenido("actividades", "Actividades"));
     }
 
-    if (calificacionesTab) {
-        calificacionesTab.addEventListener("click", () => cargarContenido("calificaciones", "Calificaciones"));
-    }
+
 
     // Cargar Avisos por defecto
     if (avisosTab) {
