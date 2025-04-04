@@ -1,0 +1,23 @@
+﻿.btn-entregar,
+.btn-enviar,
+.btn-editar {
+    font-size: 14px; /* Tamaño de texto más pequeño */
+    padding: 5px 10px; /* Ajuste de tamaño del botón */
+    width: auto; /* No ocupará todo el ancho */
+    display: inline-block; /* Evita que se extienda al ancho completo */
+    margin-top: 5px;
+}
+
+
+.respuesta-entrega {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+    .respuesta-entrega .btn-editar {
+        font-size: 14px;
+        padding: 5px 10px;
+        margin-left: 10px;
+    }

@@ -217,22 +217,28 @@ public async Task<IActionResult> ObtenerActividades(int materiaId, int alumnoId)
     var actividades = await _context.tbActividades
         .Where(a => a.MateriaId == materiaId)
         .OrderByDescending(a => a.FechaCreacion)
-        .Select(a => new
-        {
-            a.ActividadId,
-            a.NombreActividad,
-            a.Descripcion,
-            a.FechaCreacion,
-            a.FechaLimite,
-            a.Puntaje,
-            TipoActividad = a.TiposActividades != null ? a.TiposActividades.Nombre : "Sin tipo",
+		.Select(a => new
+		{
+			a.ActividadId,
+			a.NombreActividad,
+			a.Descripcion,
+			a.FechaCreacion,
+			a.FechaLimite,
+			a.Puntaje,
+			TipoActividad = a.TiposActividades != null ? a.TiposActividades.Nombre : "Sin tipo",
+			Respuesta = _context.tbEntregablesAlumno
+		.Where(e => e.AlumnosActividades!.AlumnoId == alumnoId && e.AlumnosActividades.ActividadId == a.ActividadId)
+		.Select(e => e.Respuesta)
+		.FirstOrDefault(),
+
 			Calificacion = _context.tbCalificaciones
-	.Where(c => c.EntregablesAlumno!.AlumnosActividades!.AlumnoId == alumnoId
-			 && c.EntregablesAlumno.AlumnosActividades.ActividadId == a.ActividadId)
-	.Select(c => new { c.Calificacion, c.Comentarios })
-	.FirstOrDefault()
+		.Where(c => c.EntregablesAlumno!.AlumnosActividades!.AlumnoId == alumnoId &&
+					c.EntregablesAlumno.AlumnosActividades.ActividadId == a.ActividadId)
+		.Select(c => new { c.Calificacion, c.Comentarios })
+		.FirstOrDefault()
 		})
-        .ToListAsync();
+
+		.ToListAsync();
 
     if (!actividades.Any())
     {
@@ -269,31 +275,43 @@ public async Task<IActionResult> ObtenerActividades(int materiaId, int alumnoId)
 		[HttpPost("api/Alumno/EntregarActividad")]
 		public async Task<IActionResult> EntregarActividad([FromBody] EntregaRequest entrega)
 		{
-			// Verifica si ya se entregó
-			var yaExiste = await _context.tbAlumnosActividades
-				.AnyAsync(e => e.AlumnoId == entrega.AlumnoId && e.ActividadId == entrega.ActividadId);
+			var alumnoActividad = await _context.tbAlumnosActividades
+				.FirstOrDefaultAsync(e => e.AlumnoId == entrega.AlumnoId && e.ActividadId == entrega.ActividadId);
 
-			if (yaExiste)
-				return BadRequest(new { mensaje = "Ya has entregado esta actividad. " + entrega.AlumnoId + "::" + entrega.ActividadId });
-
-			var alumnoActividad = new tbAlumnosActividades
+			if (alumnoActividad == null)
 			{
-				AlumnoId = entrega.AlumnoId,
-				ActividadId = entrega.ActividadId,
-				FechaEntrega = DateTime.Now,
-				EstatusEntrega = true
-			};
+				// Primera vez que entrega
+				alumnoActividad = new tbAlumnosActividades
+				{
+					AlumnoId = entrega.AlumnoId,
+					ActividadId = entrega.ActividadId,
+					FechaEntrega = DateTime.Now,
+					EstatusEntrega = true
+				};
 
-			_context.tbAlumnosActividades.Add(alumnoActividad);
-			await _context.SaveChangesAsync();
+				_context.tbAlumnosActividades.Add(alumnoActividad);
+				await _context.SaveChangesAsync();
+			}
 
-			var entregable = new tbEntregablesAlumno
+			// Buscar si ya hay un entregable
+			var entregable = await _context.tbEntregablesAlumno
+				.FirstOrDefaultAsync(e => e.AlumnoActividadId == alumnoActividad.AlumnoActividadId);
+
+			if (entregable != null)
 			{
-				AlumnoActividadId = alumnoActividad.AlumnoActividadId,
-				Respuesta = entrega.Respuesta
-			};
+				entregable.Respuesta = entrega.Respuesta; // 👈 Actualiza la respuesta
+				_context.tbEntregablesAlumno.Update(entregable);
+			}
+			else
+			{
+				entregable = new tbEntregablesAlumno
+				{
+					AlumnoActividadId = alumnoActividad.AlumnoActividadId,
+					Respuesta = entrega.Respuesta
+				};
+				_context.tbEntregablesAlumno.Add(entregable);
+			}
 
-			_context.tbEntregablesAlumno.Add(entregable);
 			await _context.SaveChangesAsync();
 
 			return Ok(new { mensaje = "Actividad entregada correctamente." });
@@ -303,11 +321,12 @@ public async Task<IActionResult> ObtenerActividades(int materiaId, int alumnoId)
 
 
 
-	
 
-   
 
-    }
+
+
+
+	}
 
 
 

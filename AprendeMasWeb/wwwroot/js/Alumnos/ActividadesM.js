@@ -37,27 +37,39 @@
                    <p class="card-text"><strong>Comentarios:</strong> ${a.calificacion.comentarios || 'Sin comentarios'}</p>`
                 : '<p class="card-text"><strong>Calificación:</strong> No evaluada aún</p>';
 
-            const card = `
-                <div class="card mb-3 shadow">
-                    <div class="card-body">
-                        <h5 class="card-title">${a.nombreActividad}</h5>
-             <p class="card-text">${a.descripcion}</p>
-             <p class="card-text"><strong>Fecha de entrega:</strong> ${new Date(a.fechaLimite).toLocaleDateString()}</p>
-             <p class="card-text"><strong>Puntaje:</strong> ${a.puntaje}</p>
-             <p class="card-text"><strong>Tipo:</strong> ${a.tipoActividad}</p>
-                        ${calificacionHTML}
-                        <p id="res-entrega" class="card-text"><strong>Respuesta</strong> </p>
-                         <button class="btn btn-primary mt-2" onclick="mostrarFormularioEntrega(${a.actividadId})">Entregar Actividad</button>
+            const entregada = !!a.respuesta;
 
-                        <div id="formEntrega-${a.actividadId}" class="mt-3" style="display:none;">
-                            <textarea class="form-control mb-2" id="respuesta-${a.actividadId}" placeholder="Escribe tu respuesta..."></textarea>
-                 <button class="btn btn-success" onclick="enviarEntrega(${a.actividadId})">Enviar</button>
-                        </div>
-                    </div>
-                </div>
-            `;
+
+            const card = `
+    <div class="card mb-3 shadow ${entregada ? 'bg-success bg-opacity-25 border-success' : ''}">
+        <div class="card-body">
+            <h5 class="card-title">${a.nombreActividad}</h5>
+            <p class="card-text">${a.descripcion}</p>
+            <p class="card-text"><strong>Fecha de entrega:</strong> ${new Date(a.fechaLimite).toLocaleDateString()}</p>
+            <p class="card-text"><strong>Puntaje:</strong> ${a.puntaje}</p>
+            <p class="card-text"><strong>Tipo:</strong> ${a.tipoActividad}</p>
+            <br>
+            <h4>Calificación</h4>
+            ${calificacionHTML}
+            
+            <div class="respuesta-entrega">
+                <p id="res-entrega" class="card-text"><strong>Respuesta:</strong> ${a.respuesta || 'No has entregado aún esta actividad.'}</p>
+                <button class="btn btn-primary btn-editar" onclick="mostrarFormularioEntrega(${a.actividadId})">
+                    ${entregada ? 'Editar Entrega' : 'Entregar Actividad'}
+                </button>
+            </div>
+
+            <div id="formEntrega-${a.actividadId}" class="mt-3" style="display:none;">
+                <textarea class="form-control mb-2" id="respuesta-${a.actividadId}" placeholder="Escribe tu respuesta...">${a.respuesta || ''}</textarea>
+                <button class="btn btn-success btn-enviar" onclick="enviarEntrega(${a.actividadId})">Enviar</button>
+            </div>
+        </div>
+    </div>
+`;
 
             contenedor.innerHTML += card;
+
+
         });
 
     } catch (error) {
@@ -80,7 +92,7 @@ async function enviarEntrega(actividadId) {
         alumnoId: alumnoId,
         respuesta: respuesta
     };
-
+    
     try {
         const res = await fetch('/api/Alumno/EntregarActividad', {
             method: 'POST',
@@ -90,12 +102,25 @@ async function enviarEntrega(actividadId) {
 
         const result = await res.json();
         if (res.ok) {
-            document.getElementById("res-entrega").innerHTML = "Actividad entregada correctamente.";
-            alert("Actividad entregada correctamente.");
+            // Reemplaza la actualización de HTML con SweetAlert2
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: 'Actividad entregada correctamente.',
+                confirmButtonText: 'Aceptar'
+            }).then(() => {
+                location.reload(); // Recarga la página después de cerrar la alerta
+            });
         } else {
-            document.getElementById("res-entrega").innerHTML = result.mensaje;
-            alert("Error: " + result.mensaje);
+            // Aquí puedes agregar un mensaje de error con SweetAlert2
+            Swal.fire({
+                icon: 'error',
+                title: '¡Error!',
+                text: 'Hubo un problema al entregar la actividad.',
+                confirmButtonText: 'Aceptar'
+            });
         }
+
     } catch (err) {
         console.error("Error al enviar actividad:", err);
         alert("Ocurrió un error al entregar la actividad.");
