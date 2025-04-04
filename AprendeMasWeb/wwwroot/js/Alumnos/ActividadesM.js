@@ -41,17 +41,17 @@
                 <div class="card mb-3 shadow">
                     <div class="card-body">
                         <h5 class="card-title">${a.nombreActividad}</h5>
-                        <p class="card-text">${a.descripcion}</p>
-                        <p class="card-text"><strong>Fecha de entrega:</strong> ${new Date(a.fechaLimite).toLocaleDateString()}</p>
-                        <p class="card-text"><strong>Puntaje:</strong> ${a.puntaje}</p>
-                        <p class="card-text"><strong>Tipo:</strong> ${a.tipoActividad}</p>
+             <p class="card-text">${a.descripcion}</p>
+             <p class="card-text"><strong>Fecha de entrega:</strong> ${new Date(a.fechaLimite).toLocaleDateString()}</p>
+             <p class="card-text"><strong>Puntaje:</strong> ${a.puntaje}</p>
+             <p class="card-text"><strong>Tipo:</strong> ${a.tipoActividad}</p>
                         ${calificacionHTML}
-
-                        <button class="btn btn-primary mt-2" onclick="mostrarFormularioEntrega(${a.actividadId})">Entregar Actividad</button>
+                        <p id="res-entrega" class="card-text"><strong>Respuesta</strong> </p>
+                         <button class="btn btn-primary mt-2" onclick="mostrarFormularioEntrega(${a.actividadId})">Entregar Actividad</button>
 
                         <div id="formEntrega-${a.actividadId}" class="mt-3" style="display:none;">
                             <textarea class="form-control mb-2" id="respuesta-${a.actividadId}" placeholder="Escribe tu respuesta..."></textarea>
-                            <button class="btn btn-success" onclick="enviarEntrega(${a.actividadId})">Enviar</button>
+                 <button class="btn btn-success" onclick="enviarEntrega(${a.actividadId})">Enviar</button>
                         </div>
                     </div>
                 </div>
