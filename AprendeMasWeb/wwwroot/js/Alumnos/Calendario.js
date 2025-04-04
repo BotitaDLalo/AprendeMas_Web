@@ -2,7 +2,9 @@
 let ayer = new Date();
 ayer.setDate(ayer.getDate() - 1);
 let fechaAyer = ayer.toISOString().split("T")[0];
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
+    await obtenerAlumnoId(); // Asegurarse de que el alumnoIdGlobal se obtenga antes de continuar
+
     const icono = document.getElementById("calendario-icono");
     const panel = document.getElementById("calendario-panel");
     const input = document.getElementById("calendario-input");
@@ -14,7 +16,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Función para inicializar Flatpickr
     function inicializarCalendario() {
-        fetch("/api/EventosAgendaAlumno/alumno/1")
+        fetch(`/api/EventosAgendaAlumno/alumno/${alumnoIdGlobal}`)
+
             .then(response => response.json())
             .then(data => {
                 fechasConEventos = data.map(evento => evento.fechaInicio.split("T")[0]);
@@ -86,13 +89,14 @@ document.addEventListener("DOMContentLoaded", function () {
     // Evento para guardar un nuevo evento
     document.getElementById("guardar-evento").addEventListener("click", function () {
         let evento = {
-            AlumnoId: 1, // Reemplazar con el ID real del alumno
+            AlumnoId: alumnoIdGlobal,
             FechaInicio: document.getElementById("fecha-inicio").value,
             FechaFinal: document.getElementById("fecha-final").value,
             Titulo: document.getElementById("titulo").value,
             Descripcion: document.getElementById("descripcion").value,
             Color: document.getElementById("color").value
         };
+
 
         fetch("/api/EventosAgendaAlumno", {
             method: "POST",
@@ -129,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Función para cargar eventos en el modal
     function cargarEventos(fecha) {
-        let alumnoId = 1; // Reemplazar con el ID real del alumno
+        let alumnoId = alumnoIdGlobal; // Usar el valor global obtenido
 
         fetch(`/api/EventosAgendaAlumno/alumno/${alumnoId}`)
             .then(response => response.json())
@@ -217,13 +221,14 @@ document.addEventListener("DOMContentLoaded", function () {
         let eventoId = document.getElementById("editar-evento-id").value;
         let eventoEditado = {
             EventoAlumnoId: eventoId,
-            AlumnoId: 1, // ID del alumno
+            AlumnoId: alumnoIdGlobal,
             FechaInicio: document.getElementById("editar-fecha-inicio").value,
             FechaFinal: document.getElementById("editar-fecha-final").value,
             Titulo: document.getElementById("editar-titulo").value,
             Descripcion: document.getElementById("editar-descripcion").value,
             Color: document.getElementById("editar-color").value
         };
+
 
         fetch(`/api/EventosAgendaAlumno/${eventoId}`, {
             method: "PUT",

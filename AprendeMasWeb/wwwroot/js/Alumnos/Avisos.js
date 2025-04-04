@@ -8,7 +8,7 @@
     function cargarAvisos(materiaId = null) {
         let url = `/api/Alumno/Avisos/${alumnoIdGlobal}`;
         if (materiaId) {
-            url += `/${materiaId}`; // Agregar el ID de la materia si se selecciona
+            url += `/${materiaId}`;
         }
 
         $.get(url)
@@ -18,7 +18,6 @@
                     data.forEach(function (aviso) {
                         avisosHtml += `
                         <br>
-                        
                         <li class="list-group-item1 d-flex align-items-start">
                             <img class="iconos-nav4" src="/Iconos/PERFIL-26.svg" alt="Icono de Grupo" />
                             <div>
@@ -43,14 +42,10 @@
             });
     }
 
-    // Llamar a la función al cargar la página para mostrar avisos generales
-    $(document).ready(function () {
-        cargarAvisos();
-    });
+    cargarAvisos(); // Carga los avisos generales al iniciar
 
-    // Llamar a la función cuando se seleccione una materia
     $(".materia-item").on("click", function () {
-        let materiaId = $(this).data("materia-id"); // Suponiendo que cada materia tiene un `data-materia-id`
+        let materiaId = $(this).data("materia-id");
         cargarAvisos(materiaId);
     });
 });
