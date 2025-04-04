@@ -530,7 +530,7 @@ async function eliminarGrupo(grupoId) {
         cancelButtonText: "Cancelar"
     }).then(async (result) => {
         if (result.isConfirmed) {
-            // Llamar al controlador que elimina solo el grupo
+            // Eliminar solo el grupo
             const response = await fetch(`/api/GruposApi/EliminarGrupo/${grupoId}`, { method: "DELETE" });
             if (response.ok) {
                 await Swal.fire({
@@ -551,29 +551,52 @@ async function eliminarGrupo(grupoId) {
                 });
             }
         } else if (result.isDenied) {
-            // Llamar al nuevo controlador que elimina grupo y materias
-            const response = await fetch(`/api/GruposApi/EliminarGrupoConMaterias/${grupoId}`, { method: "DELETE" });
-            if (response.ok) {
-                await Swal.fire({
-                    position: "top-end",
-                    icon: "success",
-                    title: "El grupo y sus materias han sido eliminados.",
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-                inicializar();
-            } else {
-                await Swal.fire({
-                    position: "top-end",
-                    icon: "error",
-                    title: "No se pudo eliminar el grupo y sus materias.",
-                    showConfirmButton: false,
-                    timer: 2000
-                });
+            // Segunda confirmación antes de eliminar grupo y materias
+            const confirmacion = await Swal.fire({
+                title: "¿Estás completamente seguro?",
+                html: `
+                    <p>Esto eliminará <b>todas las materias del grupo</b> y además:</p>
+                    <ul style="text-align: left;">
+                        <li>• Avisos</li>
+                        <li>• Actividades</li>
+                        <li>• Alumnos asignados</li>
+                        <li>• Calificaciones</li>
+                    </ul>
+                    <p>No podrás recuperar esta información después.</p>
+                `,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, eliminar todo",
+                cancelButtonText: "Cancelar"
+            });
+
+            if (confirmacion.isConfirmed) {
+                // Eliminar grupo y materias
+                const response = await fetch(`/api/GruposApi/EliminarGrupoConMaterias/${grupoId}`, { method: "DELETE" });
+                if (response.ok) {
+                    await Swal.fire({
+                        position: "top-end",
+                        icon: "success",
+                        title: "El grupo y sus materias han sido eliminados.",
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                    inicializar();
+                } else {
+                    await Swal.fire({
+                        position: "top-end",
+                        icon: "error",
+                        title: "No se pudo eliminar el grupo y sus materias.",
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                }
             }
         }
     });
 }
+
+
 
 //Funcion para agregar al grupo una nueva materia
 async function agregarMateriaAlGrupo(id) {
