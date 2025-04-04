@@ -32,51 +32,59 @@
         contenedor.innerHTML = "";
 
         actividades.forEach(a => {
+            const fechaLimite = new Date(a.fechaLimite);
+            const hoy = new Date();
+            const estaFueraDeTiempo = hoy > fechaLimite;
+
             const calificacionHTML = a.calificacion
-                ? `<p class="card-text"><strong>Calificación:</strong> ${a.calificacion.calificacion} </p>
-                   <p class="card-text"><strong>Comentarios:</strong> ${a.calificacion.comentarios || 'Sin comentarios'}</p>`
+                ? `<p class="card-text"><strong>Calificación:</strong> ${a.calificacion.calificacion}</p>
+           <p class="card-text"><strong>Comentarios:</strong> ${a.calificacion.comentarios || 'Sin comentarios'}</p>`
                 : '<p class="card-text"><strong>Calificación:</strong> No evaluada aún</p>';
 
             const entregada = !!a.respuesta;
 
+            const estadoEntrega = estaFueraDeTiempo
+                ? '<span class="badge bg-danger">Tarea retrasada</span>'
+                : '';
 
             const card = `
-    <div class="card mb-3 shadow ${entregada ? 'bg-success bg-opacity-25 border-success' : ''}">
-        <div class="card-body">
-            <h5 class="card-title">${a.nombreActividad}</h5>
-            <p class="card-text">${a.descripcion}</p>
-            <p class="card-text"><strong>Fecha de entrega:</strong> ${new Date(a.fechaLimite).toLocaleDateString()}</p>
-            <p class="card-text"><strong>Puntaje:</strong> ${a.puntaje}</p>
-            <p class="card-text"><strong>Tipo:</strong> ${a.tipoActividad}</p>
-            <br>
-            <h4>Calificación</h4>
-            ${calificacionHTML}
-            
-            <div class="respuesta-entrega">
-               <p id="res-entrega" class="card-text">
-  <strong>Respuesta:</strong>
-  <a href="${a.respuesta || '#'}" target="_blank">
-    ${a.respuesta || 'No has entregado aún esta actividad.'}
-  </a>
-</p>
+        <div class="card mb-3 shadow ${entregada ? 'bg-success bg-opacity-25 border-success' : ''}">
+            <div class="card-body">
+                <h5 class="card-title">${a.nombreActividad}</h5>
+                <p class="card-text">${a.descripcion}</p>
+                <p class="card-text"><strong>Fecha de entrega:</strong> ${fechaLimite.toLocaleDateString()}</p>
+                <p class="card-text"><strong>Puntaje:</strong> ${a.puntaje}</p>
+                <p class="card-text"><strong>Tipo:</strong> ${a.tipoActividad}</p>
+                ${estadoEntrega}
+                <br>
+                <h4>Calificación</h4>
+                ${calificacionHTML}
 
-                <button class="btn btn-primary btn-editar" onclick="mostrarFormularioEntrega(${a.actividadId})">
-                    ${entregada ? 'Editar Entrega' : 'Entregar Actividad'}
-                </button>
-            </div>
+                <div class="respuesta-entrega">
+                    <p id="res-entrega-${a.actividadId}" class="card-text">
+                        <strong>Respuesta:</strong>
+                        <a href="${a.respuesta || '#'}" target="_blank">
+                            ${a.respuesta || 'No has entregado aún esta actividad.'}
+                        </a>
+                    </p>
 
-            <div id="formEntrega-${a.actividadId}" class="mt-3" style="display:none;">
-                <textarea class="form-control mb-2" id="respuesta-${a.actividadId}" placeholder="Escribe tu respuesta...">${a.respuesta || ''}</textarea>
-                <button class="btn btn-success btn-enviar" onclick="enviarEntrega(${a.actividadId})">Enviar</button>
+                    <button class="btn btn-primary btn-editar" onclick="mostrarFormularioEntrega(${a.actividadId})"
+                        ${estaFueraDeTiempo ? 'disabled' : ''}>
+                        ${entregada ? 'Editar Entrega' : 'Entregar Actividad'}
+                    </button>
+                </div>
+
+                <div id="formEntrega-${a.actividadId}" class="mt-3" style="display:none;">
+                    <textarea class="form-control mb-2" id="respuesta-${a.actividadId}" placeholder="Escribe tu respuesta...">${a.respuesta || ''}</textarea>
+                    <button class="btn btn-success btn-enviar" onclick="enviarEntrega(${a.actividadId})">Enviar</button>
+                </div>
             </div>
         </div>
-    </div>
-`;
+    `;
 
             contenedor.innerHTML += card;
-
-
         });
+
 
     } catch (error) {
         console.error("Error al cargar actividades:", error);
@@ -91,14 +99,29 @@ function mostrarFormularioEntrega(actividadId) {
 
 async function enviarEntrega(actividadId) {
     const respuesta = document.getElementById(`respuesta-${actividadId}`).value;
-    const alumnoId = alumnoIdGlobal; // Asegúrate de tener este claim en el login
+    const alumnoId = alumnoIdGlobal;
+
+    const card = document.querySelector(`#formEntrega-${actividadId}`).closest('.card');
+    const fechaTexto = card.querySelector("p.card-text strong").nextSibling.textContent.trim();
+    const fechaEntrega = new Date(fechaTexto);
+    const hoy = new Date();
+
+    if (hoy > fechaEntrega) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Entrega no permitida',
+            text: 'La fecha límite de entrega ha pasado.',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
 
     const body = {
-        actividadId: actividadId,
-        alumnoId: alumnoId,
-        respuesta: respuesta
+        actividadId,
+        alumnoId,
+        respuesta
     };
-    
+
     try {
         const res = await fetch('/api/Alumno/EntregarActividad', {
             method: 'POST',
@@ -108,21 +131,19 @@ async function enviarEntrega(actividadId) {
 
         const result = await res.json();
         if (res.ok) {
-            // Reemplaza la actualización de HTML con SweetAlert2
             Swal.fire({
                 icon: 'success',
                 title: '¡Éxito!',
                 text: 'Actividad entregada correctamente.',
                 confirmButtonText: 'Aceptar'
             }).then(() => {
-                location.reload(); // Recarga la página después de cerrar la alerta
+                location.reload();
             });
         } else {
-            // Aquí puedes agregar un mensaje de error con SweetAlert2
             Swal.fire({
                 icon: 'error',
                 title: '¡Error!',
-                text: 'Hubo un problema al entregar la actividad.',
+                text: result.mensaje,
                 confirmButtonText: 'Aceptar'
             });
         }

@@ -7,119 +7,119 @@ using System.Linq;
 
 namespace AprendeMasWeb.Controllers.WEB
 {
-    [Authorize(Roles = "Alumno")] // Restringir acceso solo a usuarios con rol Alumno
-    public class AlumnoController : Controller
-    {
-        private readonly DataContext _context;
+	[Authorize(Roles = "Alumno")] // Restringir acceso solo a usuarios con rol Alumno
+	public class AlumnoController : Controller
+	{
+		private readonly DataContext _context;
 
-        public AlumnoController(DataContext context)
-        {
-            _context = context;
-        }
+		public AlumnoController(DataContext context)
+		{
+			_context = context;
+		}
 
-        // Acción para mostrar la vista principal del alumno
-        public async Task<IActionResult> Index(int alumnoId)
-        {
-            var grupos = await _context.tbAlumnosGrupos
-                .Where(ag => ag.AlumnoId == alumnoId)
-                .Include(ag => ag.Grupos)
-                .Select(ag => ag.Grupos)
-                .ToListAsync();
+		// Acción para mostrar la vista principal del alumno
+		public async Task<IActionResult> Index(int alumnoId)
+		{
+			var grupos = await _context.tbAlumnosGrupos
+				.Where(ag => ag.AlumnoId == alumnoId)
+				.Include(ag => ag.Grupos)
+				.Select(ag => ag.Grupos)
+				.ToListAsync();
 
-            var materias = await _context.tbAlumnosMaterias
-                .Where(am => am.AlumnoId == alumnoId)
-                .Include(am => am.Materias)
-                .Select(am => am.Materias)
-                .ToListAsync();
+			var materias = await _context.tbAlumnosMaterias
+				.Where(am => am.AlumnoId == alumnoId)
+				.Include(am => am.Materias)
+				.Select(am => am.Materias)
+				.ToListAsync();
 
-            var clases = new
-            {
-                Grupos = grupos,
-                Materias = materias
-            };
+			var clases = new
+			{
+				Grupos = grupos,
+				Materias = materias
+			};
 
-            return View(clases);
-        }
+			return View(clases);
+		}
 
-        // API para obtener las clases del alumno en formato JSON
-        [HttpGet("api/Alumno/Clases/{alumnoId}")]
-        public async Task<IActionResult> ObtenerClases(int alumnoId)
-        {
-            var grupos = await _context.tbAlumnosGrupos
-                .Where(ag => ag.AlumnoId == alumnoId)
-                .Include(ag => ag.Grupos)
-                .Select(ag => new
-                {
-                    Id = ag.Grupos.GrupoId,
-                    Nombre = ag.Grupos.NombreGrupo,
-                    esGrupo = true,
-                    Materias = _context.tbGruposMaterias
-                        .Where(gm => gm.GrupoId == ag.Grupos.GrupoId)
-                        .Select(gm => new
-                        {
-                            Id = gm.MateriaId,
-                            Nombre = gm.Materias.NombreMateria
-                        }).ToList()
-                })
-                .ToListAsync();
+		// API para obtener las clases del alumno en formato JSON
+		[HttpGet("api/Alumno/Clases/{alumnoId}")]
+		public async Task<IActionResult> ObtenerClases(int alumnoId)
+		{
+			var grupos = await _context.tbAlumnosGrupos
+				.Where(ag => ag.AlumnoId == alumnoId)
+				.Include(ag => ag.Grupos)
+				.Select(ag => new
+				{
+					Id = ag.Grupos.GrupoId,
+					Nombre = ag.Grupos.NombreGrupo,
+					esGrupo = true,
+					Materias = _context.tbGruposMaterias
+						.Where(gm => gm.GrupoId == ag.Grupos.GrupoId)
+						.Select(gm => new
+						{
+							Id = gm.MateriaId,
+							Nombre = gm.Materias.NombreMateria
+						}).ToList()
+				})
+				.ToListAsync();
 
-            var materias = await _context.tbAlumnosMaterias
-                .Where(am => am.AlumnoId == alumnoId)
-                .Include(am => am.Materias)
-                .Select(am => new
-                {
-                    Id = am.Materias.MateriaId,
-                    Nombre = am.Materias.NombreMateria,
-                    esGrupo = false,
-                    Materias = (List<object>)null // Se agrega esta línea para hacer el tipo compatible
-                })
-                .ToListAsync();
+			var materias = await _context.tbAlumnosMaterias
+				.Where(am => am.AlumnoId == alumnoId)
+				.Include(am => am.Materias)
+				.Select(am => new
+				{
+					Id = am.Materias.MateriaId,
+					Nombre = am.Materias.NombreMateria,
+					esGrupo = false,
+					Materias = (List<object>)null // Se agrega esta línea para hacer el tipo compatible
+				})
+				.ToListAsync();
 
-            var clases = grupos.Cast<object>().Concat(materias.Cast<object>()).ToList();
-            return Ok(clases);
-        }
-
-
+			var clases = grupos.Cast<object>().Concat(materias.Cast<object>()).ToList();
+			return Ok(clases);
+		}
 
 
 
-        public async Task<IActionResult> Clase(string tipo, string nombre)
-        {
-            if (string.IsNullOrEmpty(tipo) || string.IsNullOrEmpty(nombre))
-            {
-                return BadRequest("Parámetros inválidos.");
-            }
 
-            if (tipo.ToLower() == "grupo")
-            {
-                var grupo = await _context.tbGrupos.FirstOrDefaultAsync(g => g.NombreGrupo == nombre);
-                if (grupo == null) return NotFound("Grupo no encontrado.");
-                return View("DetalleGrupo", grupo);
-            }
-            else if (tipo.ToLower() == "materia")
-            {
-                var materia = await _context.tbMaterias.FirstOrDefaultAsync(m => m.NombreMateria == nombre);
-                if (materia == null) return NotFound("Materia no encontrada.");
-                return View("DetalleMateria", materia);
-            }
 
-            return BadRequest("Tipo de clase no válido.");
-        }
+		public async Task<IActionResult> Clase(string tipo, string nombre)
+		{
+			if (string.IsNullOrEmpty(tipo) || string.IsNullOrEmpty(nombre))
+			{
+				return BadRequest("Parámetros inválidos.");
+			}
 
-        //public IActionResult Index()
-        //      {
-        //          return View();
-        //      }
+			if (tipo.ToLower() == "grupo")
+			{
+				var grupo = await _context.tbGrupos.FirstOrDefaultAsync(g => g.NombreGrupo == nombre);
+				if (grupo == null) return NotFound("Grupo no encontrado.");
+				return View("DetalleGrupo", grupo);
+			}
+			else if (tipo.ToLower() == "materia")
+			{
+				var materia = await _context.tbMaterias.FirstOrDefaultAsync(m => m.NombreMateria == nombre);
+				if (materia == null) return NotFound("Materia no encontrada.");
+				return View("DetalleMateria", materia);
+			}
 
-        public IActionResult DetalleMateria()
-        {
-            return View();
-        }
+			return BadRequest("Tipo de clase no válido.");
+		}
 
-        public IActionResult DetalleGrupo()
-        {
-            return View();
-        }
+		//public IActionResult Index()
+		//      {
+		//          return View();
+		//      }
+
+		public IActionResult DetalleMateria()
+		{
+			return View();
+		}
+
+		public IActionResult DetalleGrupo()
+		{
+			return View();
+		}
 
 
 
@@ -205,48 +205,48 @@ namespace AprendeMasWeb.Controllers.WEB
 		}
 
 
-        public IActionResult Actividades()
-        {
-            return PartialView("_Actividades");
-        }
-
-        [AllowAnonymous]
-[HttpGet("api/Alumno/Actividades/{materiaId}/{alumnoId}")]
-public async Task<IActionResult> ObtenerActividades(int materiaId, int alumnoId)
-{
-    var actividades = await _context.tbActividades
-        .Where(a => a.MateriaId == materiaId)
-        .OrderByDescending(a => a.FechaCreacion)
-		.Select(a => new
+		public IActionResult Actividades()
 		{
-			a.ActividadId,
-			a.NombreActividad,
-			a.Descripcion,
-			a.FechaCreacion,
-			a.FechaLimite,
-			a.Puntaje,
-			TipoActividad = a.TiposActividades != null ? a.TiposActividades.Nombre : "Sin tipo",
-			Respuesta = _context.tbEntregablesAlumno
-		.Where(e => e.AlumnosActividades!.AlumnoId == alumnoId && e.AlumnosActividades.ActividadId == a.ActividadId)
-		.Select(e => e.Respuesta)
-		.FirstOrDefault(),
+			return PartialView("_Actividades");
+		}
 
-			Calificacion = _context.tbCalificaciones
-		.Where(c => c.EntregablesAlumno!.AlumnosActividades!.AlumnoId == alumnoId &&
-					c.EntregablesAlumno.AlumnosActividades.ActividadId == a.ActividadId)
-		.Select(c => new { c.Calificacion, c.Comentarios })
-		.FirstOrDefault()
-		})
+		[AllowAnonymous]
+		[HttpGet("api/Alumno/Actividades/{materiaId}/{alumnoId}")]
+		public async Task<IActionResult> ObtenerActividades(int materiaId, int alumnoId)
+		{
+			var actividades = await _context.tbActividades
+				.Where(a => a.MateriaId == materiaId)
+				.OrderByDescending(a => a.FechaCreacion)
+				.Select(a => new
+				{
+					a.ActividadId,
+					a.NombreActividad,
+					a.Descripcion,
+					a.FechaCreacion,
+					a.FechaLimite,
+					a.Puntaje,
+					TipoActividad = a.TiposActividades != null ? a.TiposActividades.Nombre : "Sin tipo",
+					Respuesta = _context.tbEntregablesAlumno
+				.Where(e => e.AlumnosActividades!.AlumnoId == alumnoId && e.AlumnosActividades.ActividadId == a.ActividadId)
+				.Select(e => e.Respuesta)
+				.FirstOrDefault(),
 
-		.ToListAsync();
+					Calificacion = _context.tbCalificaciones
+				.Where(c => c.EntregablesAlumno!.AlumnosActividades!.AlumnoId == alumnoId &&
+							c.EntregablesAlumno.AlumnosActividades.ActividadId == a.ActividadId)
+				.Select(c => new { c.Calificacion, c.Comentarios })
+				.FirstOrDefault()
+				})
 
-    if (!actividades.Any())
-    {
-        return NotFound(new { mensaje = "No hay actividades registradas para esta materia." });
-    }
+				.ToListAsync();
 
-    return Ok(actividades);
-}
+			if (!actividades.Any())
+			{
+				return NotFound(new { mensaje = "No hay actividades registradas para esta materia." });
+			}
+
+			return Ok(actividades);
+		}
 
 
 
@@ -275,6 +275,16 @@ public async Task<IActionResult> ObtenerActividades(int materiaId, int alumnoId)
 		[HttpPost("api/Alumno/EntregarActividad")]
 		public async Task<IActionResult> EntregarActividad([FromBody] EntregaRequest entrega)
 		{
+
+			var actividad = await _context.tbActividades
+	   .FirstOrDefaultAsync(a => a.ActividadId == entrega.ActividadId);
+
+			if (actividad == null)
+				return NotFound(new { mensaje = "Actividad no encontrada." });
+
+			if (DateTime.Now > actividad.FechaLimite)
+				return BadRequest(new { mensaje = "La actividad ya no puede ser entregada. Fecha límite superada." });
+
 			var alumnoActividad = await _context.tbAlumnosActividades
 				.FirstOrDefaultAsync(e => e.AlumnoId == entrega.AlumnoId && e.ActividadId == entrega.ActividadId);
 
