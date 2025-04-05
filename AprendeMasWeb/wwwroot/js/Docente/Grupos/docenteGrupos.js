@@ -237,6 +237,7 @@ async function cargarGrupos() {
 
             // Añadir items al dropdown
             const dropdownItems = [
+                { text: "Compartir Acceso", action: () => CompartirAcceso(grupo.codigoAcceso) },
                 { text: "Eliminar", action: () => eliminarGrupo(grupo.grupoId) },
                 { text: "Aviso Grupal", action: () => crearAvisoGrupal(grupo.grupoId) },
                 { text: "Crear Materia", action: () => agregarMateriaAlGrupo(grupo.grupoId) },
@@ -510,6 +511,34 @@ async function handleCardClick(grupoId) {
                 timer: 2000
             });
         }
+    }
+}
+
+async function CompartirAcceso(codigoAcceso) {
+    try {
+        // Crear el mensaje completo
+        const mensaje = `Ingresa al grupo con el siguiente código: ${codigoAcceso}`;
+
+        // Copiar al portapapeles
+        await navigator.clipboard.writeText(mensaje);
+
+        // Notificar al usuario con SweetAlert
+        Swal.fire({
+            icon: 'success',
+            title: 'Código copiado',
+            text: 'El código de acceso al grupo ha sido copiado al portapapeles.',
+            showConfirmButton: false,
+            timer: 1500 // Opcional: Desaparece después de 1.5 segundos
+        });
+    } catch (error) {
+        // En caso de error
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo copiar al portapapeles.',
+            showConfirmButton: true
+        });
+        console.error('Error al copiar al portapapeles:', error);
     }
 }
 

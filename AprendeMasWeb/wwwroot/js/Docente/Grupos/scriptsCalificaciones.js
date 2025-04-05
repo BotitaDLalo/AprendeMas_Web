@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", function () {
     cargarActividadesEnSelect();
 });
 
-//Script para consultar las calificaciones de actividades
 async function consultarCalificaciones() {
     const select = document.getElementById("select-actividad");
     const actividadSeleccionada = select.value;
@@ -34,28 +33,43 @@ async function consultarCalificaciones() {
             throw new Error("Error al obtener las calificaciones");
         }
 
+        // Ordenar por Apellido (Nombre completo alfabéticamente)
+        datos.sort((a, b) => a.nombreCompleto.localeCompare(b.nombreCompleto));
+
         const tbody = document.getElementById("tbody-calificaciones");
         tbody.innerHTML = ""; // Limpiar tabla
 
         datos.forEach(item => {
             const fila = document.createElement("tr");
 
-            // Formato de calificación
             let calificacionFormateada = item.calificacion;
             if (!isNaN(item.calificacion)) {
                 calificacionFormateada = `${item.calificacion} / ${item.puntajeMaximo}`;
             }
 
+            let porcentaje = (item.calificacion / item.puntajeMaximo) * 100;
+            let bgColor = "";
+            let textColor = "#333";
+
+            if (item.estatusEntrega === "No entregado") {
+                bgColor = "rgba(231, 76, 60, 0.15)";
+                textColor = "#a94442";
+            } else if (porcentaje < 50) {
+                bgColor = "rgba(241, 196, 15, 0.15)";
+            } else if (porcentaje >= 50 && porcentaje <= 75) {
+                bgColor = "rgba(241, 196, 15, 0.2)";
+            } else {
+                bgColor = "rgba(46, 204, 113, 0.15)";
+            }
+
             fila.innerHTML = `
-                <td>${item.nombreCompleto}</td>
-                <td>${item.comentarios}</td>
-                <td>${calificacionFormateada}</td>
+                <td style="font-size: 1.05rem; font-weight: 500; color: ${textColor};">${item.nombreCompleto}</td>
+                <td style="font-size: 1.05rem; color: ${textColor};">${item.comentarios}</td>
+                <td style="font-size: 1.05rem; font-weight: 600; color: ${textColor};">${calificacionFormateada}</td>
             `;
 
-            // Si NO entregó, aplicar clase especial
-            if (item.estatusEntrega === "No entregado") {
-                fila.classList.add("bg-danger", "text-white"); // Bootstrap
-            }
+            fila.style.backgroundColor = bgColor;
+            fila.style.transition = "background-color 0.3s ease";
 
             tbody.appendChild(fila);
         });
@@ -75,6 +89,40 @@ async function consultarCalificaciones() {
     }
 }
 
+//Exportat a excel
+function exportarExcel() {
+    const select = document.getElementById("select-actividad");
+    const actividadSeleccionada = select.value;
+    const textoSeleccionado = select.options[select.selectedIndex].text.trim();
+
+    if (!actividadSeleccionada || select.selectedIndex === 0) {
+        Swal.fire("Seleccione actividad", "Para exportar calificaciones.", "question");
+        return;
+    }
+
+    const tabla = document.getElementById("tabla-calificaciones");
+
+    // Verificar si la tabla tiene filas
+    const filas = tabla.querySelectorAll("tbody tr");
+    if (filas.length === 0) {
+        Swal.fire("No hay datos", "La tabla no tiene calificaciones para exportar.", "info");
+        return;
+    }
+
+    const wb = XLSX.utils.table_to_book(tabla, { sheet: "Calificaciones" });
+
+    // Limpiar el nombre de la actividad por si tiene caracteres inválidos
+    const nombreLimpio = textoSeleccionado.replace(/[\\/:*?"<>|]/g, "");
+
+    // Obtener fecha actual en formato YYYY-MM-DD
+    const fecha = new Date();
+    const fechaFormateada = fecha.toISOString().split('T')[0]; // YYYY-MM-DD
+
+    // Construir el nombre del archivo
+    const nombreArchivo = `Calificaciones de ${nombreLimpio} - ${fechaFormateada}.xlsx`;
+
+    XLSX.writeFile(wb, nombreArchivo);
+}
 
 
 

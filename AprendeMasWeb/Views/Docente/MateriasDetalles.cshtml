@@ -108,12 +108,16 @@
                     </select>
 
                     <button class="btn btn-primary" onclick="consultarCalificaciones()">Consultar Calificaciones</button>
+                    <button onclick="exportarExcel()" class="btn btn-success mb-2">
+                        Exportar a Excel 📥
+                    </button>
+
                 </div>
 
                 <!-- Tabla de Calificaciones -->
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover text-center shadow rounded">
-                        <thead class="bg-primary text-white">
+                    <table id="tabla-calificaciones" class="table table-bordered">
+                        <thead>
                             <tr>
                                 <th>Nombre del Alumno</th>
                                 <th>Comentario</th>
@@ -121,9 +125,9 @@
                             </tr>
                         </thead>
                         <tbody id="tbody-calificaciones">
-                            <!-- Aquí se agregan dinámicamente las filas -->
                         </tbody>
                     </table>
+
                 </div>
 
             </div>
@@ -136,6 +140,8 @@
 @section Scripts {
     <!--Incluye un archivo JavaScript específico para manejar las funcionalidades relacionadas con los grupos de materias.-->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
     <script src="~/js/Docente/Grupos/DetalleMateria.js"></script>
     <script src="~/js/Docente/Grupos/DetalleMateriaIconos.js"></script>
 
