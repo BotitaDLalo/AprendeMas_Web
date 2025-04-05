@@ -3,11 +3,13 @@ using AprendeMasWeb.Data;
 using AprendeMasWeb.Models;
 using AprendeMasWeb.Models.DBModels;
 using Google;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AprendeMasWeb.Controllers.WEB
 {
+    [Authorize(Roles = "Docente")]
     [Route("api/[controller]")]
     [ApiController]
     public class EvaluarActividadesApiController : ControllerBase

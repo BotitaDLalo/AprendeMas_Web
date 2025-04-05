@@ -1,12 +1,14 @@
 ﻿// Se importan los espacios de nombres necesarios para trabajar con la base de datos y las API de ASP.NET Core
 using AprendeMasWeb.Data;
 using AprendeMasWeb.Models.DBModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
 namespace AprendeMasWeb.Controllers.WEB
 {
+    [Authorize(Roles = "Docente")]
     // Se define la ruta base para este controlador API (utilizando la convención de API REST)
     [Route("api/[controller]")]
     // Indica que este controlador es para una API

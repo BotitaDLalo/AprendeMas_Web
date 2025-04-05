@@ -2,11 +2,13 @@
 using AprendeMasWeb.Data;
 using AprendeMasWeb.Models;
 using AprendeMasWeb.Models.DBModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AprendeMasWeb.Controllers.WEB
 {
+    [Authorize(Roles = "Docente")]
     // Se define la ruta base para este controlador API
     [Route("api/[controller]")]
     // Indica que este controlador es para una API

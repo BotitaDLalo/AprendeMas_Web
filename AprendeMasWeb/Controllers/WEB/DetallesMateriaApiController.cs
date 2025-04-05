@@ -3,12 +3,14 @@ using AprendeMasWeb.Data;
 using AprendeMasWeb.Models;
 using AprendeMasWeb.Models.DBModels;
 using Google;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 // Define el controlador para la API
 namespace AprendeMasWeb.Controllers.WEB
 {
+    [Authorize(Roles = "Docente")]
     // Define la ruta de la API, en este caso, 'api/[controller]' significa que el controlador será accesible a través de 'api/DetallesMateriaApi'
     [Route("api/[controller]")]
     [ApiController] // Indica que este es un controlador de API
