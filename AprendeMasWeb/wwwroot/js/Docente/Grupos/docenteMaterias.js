@@ -355,7 +355,16 @@ async function editarMateria(materiaId) {
 async function eliminarMateria(MateriaId) {
     const confirmacion = await Swal.fire({
         title: "¿Estás seguro?",
-        text: "No podrás recuperar el contenido de la materia después de eliminarla como:\n- Avisos\n- Actividades\n- Alumnos Registrados\n- Calificaciones.\n",
+        html: `
+                    <p>Esto eliminará <b>todo lo que contenga la materia</b> incluyendo:</p>
+                    <ul style="text-align: left;">
+                        <li>Avisos</li>
+                        <li>Actividades</li>
+                        <li>Alumnos asignados</li>
+                        <li>Calificaciones</li>
+                    </ul>
+                    <p>No podrás recuperar esta información después.</p>
+                `,
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Sí, eliminar",

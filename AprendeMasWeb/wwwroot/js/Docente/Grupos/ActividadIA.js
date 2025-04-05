@@ -52,10 +52,19 @@ document.getElementById('btnSugerencias').addEventListener('click', async () => 
 
 async function obtenerRecomendaciones(nombre, descripcion) {
     const prompt = `A partir de la siguiente actividad: Título: "${nombre}", Descripción: "${descripcion}", 
-    genera tres versiones mejoradas de la descripción, más claras, completas y bien estructuradas. 
-    Cada versión debe incluir detalles útiles sin cambiar el significado original. 
-    Devuelve SOLO las tres versiones numeradas (1, 2 y 3) sin texto adicional.
-    Sino hay nombre y descripción solo mostrar un aviso:  Se necesita un titulo y descripción para mostrar sugerencias"`;
+                    genera solo y unicamente tres versiones mejoradas de la descripción, mas claras, completas, bien estructuraras
+                    y principalmente en forma de instrucciones dirigidas al alumno. 
+                    Cada versión debe ser clara, completa y bien estructurada, con un lenguaje directo y comprensible. 
+                    Evita explicaciones en tercera persona. En su lugar, utiliza frases como "Resuelve", "Realiza", "Contesta", etc., 
+                    para que el alumno entienda exactamente qué debe hacer. 
+                    Devuelve SOLO y unicamente  las tres versiones numeradas (1, 2 y 3), sin texto adicional.
+                    Y si desde el parecer del titulo y descripcion suena como si se esperara una respuesta rapido decir al final de cada descripcion:
+                    Contesta directamente en la plataforma
+                    y si suenan como una "informe", "ensayo", "investigación", "análisis", "resumen", "presentación", "trabajo", "reporte", "cuento", "historia" similar
+                    incluir en la descripcion :
+                    agregar link del archivo 
+                    Si no hay título y descripción, muestra este aviso: Se necesita un título y descripción para mostrar sugerencias.`;
+
 
     const requestBody = {
         contents: [{

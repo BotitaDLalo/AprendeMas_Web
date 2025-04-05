@@ -237,7 +237,7 @@ async function cargarGrupos() {
 
             // Añadir items al dropdown
             const dropdownItems = [
-                { text: "Compartir Acceso", action: () => CompartirAcceso(grupo.codigoAcceso) },
+                { text: "Compartir Acceso", action: () => CompartirAcceso(grupo.codigoAcceso, grupo.nombreGrupo) },
                 { text: "Eliminar", action: () => eliminarGrupo(grupo.grupoId) },
                 { text: "Aviso Grupal", action: () => crearAvisoGrupal(grupo.grupoId) },
                 { text: "Crear Materia", action: () => agregarMateriaAlGrupo(grupo.grupoId) },
@@ -514,10 +514,10 @@ async function handleCardClick(grupoId) {
     }
 }
 
-async function CompartirAcceso(codigoAcceso) {
+async function CompartirAcceso(codigoAcceso, nombreGrupo) {
     try {
         // Crear el mensaje completo
-        const mensaje = `Ingresa al grupo con el siguiente código: ${codigoAcceso}`;
+        const mensaje = `Únete al grupo "${nombreGrupo}" con el siguiente código de acceso: ${codigoAcceso}`;
 
         // Copiar al portapapeles
         await navigator.clipboard.writeText(mensaje);
@@ -528,10 +528,9 @@ async function CompartirAcceso(codigoAcceso) {
             title: 'Código copiado',
             text: 'El código de acceso al grupo ha sido copiado al portapapeles.',
             showConfirmButton: false,
-            timer: 1500 // Opcional: Desaparece después de 1.5 segundos
+            timer: 1500
         });
     } catch (error) {
-        // En caso de error
         Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -584,10 +583,10 @@ async function eliminarGrupo(grupoId) {
                 html: `
                     <p>Esto eliminará <b>todas las materias del grupo</b> y además:</p>
                     <ul style="text-align: left;">
-                        <li>• Avisos</li>
-                        <li>• Actividades</li>
-                        <li>• Alumnos asignados</li>
-                        <li>• Calificaciones</li>
+                        <li>Avisos</li>
+                        <li>Actividades</li>
+                        <li>Alumnos asignados</li>
+                        <li>Calificaciones</li>
                     </ul>
                     <p>No podrás recuperar esta información después.</p>
                 `,

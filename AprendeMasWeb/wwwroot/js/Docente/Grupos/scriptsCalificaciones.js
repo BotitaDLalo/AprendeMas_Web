@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     cargarActividadesEnSelect();
 });
-
+//Funcion para consultar actviidades por actividad
 async function consultarCalificaciones() {
     const select = document.getElementById("select-actividad");
     const actividadSeleccionada = select.value;

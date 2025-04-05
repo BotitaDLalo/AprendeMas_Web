@@ -1,11 +1,16 @@
 ﻿function copiarCodigoAcceso() {
     const codigoElemento = document.getElementById("codigoAcceso");
-    const codigo = codigoElemento.innerText;
+    const materiaElemento = document.getElementById("materiaNombre");
 
-    // Crear un input temporal para copiar el texto
+    const codigo = codigoElemento.innerText;
+    const nombreMateria = materiaElemento.innerText;
+
+    const textoCopiar = `Únete a mi materia "${nombreMateria}" con el siguiente código de acceso: ${codigo}`;
+
+    // Crear un input temporal para copiar el texto completo
     const inputTemp = document.createElement("input");
     document.body.appendChild(inputTemp);
-    inputTemp.value = codigo;
+    inputTemp.value = textoCopiar;
     inputTemp.select();
     document.execCommand("copy");
     document.body.removeChild(inputTemp);
