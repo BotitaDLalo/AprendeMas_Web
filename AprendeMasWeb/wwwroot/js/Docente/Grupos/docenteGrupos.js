@@ -69,7 +69,7 @@ async function guardarGrupo() {
             await asociarMateriasAGrupo(grupoId, materiasSeleccionadas);
         }
 
-        Swal.fire({
+        await Swal.fire({
             position: "top-end",
             icon: "success",
             title: "Grupo registrado correctamente.",
@@ -81,7 +81,7 @@ async function guardarGrupo() {
         cargarMateriasSinGrupo();
         cargarMaterias();
     } else {
-        Swal.fire({
+        await Swal.fire({
             position: "top-end",
             icon: "error",
             title: "Error al registrar grupo.",
@@ -300,7 +300,7 @@ async function cargarGrupos() {
         }
     } catch (error) {
         // El evento 'offline' ya maneja la reconexión globalmente
-        Swal.fire({
+        await Swal.fire({
             title: "Error al cargar los grupos.",
             html: "Reintentando en <b></b> segundos...",
             timer: 4000,
@@ -512,7 +512,7 @@ async function handleCardClick(grupoId) {
             }
             materiasContainer.style.display = "block";
         } else {
-            Swal.fire({
+            await Swal.fire({
                 position: "top-end",
                 icon: "error",
                 title: "Error al obtener las materias del grupo.",
@@ -554,7 +554,7 @@ async function CompartirAcceso(codigoAcceso, nombreGrupo) {
 
 //Funciones de contenedor de grupo
 async function eliminarGrupo(grupoId) {
-    Swal.fire({
+    await Swal.fire({
         title: "¿Qué deseas eliminar?",
         text: "Elige si deseas eliminar solo el grupo o también las materias que contiene.",
         icon: "warning",
@@ -685,14 +685,32 @@ async function agregarMateriaAlGrupo(id) {
         }
 
         if (response.ok) {
-            Swal.fire("Éxito", "Materia creada y asociada al grupo correctamente", "success");
+            await Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Materia creada y asociada al grupo correctamente.",
+                showConfirmButton: false,
+                timer: 2000
+            });
             cargarGrupos();
         } else {
-            Swal.fire("Error", data.mensaje || "Ocurrió un error", "error");
+            await Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: data.mensaje || "Ocurrió un error",
+                showConfirmButton: false,
+                timer: 2000
+            });
         }
     } catch (error) {
         console.error("Error al agregar la materia:", error);
-        Swal.fire("Error", "Ocurrió un error al intentar agregar la materia.", "error");
+        await Swal.fire({
+            position: "top-end",
+            icon: "error",
+            title: "Ocurrio un error al intentar agregar la materia.",
+            showConfirmButton: false,
+            timer: 2500
+        });
     }
 }
 
@@ -753,7 +771,14 @@ async function editarGrupo(grupoId) {
 
         if (!updateResponse.ok) throw new Error("No se pudo actualizar el grupo.");
 
-        Swal.fire("Actualizado", "El grupo ha sido editado correctamente.", "success");
+        await Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Actualizado",
+            text: "El grupo ha sido editado correctamente.",
+            showConfirmButton: false,
+            timer: 2000
+        });
 
         // Recargar para reflejar los cambios
         cargarGrupos();
@@ -805,13 +830,34 @@ async function crearAvisoGrupal(id) {
 
             const data = await response.json();
             if (data.mensaje) {
-                Swal.fire("Éxito", data.mensaje, "success");
+                await Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Éxito.",
+                    text: data.mensaje,
+                    showConfirmButton: false,
+                    timer: 2500
+                });
             } else {
-                Swal.fire("Error", "No se pudo crear el aviso", "error");
+                await Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: "Error",
+                    text:"No se pudo crear el aviso.",
+                    showConfirmButton: false,
+                    timer: 2500
+                });
             }
         } catch (error) {
             console.error("Error al enviar el aviso:", error);
-            Swal.fire("Error", "Ocurrió un error al crear el aviso", "error");
+            await Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title:"Error",
+                text: "Ocurrió un error al crear el aviso",
+                showConfirmButton: false,
+                timer: 2500
+            });
         }
     }
 }

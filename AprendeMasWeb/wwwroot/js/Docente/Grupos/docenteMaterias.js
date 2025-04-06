@@ -29,7 +29,7 @@ async function guardarMateriaSinGrupo() {
     });
 
     if (response.ok) { // Verificamos si la respuesta es exitosa
-        Swal.fire({
+        await Swal.fire({
             position: "top-end",
             icon: "success",
             title: "Materia registrada correctamente.",
@@ -40,7 +40,7 @@ async function guardarMateriaSinGrupo() {
         document.getElementById("materiasForm").reset(); // Limpiamos el formulario
         cargarMateriasSinGrupo(); // Recargamos la lista de materias sin grupo
     } else {
-        Swal.fire({
+        await Swal.fire({
             position: "top-end",
             icon: "error",
             title: "Error al registrar materia.",
@@ -337,8 +337,14 @@ async function editarMateria(materiaId) {
         });
 
         if (!updateResponse.ok) throw new Error("No se pudo actualizar la materia.");
-
-        Swal.fire("Actualizado", "La materia ha sido editada correctamente.", "success");
+        await Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Actualizado",
+            text: "La materia ha sido editada correctamente.",
+            showConfirmButton: false,
+            timer: 2500
+        });
 
         // Recargar para reflejar los cambios
         cargarGrupos();
@@ -346,7 +352,7 @@ async function editarMateria(materiaId) {
         cargarMateriasSinGrupo();
     }
     catch (error) {
-        Swal.fire("Error", error.message, "error");
+        await Swal.fire("Error", error.message, "error");
     }
 }
 
