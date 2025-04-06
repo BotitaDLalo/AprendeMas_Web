@@ -93,30 +93,36 @@ async function cargarMaterias() {
 
 // Cargar materias que fueron creadas sin un grupo a la vista principal.
 async function cargarMateriasSinGrupo() {
-    const response = await fetch(`/api/MateriasApi/ObtenerMateriasSinGrupo/${docenteIdGlobal}`);
-    if (response.ok) {
-        const materiasSinGrupo = await response.json();
-        const listaMateriasSinGrupo = document.getElementById("listaMateriasSinGrupo");
+    mostrarCargando("Cargando materias..."); // Mostrar indicador de carga
 
-        // Limpiar contenido anterior y crear el contenedor con Bootstrap Grid
-        listaMateriasSinGrupo.innerHTML = "";
-        const rowContainer = document.createElement("div");
-        rowContainer.classList.add("row", "g-3"); // "g-3" agrega un pequeño espacio entre las filas
+    try {
+        const response = await fetch(`/api/MateriasApi/ObtenerMateriasSinGrupo/${docenteIdGlobal}`);
+        
+        if (response.ok) {
+            const materiasSinGrupo = await response.json();
+            const listaMateriasSinGrupo = document.getElementById("listaMateriasSinGrupo");
 
-        if (materiasSinGrupo.length === 0) {
-            const mensaje = document.createElement("p");
-            mensaje.classList.add("text-center", "text-muted");
-            mensaje.textContent = "No hay materias registradas.";
-            listaMateriasSinGrupo.appendChild(mensaje);
-            return;
-        }
+            // Limpiar contenido anterior y crear el contenedor con Bootstrap Grid
+            listaMateriasSinGrupo.innerHTML = "";
+            const rowContainer = document.createElement("div");
+            rowContainer.classList.add("row", "g-3");
 
-        materiasSinGrupo.forEach(materia => {
-            const col = document.createElement("div");
-            col.classList.add("col-md-3"); // Ajusta el tamaño de la tarjeta en la fila
+            if (materiasSinGrupo.length === 0) {
+                const mensaje = document.createElement("p");
+                mensaje.classList.add("text-center", "text-muted");
+                mensaje.textContent = "No hay materias registradas.";
+                listaMateriasSinGrupo.appendChild(mensaje);
+                cerrarCargando(); // Cerrar indicador de carga
+                return;
+            }
 
-            const card = document.createElement("div");
-            card.classList.add("materia-card", "bg-light", "mb-3", "shadow-sm");
+            materiasSinGrupo.forEach(materia => {
+                const col = document.createElement("div");
+                col.classList.add("col-md-3");
+
+                const card = document.createElement("div");
+                card.classList.add("materia-card", "bg-light", "mb-3", "shadow-sm");
+
             card.style.maxWidth = "100%";
 
             // Header
@@ -256,31 +262,24 @@ async function cargarMateriasSinGrupo() {
             col.appendChild(card);
 
             // Agregar la columna al contenedor de la fila
-            rowContainer.appendChild(col);
-        });
+                rowContainer.appendChild(col);
+            });
 
-        // Agregar todas las tarjetas dentro del contenedor de filas
-        listaMateriasSinGrupo.appendChild(rowContainer);
+            listaMateriasSinGrupo.appendChild(rowContainer);
+            cerrarCargando(); // Cerrar indicador de carga
 
-    } else {
+        } else {
+            throw new Error("Error al cargar las materias.");
+        }
+    } catch (error) {
+        // Si hay un error (por ejemplo, desconexión de red), el evento 'offline' ya lo maneja globalmente
         Swal.fire({
             title: "Error al cargar materias",
-            html: "Reintentando en <b></b> segundos...",
-            timer: 4000,
-            timerProgressBar: true,
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-                const timer = Swal.getPopup().querySelector("b");
-                let timerInterval = setInterval(() => {
-                    timer.textContent = `${Math.floor(Swal.getTimerLeft() / 1000)}`;
-                }, 100);
-            },
-            willClose: () => clearInterval(timerInterval)
-        }).then((result) => {
-            if (result.dismiss === Swal.DismissReason.timer) {
-                cargarMateriasSinGrupo();
-            }
+            text: "Por favor verifica tu conexión a internet.",
+            icon: "error",
+            confirmButtonText: "Reintentar",
+        }).then(() => {
+            cargarMateriasSinGrupo(); // Reintentar la carga
         });
     }
 }

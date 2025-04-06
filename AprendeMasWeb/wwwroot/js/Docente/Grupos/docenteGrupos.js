@@ -117,181 +117,189 @@ function removerDeLista(button) {
 
 
 
-//Funcion para obtener los grupos de la base de datos y mostrarlos
+// Función para obtener los grupos de la base de datos y mostrarlos
 async function cargarGrupos() {
-    const response = await fetch(`/api/GruposApi/ObtenerGrupos/${docenteIdGlobal}`);
-    if (response.ok) {
-        const grupos = await response.json();
-        const listaGrupos = document.getElementById("listaGrupos");
-        listaGrupos.innerHTML = "";
+    mostrarCargando("Cargando grupos..."); // Mostrar indicador de carga
 
-        if (grupos.length === 0) {
-            const mensaje = document.createElement("p");
-            mensaje.classList.add("text-center", "text-muted");
-            mensaje.textContent = "No hay grupos registrados.";
-            listaGrupos.appendChild(mensaje);
-            return;
-        }
+    try {
+        const response = await fetch(`/api/GruposApi/ObtenerGrupos/${docenteIdGlobal}`);
 
-        grupos.forEach(grupo => {
-            // 📌 Tarjeta principal
-            const card = document.createElement("div");
-            card.id = `grupo-${grupo.grupoId}`;
-            card.classList.add("grupo-card", "bg-primary", "text-white", "mb-3");
-            card.style.cursor = "pointer";
-            card.style.maxWidth = "20em";
-            card.style.height = "5em";
-            card.style.display = "block";
-            card.style.alignItems = "center";
-            card.style.transition = "transform 0.3s ease, box-shadow 0.3s ease";
-            card.onmouseover = () => {
-                card.style.transform = "translateY(-10px)";
-                card.style.boxShadow = "0 10px 20px rgba(0, 0, 0, 0.2)";
-            };
-            card.onmouseout = () => {
-                card.style.transform = "";
-                card.style.boxShadow = "";
-            };
+        if (response.ok) {
+            const grupos = await response.json();
+            const listaGrupos = document.getElementById("listaGrupos");
+            listaGrupos.innerHTML = "";
 
-            // 📌 Imagen del grupo
-            const img = document.createElement("img");
-            img.classList.add("card-img-top");
-            img.src = "/Iconos/1-26.svg";
-            img.alt = "Grupo";
-            img.style.maxWidth = "25%";
-            img.style.margin = "auto";
-            img.style.padding = "0.5em";
-            img.style.borderRadius = "0.7em";
+            if (grupos.length === 0) {
+                const mensaje = document.createElement("p");
+                mensaje.classList.add("text-center", "text-muted");
+                mensaje.textContent = "No hay grupos registrados.";
+                listaGrupos.appendChild(mensaje);
+                cerrarCargando(); // Cerrar indicador de carga
+                return;
+            }
 
-            // 📌 Contenedor del contenido
-            const cardBody = document.createElement("div");
-            cardBody.classList.add("grupo-card-body");
-            cardBody.style.display = "flex";
-            cardBody.style.justifyContent = "space-between";
-            cardBody.style.alignItems = "center";
-            cardBody.style.flex = "1";
-            cardBody.style.overflow = "hidden";
+            grupos.forEach(grupo => {
+                // 📌 Tarjeta principal
+                const card = document.createElement("div");
+                card.id = `grupo-${grupo.grupoId}`;
+                card.classList.add("grupo-card", "bg-primary", "text-white", "mb-3");
+                card.style.cursor = "pointer";
+                card.style.maxWidth = "20em";
+                card.style.height = "5em";
+                card.style.display = "block";
+                card.style.alignItems = "center";
+                card.style.transition = "transform 0.3s ease, box-shadow 0.3s ease";
+                card.onmouseover = () => {
+                    card.style.transform = "translateY(-10px)";
+                    card.style.boxShadow = "0 10px 20px rgba(0, 0, 0, 0.2)";
+                };
+                card.onmouseout = () => {
+                    card.style.transform = "";
+                    card.style.boxShadow = "";
+                };
 
-            // 📌 Sección de texto
-            const textSection = document.createElement("div");
-            textSection.classList.add("text-section");
-            textSection.style.maxWidth = "100%";
-            textSection.style.overflow = "hidden";
-            textSection.style.display = "flex";
-            textSection.style.flexDirection = "column";
-            textSection.style.justifyContent = "center";
+                // 📌 Imagen del grupo
+                const img = document.createElement("img");
+                img.classList.add("card-img-top");
+                img.src = "/Iconos/1-26.svg";
+                img.alt = "Grupo";
+                img.style.maxWidth = "25%";
+                img.style.margin = "auto";
+                img.style.padding = "0.5em";
+                img.style.borderRadius = "0.7em";
 
-            const title = document.createElement("h5");
-            title.classList.add("card-title");
-            title.textContent = grupo.nombreGrupo;
-            title.style.whiteSpace = "nowrap";
-            title.style.overflow = "hidden";
-            title.style.textOverflow = "ellipsis";
-            title.style.margin = "0";
-            title.style.fontWeight = "bold";
+                // 📌 Contenedor del contenido
+                const cardBody = document.createElement("div");
+                cardBody.classList.add("grupo-card-body");
+                cardBody.style.display = "flex";
+                cardBody.style.justifyContent = "space-between";
+                cardBody.style.alignItems = "center";
+                cardBody.style.flex = "1";
+                cardBody.style.overflow = "hidden";
 
-            const description = document.createElement("p");
-            description.classList.add("card-text");
-            description.textContent = grupo.descripcion || "Sin descripción";
-            description.style.whiteSpace = "nowrap";
-            description.style.overflow = "hidden";
-            description.style.textOverflow = "ellipsis";
-            description.style.margin = "0";
+                // 📌 Sección de texto
+                const textSection = document.createElement("div");
+                textSection.classList.add("text-section");
+                textSection.style.maxWidth = "100%";
+                textSection.style.overflow = "hidden";
+                textSection.style.display = "flex";
+                textSection.style.flexDirection = "column";
+                textSection.style.justifyContent = "center";
 
-            textSection.appendChild(title);
-            textSection.appendChild(description);
+                const title = document.createElement("h5");
+                title.classList.add("card-title");
+                title.textContent = grupo.nombreGrupo;
+                title.style.whiteSpace = "nowrap";
+                title.style.overflow = "hidden";
+                title.style.textOverflow = "ellipsis";
+                title.style.margin = "0";
+                title.style.fontWeight = "bold";
 
-            // 📌 Sección del botón (Icono de engranaje)
-            const ctaSection = document.createElement("div");
-            ctaSection.classList.add("cta-section");
-            ctaSection.style.maxWidth = "40%";
-            ctaSection.style.display = "flex";
-            ctaSection.style.flexDirection = "column";
-            ctaSection.style.justifyContent = "center";
+                const description = document.createElement("p");
+                description.classList.add("card-text");
+                description.textContent = grupo.descripcion || "Sin descripción";
+                description.style.whiteSpace = "nowrap";
+                description.style.overflow = "hidden";
+                description.style.textOverflow = "ellipsis";
+                description.style.margin = "0";
 
-            const settingsButton = document.createElement("button");
-            settingsButton.classList.add("btn", "btn-link", "text-white", "p-0");
-            settingsButton.type = "button";
-            settingsButton.setAttribute("data-bs-toggle", "dropdown");
-            settingsButton.setAttribute("aria-expanded", "false");
-            settingsButton.onclick = (event) => event.stopPropagation();
-            settingsButton.style.width = "3em";
-            settingsButton.style.height = "3em";
-            settingsButton.style.display = "flex";
-            settingsButton.style.alignItems = "center";
-            settingsButton.style.justifyContent = "center";
-            settingsButton.style.border = "none";
-            settingsButton.style.outline = "none";
-            settingsButton.style.textDecoration = "none";
+                textSection.appendChild(title);
+                textSection.appendChild(description);
 
-            const settingsIcon = document.createElement("i");
-            settingsIcon.classList.add("fas", "fa-cog");
-            settingsIcon.style.fontSize = "1.5em";
+                // 📌 Sección del botón (Icono de engranaje)
+                const ctaSection = document.createElement("div");
+                ctaSection.classList.add("cta-section");
+                ctaSection.style.maxWidth = "40%";
+                ctaSection.style.display = "flex";
+                ctaSection.style.flexDirection = "column";
+                ctaSection.style.justifyContent = "center";
+
+                const settingsButton = document.createElement("button");
+                settingsButton.classList.add("btn", "btn-link", "text-white", "p-0");
+                settingsButton.type = "button";
+                settingsButton.setAttribute("data-bs-toggle", "dropdown");
+                settingsButton.setAttribute("aria-expanded", "false");
+                settingsButton.onclick = (event) => event.stopPropagation();
+                settingsButton.style.width = "3em";
+                settingsButton.style.height = "3em";
+                settingsButton.style.display = "flex";
+                settingsButton.style.alignItems = "center";
+                settingsButton.style.justifyContent = "center";
+                settingsButton.style.border = "none";
+                settingsButton.style.outline = "none";
+                settingsButton.style.textDecoration = "none";
+
+                const settingsIcon = document.createElement("i");
+                settingsIcon.classList.add("fas", "fa-cog");
+                settingsIcon.style.fontSize = "1.5em";
 
 
-            // ... (el código anterior hasta crear el settingsButton)
+                // Crear el menú dropdown con clases de Bootstrap
+                const dropdownMenu = document.createElement("div");
+                dropdownMenu.classList.add("dropdown-menu");
 
-            // Crear el menú dropdown con clases de Bootstrap
-            const dropdownMenu = document.createElement("div");
-            dropdownMenu.classList.add("dropdown-menu");
+                // Añadir items al dropdown
+                const dropdownItems = [
+                    { text: "Compartir Acceso", action: () => CompartirAcceso(grupo.codigoAcceso, grupo.nombreGrupo) },
+                    { text: "Eliminar", action: () => eliminarGrupo(grupo.grupoId) },
+                    { text: "Aviso Grupal", action: () => crearAvisoGrupal(grupo.grupoId) },
+                    { text: "Crear Materia", action: () => agregarMateriaAlGrupo(grupo.grupoId) },
+                    { text: "Editar Grupo", action: () => editarGrupo(grupo.grupoId) }
+                ];
 
-            // Añadir items al dropdown
-            const dropdownItems = [
-                { text: "Compartir Acceso", action: () => CompartirAcceso(grupo.codigoAcceso, grupo.nombreGrupo) },
-                { text: "Eliminar", action: () => eliminarGrupo(grupo.grupoId) },
-                { text: "Aviso Grupal", action: () => crearAvisoGrupal(grupo.grupoId) },
-                { text: "Crear Materia", action: () => agregarMateriaAlGrupo(grupo.grupoId) },
-                { text: "Editar Grupo", action: () => editarGrupo(grupo.grupoId) }
-
-            ];
-
-            dropdownItems.forEach(item => {
-                const dropdownItem = document.createElement("a");
-                dropdownItem.classList.add("dropdown-item");
-                dropdownItem.href = "#";
-                dropdownItem.textContent = item.text;
-                dropdownItem.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    item.action();
+                dropdownItems.forEach(item => {
+                    const dropdownItem = document.createElement("a");
+                    dropdownItem.classList.add("dropdown-item");
+                    dropdownItem.href = "#";
+                    dropdownItem.textContent = item.text;
+                    dropdownItem.addEventListener("click", (e) => {
+                        e.preventDefault();
+                        item.action();
+                    });
+                    dropdownMenu.appendChild(dropdownItem);
                 });
-                dropdownMenu.appendChild(dropdownItem);
+
+                // Ensamblar todos los elementos
+                settingsButton.appendChild(settingsIcon);
+                ctaSection.appendChild(settingsButton);
+                ctaSection.appendChild(dropdownMenu);
+
+                // 📌 Contenedor de materias (inicialmente oculto)
+                const materiasContainer = document.createElement("div");
+                materiasContainer.id = `materiasContainer-${grupo.grupoId}`;
+                materiasContainer.classList.add("materias-container");
+                materiasContainer.style.display = "none";
+                materiasContainer.style.paddingLeft = "20px";
+                materiasContainer.style.marginBottom = "20px";
+
+                // 📌 Evento al hacer clic en la tarjeta
+                card.onclick = () => {
+                    handleCardClick(grupo.grupoId);
+                };
+
+                // 📌 Estructura final
+                cardBody.appendChild(textSection);
+                cardBody.appendChild(ctaSection);
+
+                const contentWrapper = document.createElement("div");
+                contentWrapper.style.display = "flex";
+                contentWrapper.style.width = "100%";
+                contentWrapper.appendChild(img);
+                contentWrapper.appendChild(cardBody);
+
+                card.appendChild(contentWrapper);
+
+                listaGrupos.appendChild(card);
+                listaGrupos.appendChild(materiasContainer);
             });
 
-            // Ensamblar todos los elementos
-            settingsButton.appendChild(settingsIcon);
-            ctaSection.appendChild(settingsButton);
-            ctaSection.appendChild(dropdownMenu);
+            cerrarCargando(); // Cerrar indicador de carga
 
-
-            // 📌 Contenedor de materias (inicialmente oculto)
-            const materiasContainer = document.createElement("div");
-            materiasContainer.id = `materiasContainer-${grupo.grupoId}`;
-            materiasContainer.classList.add("materias-container");
-            materiasContainer.style.display = "none";
-            materiasContainer.style.paddingLeft = "20px";
-            materiasContainer.style.marginBottom = "20px";
-
-            // 📌 Evento al hacer clic en la tarjeta
-            card.onclick = () => {
-                handleCardClick(grupo.grupoId);
-            };
-
-            // 📌 Estructura final
-            cardBody.appendChild(textSection);
-            cardBody.appendChild(ctaSection);
-
-            const contentWrapper = document.createElement("div");
-            contentWrapper.style.display = "flex";
-            contentWrapper.style.width = "100%";
-            contentWrapper.appendChild(img);
-            contentWrapper.appendChild(cardBody);
-
-            card.appendChild(contentWrapper);
-
-            listaGrupos.appendChild(card);
-            listaGrupos.appendChild(materiasContainer);
-        });
-    } else {
+        } else {
+            throw new Error("Error al cargar los grupos.");
+        }
+    } catch (error) {
+        // El evento 'offline' ya maneja la reconexión globalmente
         Swal.fire({
             title: "Error al cargar los grupos.",
             html: "Reintentando en <b></b> segundos...",
@@ -310,13 +318,12 @@ async function cargarGrupos() {
             willClose: () => clearInterval(timerInterval)
         }).then((result) => {
             if (result.dismiss === Swal.DismissReason.timer) {
-                cargarGrupos();
+                cargarGrupos(); // Reintentar la carga
             } else if (result.dismiss === Swal.DismissReason.cancel) {
                 cerrarSesion();
             }
         });
     }
-
     document.getElementById('gruposModal').addEventListener('hidden.bs.modal', cargarGrupos);
 }
 

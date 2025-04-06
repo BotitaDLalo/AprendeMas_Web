@@ -2,7 +2,7 @@ let docenteIdGlobal = null; //Variable para almacenar el docenteId
 let materiasPorCrear = []; // Lista de materias a crear
 let intentosAcceder = 0;
 
-
+/*
 //Funcion que obtiene informacion del docente.
 async function obtenerDocenteId() {
     try {
@@ -17,23 +17,8 @@ async function obtenerDocenteId() {
         AlertaCierreSesion(); // Si existe un error al obtener el id del docente, cierra la sesión, ya que es indispensable 
     }
 }
+*/
 
-function mostrarCargando(titulo = "Cargando...") {
-    Swal.fire({
-        title: titulo,
-        timerProgressBar: true,
-        didOpen: () => {
-            Swal.showLoading();
-        },
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        allowEnterKey: false
-    });
-}
-
-function cerrarCargando() {
-    Swal.close();
-}
 
 
 // Función para asociar materias al grupo
@@ -73,7 +58,7 @@ async function inicializar() {
 
     await obtenerDocenteId(); // Espera a que el ID se obtenga antes de continuar
 
-    if (docenteIdGlobal) {
+    if (docenteIdGlobal != 0 || docenteIdGlobal != null) {
         await cargarMateriasSinGrupo(docenteIdGlobal); //esperar la promesa
         await cargarGrupos(docenteIdGlobal); //Esperar la promesa
         cerrarCargando();

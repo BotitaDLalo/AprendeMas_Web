@@ -41,27 +41,6 @@ document.addEventListener("DOMContentLoaded", function () {
     cambiarSeccion(seccion);
 });
 
-function mostrarCargando(titulo = "Cargando...") {
-    Swal.fire({
-        title: titulo,
-        timerProgressBar: true,
-        didOpen: () => {
-            Swal.showLoading();
-        },
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        allowEnterKey: false
-    });
-}
-
-function cerrarCargando() {
-    Swal.close();
-}
-
-
-
-
-
 function cambiarSeccion(seccion) {
     document.querySelectorAll('.seccion').forEach(div => div.style.display = 'none');
     const seccionMostrar = document.getElementById(`seccion-${seccion}`);

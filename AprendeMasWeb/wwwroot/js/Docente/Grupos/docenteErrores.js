@@ -1,4 +1,5 @@
-﻿//Funcion que detecta errores generales
+﻿/*
+//Funcion que detecta errores generales
 function alertaDeErroresGenerales(error) {
     // Mensaje de error por defecto
     let mensajeError = "Ocurrió un error inesperado.";
@@ -9,7 +10,7 @@ function alertaDeErroresGenerales(error) {
     }
 
     // Enlace para enviar un correo con el error incluido en el cuerpo
-    const enlaceCorreo = `mailto:soporte@tuempresa.com?subject=Error%20en%20la%20aplicación
+    const enlaceCorreo = `mailto:soporte@siexasistemas.com?subject=Error%20en%20la%20aplicación
         &body=Hola,%20tengo%20un%20problema%20en%20la%20aplicación.%0A%0ADetalles%20del%20error:%0A${encodeURIComponent(mensajeError)}
         %0A%0APor%20favor,%20ayuda.`.replace(/\s+/g, ''); // Limpia espacios innecesarios
 
@@ -77,7 +78,7 @@ async function cerrarSesion() {
                 text: "No se pudo cerrar sesión.",
                 position: "center",
                 allowOutsideClick: false//,// Evita que la alerta se cierre al hacer clic fuera de ella
-                // footer: '<a href="mailto:soporte@tuempresa.com?subject=Problema%20con%20cierre%20de%20sesión&body=Hola,%20tengo%20un%20problema%20al%20cerrar%20sesión.%20Por%20favor,%20ayuda." target="_blank">Si el problema persiste, contáctanos.</a>'
+                // footer: '<a href="mailto:soporte@siexasistemas.com?subject=Problema%20con%20cierre%20de%20sesión&body=Hola,%20tengo%20un%20problema%20al%20cerrar%20sesión.%20Por%20favor,%20ayuda." target="_blank">Si el problema persiste, contáctanos.</a>'
             });
         }
     } catch (error) {
@@ -85,3 +86,4 @@ async function cerrarSesion() {
         alertaDeErroresGenerales(error);
     }
 }
+*/

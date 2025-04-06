@@ -48,22 +48,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     prepararAlumnosYActividades();
 });
-function mostrarCargando(titulo = "Cargando...") {
-    Swal.fire({
-        title: titulo,
-        timerProgressBar: true,
-        didOpen: () => {
-            Swal.showLoading();
-        },
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        allowEnterKey: false
-    });
-}
-
-function cerrarCargando() {
-    Swal.close();
-}
 
 
 async function prepararAlumnosYActividades() {
