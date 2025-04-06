@@ -202,7 +202,9 @@ async function cargarMateriasSinGrupo() {
                     actividadLink.href = "#";
                     actividadLink.classList.add("actividad-link");
                     actividadLink.textContent = actividad.nombreActividad;
-                    actividadLink.setAttribute("data-id", actividad.actividadId, materia.materiaId);
+                    //actividadLink.setAttribute("data-id", actividad.actividadId, materia.materiaId);
+                    actividadLink.setAttribute("data-actividad-id", actividad.actividadId);
+                    actividadLink.setAttribute("data-materia-id", materia.materiaId);
 
                     const actividadFecha = document.createElement("p");
                     actividadFecha.classList.add("actividad-fecha");

@@ -12,32 +12,28 @@ async function obtenerDocenteId() {
         if (data.docenteId) {
             docenteIdGlobal = data.docenteId; // Guardamos el docenteId en la variable 
             localStorage.setItem("docenteId", docenteIdGlobal); // Guardamos el docenteIdGlobal en el almacenamiento local
-
-            // Alerta con diseño de Toast
-            const Toast = Swal.mixin({
-                toast: true,
-                position: "top-end",
-                showConfirmButton: false,
-                timer: 1500,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.onmouseleave = Swal.resumeTimer;
-                }
-            });
-
-            Toast.fire({
-                icon: "success",
-                title: "Todo correcto."
-            });
-
         }
     } catch (error) {
-        AlertaCierreSesion(); // Si existe un error, cierra la sesión
+        AlertaCierreSesion(); // Si existe un error al obtener el id del docente, cierra la sesión, ya que es indispensable 
     }
 }
 
+function mostrarCargando(titulo = "Cargando...") {
+    Swal.fire({
+        title: titulo,
+        timerProgressBar: true,
+        didOpen: () => {
+            Swal.showLoading();
+        },
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false
+    });
+}
 
-
+function cerrarCargando() {
+    Swal.close();
+}
 
 
 // Función para asociar materias al grupo
@@ -73,15 +69,20 @@ function irAMateria(materiaIdSeleccionada, seccion = 'avisos') {
 
 // Ejecutar primero la obtención del DocenteId y luego cargar los datos
 async function inicializar() {
+    mostrarCargando("Cargando informacion...");
+
     await obtenerDocenteId(); // Espera a que el ID se obtenga antes de continuar
-    if (docenteIdGlobal) { // Si el DocenteId es válido
-        cargarMateriasSinGrupo(docenteIdGlobal); // Carga las materias sin grupo
-        cargarGrupos(docenteIdGlobal); // Carga los grupos
+
+    if (docenteIdGlobal) {
+        await cargarMateriasSinGrupo(docenteIdGlobal); //esperar la promesa
+        await cargarGrupos(docenteIdGlobal); //Esperar la promesa
+        cerrarCargando();
     } else {
-        // Si no se obtiene el DocenteId, muestra un error
-        AlertaCierreSesion();
+        cerrarCargando();
+        AlertaCierreSesion(); // Función personalizada para manejar sesión inválida
     }
 }
+
 
 //Prioriza la ejecucion al cargar index
 // Llamar a la función inicializadora cuando se cargue la página
@@ -96,8 +97,9 @@ document.addEventListener("DOMContentLoaded", () => {
         let link = event.target.closest(".actividad-link"); // Detecta si el clic fue en un enlace de actividad
         if (link) {
             event.preventDefault(); // Evita la recarga de la página si es un <a>
-            let actividadId = link.getAttribute("data-id"); // Obtener el ID correcto
-            verActividad(actividadId);
+            let actividadId = link.getAttribute("data-actividad-id");
+            let materiaId = link.getAttribute("data-materia-id");
+            verActividad(actividadId, materiaId);
         }
     });
 });
@@ -107,6 +109,7 @@ function verActividad(actividadIdSeleccionada, materiaId) {
     localStorage.setItem("materiaIdSeleccionada", materiaId);
     //guardar el id de la materia para acceder a la materia en la que se entro y usarla en otro script
     localStorage.setItem("actividadSeleccionada", actividadIdSeleccionada);
+    localStorage.setItem("materiaIdSeleccionada", materiaId);
     // Redirige a la página de detalles de la materia
     window.open(`/Docente/EvaluarActividades`, '_blank'); //Aqui lleva en la url el id de la actividadSeleccionada
 }

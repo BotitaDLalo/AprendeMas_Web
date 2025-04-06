@@ -7,8 +7,11 @@ let actividadIdGlobal = localStorage.getItem("actividadSeleccionada");
 let puntajeMaximo = null;
 // Esperar a que el DOM esté completamente cargado antes de ejecutar el código
 document.addEventListener("DOMContentLoaded", function () {
-
     if (actividadIdGlobal != null && materiaIdGlobal != null) {
+
+        // Mostramos el loader
+        mostrarCargando("Cargando detalles de la actividad...");
+
         fetch(`/api/EvaluarActividadesApi/ObtenerActividadPorId/${actividadIdGlobal}`)
             .then(response => {
                 if (!response.ok) {
@@ -17,6 +20,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 return response.json();
             })
             .then(data => {
+                cerrarCargando(); // Cerramos el loader
+
                 if (data) {
                     document.getElementById("nombreActividad").innerText = data.nombreActividad || "No disponible";
                     document.getElementById("descripcionActividad").innerHTML = convertirUrlsEnEnlaces(data.descripcion) || "No disponible";
@@ -29,18 +34,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     document.getElementById("tipoActividad").innerText = data.tipoActividad || "Actividad";
                     document.getElementById("puntajeMaximo").innerText = data.puntaje || "0";
-                    puntajeMaximo = data.puntaje; //Se guarda puntaje maximo para poder usarla como limite
-                    //document.getElementById("alumnosEntregados").innerText = data.alumnosEntregados || `0 de 0`;
-                    //document.getElementById("actividadesCalificadas").innerText = data.actividadesCalificadas || "0 de 0";
+                    puntajeMaximo = data.puntaje;
                 } else {
                     console.error("No se encontraron datos válidos para esta actividad.");
                 }
             })
-            .catch(error => console.error("Error al obtener los datos de la actividad:", error));
+            .catch(error => {
+                cerrarCargando(); // Cierra aunque haya error
+                console.error("Error al obtener los datos de la actividad:", error);
+                Swal.fire("Error", "No se pudo cargar la información de la actividad.", "error");
+            });
     }
 
-    prepararAlumnosYActividades(); //Prepara y espera hasta obtener los datos que necesita para funsionar en esta vista.
+    prepararAlumnosYActividades();
 });
+function mostrarCargando(titulo = "Cargando...") {
+    Swal.fire({
+        title: titulo,
+        timerProgressBar: true,
+        didOpen: () => {
+            Swal.showLoading();
+        },
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false
+    });
+}
+
+function cerrarCargando() {
+    Swal.close();
+}
+
 
 async function prepararAlumnosYActividades() {
     await AlumnosDeMateriaParaActividades();

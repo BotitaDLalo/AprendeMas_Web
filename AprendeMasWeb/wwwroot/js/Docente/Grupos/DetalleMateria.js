@@ -6,6 +6,8 @@ let grupoIdGlobal = localStorage.getItem("grupoIdSeleccionado"); //se obtiene el
 document.addEventListener("DOMContentLoaded", function () {
     // Verificar si se tienen ambos IDs antes de hacer la petición
     if (materiaIdGlobal && docenteIdGlobal) {
+        mostrarCargando("Cargando detalles de la materia...");
+
         fetch(`/api/DetallesMateriaApi/ObtenerDetallesMateria/${materiaIdGlobal}/${docenteIdGlobal}`)
             .then(response => {
                 if (!response.ok) {
@@ -14,6 +16,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 return response.json();
             })
             .then(data => {
+                cerrarCargando();
+
                 if (data.nombreMateria && data.codigoAcceso && data.codigoColor) {
                     document.getElementById("materiaNombre").innerText = data.nombreMateria;
                     document.getElementById("codigoAcceso").innerText = data.codigoAcceso;
@@ -22,19 +26,39 @@ document.addEventListener("DOMContentLoaded", function () {
                     console.error("No se encontraron datos válidos para esta materia.");
                 }
             })
-            .catch(error => console.error("Error al obtener los datos de la materia:", error));
+            .catch(error => {
+                cerrarCargando();
+                console.error("Error al obtener los datos de la materia:", error);
+                Swal.fire("Error", "No se pudo cargar la información de la materia.", "error");
+            });
     }
 
-    //Cambia de seccion forma automatica
-    // Leer los parámetros de la URL (materiaId y seccion)
+    // Cambia de sección automáticamente
     const urlParams = new URLSearchParams(window.location.search);
-    const materiaId = urlParams.get('materiaId'); // Debería estar almacenado también en materiaIdGlobal?? 
-    const seccion = urlParams.get('seccion') || 'avisos'; // Si no se pasa, se usa 'avisos' por defecto
+    const materiaId = urlParams.get('materiaId');
+    const seccion = urlParams.get('seccion') || 'avisos';
 
-    // Cambiar a la sección que se pasa como parámetro
-    cambiarSeccion(seccion);  // Llamamos a la función para mostrar la sección correcta
-
+    cambiarSeccion(seccion);
 });
+
+function mostrarCargando(titulo = "Cargando...") {
+    Swal.fire({
+        title: titulo,
+        timerProgressBar: true,
+        didOpen: () => {
+            Swal.showLoading();
+        },
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false
+    });
+}
+
+function cerrarCargando() {
+    Swal.close();
+}
+
+
 
 
 
