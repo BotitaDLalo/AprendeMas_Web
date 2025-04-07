@@ -35,9 +35,26 @@
     }
 
 
+.titulo-calificacion {
+    display: flex;
+    align-items: center;
+    
+}
 
-/* Estilos de la card */
-.materia-card-unique {
+.iconos-nav5 {
+    width: 60px;
+    height: auto;
+
+}
+.iconos-nav6 {
+    width: 116px;
+    /* height: 8px; */
+    margin: -32px;
+    padding: 8px;
+    /* Estilos de la card */
+}
+
+    .materia-card-unique {
     background: #808080bf; /* Gris oscuro */
     width: 355px;
     padding: 20px;

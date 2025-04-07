@@ -54,7 +54,8 @@
             }
 
             const calificacionHTML = a.calificacion
-                ? `<p class="card-text"><strong>Calificación:</strong> ${a.calificacion.calificacion}</p>
+                ? `
+                <br><p class="card-text"><strong>Calificación:</strong> ${a.calificacion.calificacion}</p>
            <p class="card-text"><strong>Comentarios:</strong> ${a.calificacion.comentarios || 'Sin comentarios'}</p>`
                 : '<p class="card-text"><strong>Calificación:</strong> No evaluada aún</p>';
 
@@ -67,7 +68,10 @@
             const card = `
     <div class="card mb-3 shadow ${entregada ? 'bg-success bg-opacity-25 border-success' : ''}">
         <div class="card-body">
-            <h5 class="card-title">${a.nombreActividad}</h5>
+            <h5 class="card-title">
+             <img class="iconos-nav6" src="/Iconos/TABLA-26.svg" alt="Icono de Grupo" />
+            ${a.nombreActividad}</h5>
+            <br>
             <p class="card-text">${a.descripcion}</p>
             <p class="card-text"><strong>Fecha de entrega:</strong>
                 ${fechaLimite.toLocaleDateString()} ${fechaLimite.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -76,11 +80,17 @@
             <p class="card-text"><strong>Tipo:</strong> ${a.tipoActividad}</p>
             ${estadoEntrega}
             <br>
-
-            <h4>Calificación</h4>
-            ${calificacionHTML}
+            <hr>
+            <div class="titulo-calificacion">
+  <img class="iconos-nav5" src="/Iconos/CALIFICACIONES-26.svg" alt="Icono de Grupo" />
+  <h4>Calificación</h4>
+  
+</div>
+  
+${calificacionHTML}
             ${etiquetaResultado}
-
+            
+            <hr>
             <div class="respuesta-entrega mt-2">
                 <p id="res-entrega-${a.actividadId}" class="card-text">
                     <strong>Respuesta:</strong>
