@@ -61,9 +61,11 @@
             <h5 class="mb-0">Alumnos que han entregado</h5>
         </div>
         <div class="card-body">
-            <div id="listaAlumnosEntregados" class="list-group">
-                <!-- Aquí se generarán dinámicamente los alumnos -->
+            <!--Lista de alumnos que entregaron actividad acordeon-->
+            <div class="accordion" id="listaAlumnosEntregados">
+                <!---->
             </div>
+
         </div>
     </div>
     <!-- Alumnos que no han entregado -->
@@ -119,7 +121,9 @@
                     <div id="respuesta-alumno">
                         <!-- Aquí se muestra la respuesta del alumno -->
                         <p><strong>Respuesta recibida :</strong></p>
-                        <pre id="texto-respuesta">Texto de la respuesta del alumno.</pre>
+                        <pre id="texto-respuesta" style="white-space: pre-wrap; word-wrap: break-word; 
+                        background-color: #f8f8f8; padding: 10px; border: 1px solid #ccc; 
+                        border-radius: 5px; max-height: 200px; overflow-y: auto;"> Texto de la respuesta del alumno.</pre>
                     </div>
                 </div>
             </div>
@@ -189,12 +193,13 @@
                 throw new Error(data.mensaje || "Error al registrar calificación");
             }
 
-            Swal.fire({
+            await Swal.fire({
                 title: "Éxito",
-                text: "Calificación guardada correctamente.",
+                text: "Calificación asignada correctamente.",
                 icon: "success",
                 timer: 2500
             });
+            location.reload();
 
             $('#calificarModal').modal('hide');
         } catch (error) {

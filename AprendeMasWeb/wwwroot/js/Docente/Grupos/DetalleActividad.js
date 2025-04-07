@@ -34,8 +34,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     document.getElementById("tipoActividad").innerText = data.tipoActividad || "Actividad";
                     document.getElementById("puntajeMaximo").innerText = data.puntaje || "0";
-                    puntajeMaximo = data.puntaje;
-                } else {
+                    puntajeMaximo = data.puntaje;//Se guarda puntaje maximo para poder usarla como limite
+                    } else {
                     console.error("No se encontraron datos válidos para esta actividad.");
                 }
             })
@@ -136,27 +136,63 @@ function renderizarAlumnos(data) {
     listaNoEntregados.innerHTML = "";
 
     // Renderizar alumnos que entregaron actividad
-    data.entregados.forEach(alumno => {
-        const fechaEntrega = new Date(alumno.fechaEntrega).toLocaleDateString("es-ES");
-        const fechaCalificacion = alumno.entrega?.fechaCalificacionAsignada
-            ? new Date(alumno.entrega.fechaCalificacion).toLocaleDateString("es-ES")
+    data.entregados.forEach((alumno, index) => {
+        const fechaEntregaObj = new Date(alumno.fechaEntrega);
+        const fechaEntrega = fechaEntregaObj.toLocaleDateString("es-ES");
+        const horaEntrega = fechaEntregaObj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+
+        const yaCalificado = alumno.calificacion !== null;
+
+        const textoEstado = yaCalificado
+            ? 'Entregado y calificado <span style="color: green;">✔️</span>'
+            : 'Entregado';
+
+        const fechaCalificacion = yaCalificado
+            ? new Date(alumno.calificacion.fechaCalificacionAsignada).toLocaleString("es-ES", {
+                day: "2-digit", month: "2-digit", year: "numeric",
+                hour: "2-digit", minute: "2-digit"
+            })
             : "Sin calificar";
 
+        const calificacionInfo = yaCalificado
+            ? `
+            <p class="mb-1"><strong>Calificación:</strong> ${alumno.calificacion.calificacion} de ${puntajeMaximo}</p>
+            <p class="mb-1"><strong>Comentario:</strong> ${alumno.calificacion.comentarios}</p>
+        `
+            : '';
+
         const alumnoHTML = `
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    <h5 class="mb-1" style="font-weight: bold; color: #333;">${alumno.nombre} ${alumno.apellidoPaterno} ${alumno.apellidoMaterno}</h5>
-                    <p class="mb-1" style="color: #777;">Entregó: ${fechaEntrega}</p>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading${index}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index}" aria-expanded="false" aria-controls="collapse${index}">
+                    <div>
+                        <strong>${alumno.nombre} ${alumno.apellidoPaterno} ${alumno.apellidoMaterno}</strong><br>
+                        <small>${textoEstado}</small><br>
+                        <small>Entregado el: ${fechaEntrega} a las ${horaEntrega}</small>
+                    </div>
+                </button>
+            </h2>
+            <div id="collapse${index}" class="accordion-collapse collapse" aria-labelledby="heading${index}" data-bs-parent="#listaAlumnosEntregados">
+                <div class="accordion-body">
+                    <p><strong>Calificado el:</strong> ${fechaCalificacion}</p>
+                    ${calificacionInfo}
+                    <div class="d-flex gap-2 mt-2">
+                        <button class="btn btn-primary btn-sm" onclick="verRespuesta(${alumno.alumnoActividadId})">Ver Respuesta</button>
+                        ${
+                            yaCalificado
+            ? `<button class="btn btn-sm" style="background-color: #4CAF50; color: white;" onclick="abrirModalCalificar(${alumno.entrega.entregaId}, ${puntajeMaximo})">🔁 Calificar nuevamente</button>`
+                            : `<button class="btn btn-warning btn-sm" onclick="abrirModalCalificar(${alumno.entrega.entregaId}, ${puntajeMaximo})">Calificar</button>`
+                    }
+                    </div>
                 </div>
-                <span class="badge bg-success">Entregado</span>
-                <button class="btn btn-primary btn-sm" onclick="verRespuesta(${alumno.alumnoActividadId})">Ver Respuesta</button>
-                <button class="btn btn-warning btn-sm" onclick="abrirModalCalificar(${alumno.entrega.entregaId}, ${puntajeMaximo})">Calificar</button>
-                <p class="mb-1" style="color: #777;">Calificado el: ${fechaCalificacion}</p>
             </div>
-        `;
+        </div>
+    `;
 
         listaEntregados.innerHTML += alumnoHTML;
     });
+
+
 
     // Renderizar alumnos que NO entregaron actividad
     data.noEntregados.forEach(alumno => {
@@ -172,6 +208,15 @@ function renderizarAlumnos(data) {
 
         listaNoEntregados.innerHTML += alumnoHTML;
     });
+
+    // Mostrar resumen de entregas y calificaciones
+    const totalAlumnos = data.entregados.length + data.noEntregados.length;
+    const totalEntregados = data.entregados.length;
+    const totalCalificados = data.entregados.filter(alumno => alumno.calificacion !== null).length;
+
+    document.getElementById("alumnosEntregados").innerText = `${totalEntregados} de ${totalAlumnos}`;
+    document.getElementById("actividadesCalificadas").innerText = `${totalCalificados} de ${totalEntregados}`;
+
 }
 
 function convertirUrlsEnEnlaces(texto) {

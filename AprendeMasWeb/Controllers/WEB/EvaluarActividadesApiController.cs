@@ -124,29 +124,48 @@ namespace AprendeMasWeb.Controllers.WEB
                 .Where(ea => entregadosIds.Contains(ea.AlumnoActividadId))
                 .ToListAsync();
 
+            // Obtener los IDs de Entrega para buscar en Calificaciones
+            var entregaIds = entregados.Select(e => e.EntregaId).ToList();
+
+            // Buscar calificaciones relacionadas con esas entregas
+            var calificaciones = await _context.tbCalificaciones
+                .Where(c => entregaIds.Contains(c.EntregaId))
+                .ToListAsync();
+
+            // Combinar entregas con calificaciones (si existen)
             var entregadosFormato = entregados
-                .Select(ea => new
+                .Select(ea =>
                 {
-                    AlumnoActividad = alumnosActividades.FirstOrDefault(aa => aa.AlumnoActividadId == ea.AlumnoActividadId),
-                    Entrega = new
+                    var alumnoActividad = alumnosActividades.FirstOrDefault(aa => aa.AlumnoActividadId == ea.AlumnoActividadId);
+                    var calificacion = calificaciones.FirstOrDefault(c => c.EntregaId == ea.EntregaId);
+
+                    return new
                     {
-                        ea.EntregaId,
-                        ea.AlumnoActividadId,
-                        ea.Respuesta
-                    }
-                })
-                .Select(e => new
-                {
-                    e.AlumnoActividad.AlumnoActividadId,
-                    FechaEntrega = e.AlumnoActividad.FechaEntrega,
-                    EstatusEntrega = true,
-                    e.AlumnoActividad.Alumnos.AlumnoId,
-                    e.AlumnoActividad.Alumnos.Nombre,
-                    e.AlumnoActividad.Alumnos.ApellidoPaterno,
-                    e.AlumnoActividad.Alumnos.ApellidoMaterno,
-                    Entrega = e.Entrega
+                        alumnoActividad.AlumnoActividadId,
+                        FechaEntrega = alumnoActividad.FechaEntrega,
+                        EstatusEntrega = true,
+                        alumnoActividad.Alumnos.AlumnoId,
+                        alumnoActividad.Alumnos.Nombre,
+                        alumnoActividad.Alumnos.ApellidoPaterno,
+                        alumnoActividad.Alumnos.ApellidoMaterno,
+                        Entrega = new
+                        {
+                            ea.EntregaId,
+                            ea.AlumnoActividadId,
+                            ea.Respuesta
+                        },
+                        Calificacion = calificacion != null ? new
+                        {
+                            calificacion.CalificacionId,
+                            calificacion.EntregaId,
+                            calificacion.FechaCalificacionAsignada,
+                            calificacion.Comentarios,
+                            calificacion.Calificacion
+                        } : null
+                    };
                 })
                 .ToList();
+
 
             // Retornar resultado en formato JSON
             return Ok(new

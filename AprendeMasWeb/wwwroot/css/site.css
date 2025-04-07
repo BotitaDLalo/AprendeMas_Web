@@ -21,3 +21,9 @@ body {
   margin-bottom: 60px;
 /*  background:#726c6c;*/
 }
+
+/*Estilo color mas amigable para selector de la actividad a calificar del alumno*/
+.accordion-button:not(.collapsed):hover,
+.accordion-button:hover {
+    background-color: #e7f1ff !important;
+}
