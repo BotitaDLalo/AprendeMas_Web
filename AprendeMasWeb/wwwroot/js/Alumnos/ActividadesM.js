@@ -50,9 +50,13 @@
             const card = `
         <div class="card mb-3 shadow ${entregada ? 'bg-success bg-opacity-25 border-success' : ''}">
             <div class="card-body">
+
                 <h5 class="card-title">${a.nombreActividad}</h5>
                 <p class="card-text">${a.descripcion}</p>
-                <p class="card-text"><strong>Fecha de entrega:</strong> ${fechaLimite.toLocaleDateString()}</p>
+               <p class="card-text"><strong>Fecha de entrega:</strong>
+    ${fechaLimite.toLocaleDateString()} ${fechaLimite.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+</p>
+
                 <p class="card-text"><strong>Puntaje:</strong> ${a.puntaje}</p>
                 <p class="card-text"><strong>Tipo:</strong> ${a.tipoActividad}</p>
                 ${estadoEntrega}
@@ -110,7 +114,7 @@ async function enviarEntrega(actividadId) {
         Swal.fire({
             icon: 'warning',
             title: 'Entrega no permitida',
-            text: 'La fecha límite de entrega ha pasado.',
+            html: `La fecha límite fue <strong>${fechaEntrega.toLocaleString()}</strong> y ya ha pasado.`,
             confirmButtonText: 'Aceptar'
         });
         return;
