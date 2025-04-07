@@ -73,11 +73,11 @@
 
 .menu-options2 {
     display: none;
-    top: -55px;
-    right: -600px;
+    top: -50px;
+    right: -570px;
     position: absolute;
-    background: white;
-    border: 1px solid #ddd;
+    background: #ccc;
+    border: 1px solid #f2f0f0;
     border-radius: 5px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
     z-index: 10;
@@ -229,6 +229,28 @@
         transform: scale(1.1); /* Aumenta ligeramente el tamaño de la imagen */
         box-shadow: 0 0 10px rgba(0, 0, 0, 0);
     }
+
+
+.btn-salir {
+    display: inline-flex;
+    align-items: center;
+    
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: black;
+    font-size: 14px;
+    transition: transform 0.3s ease;
+}
+
+    .btn-salir:hover {
+        transform: scale(1.05);
+    }
+
+.icono-salir {
+    width: 16px;
+    height: 16px;
+}
 
 
 

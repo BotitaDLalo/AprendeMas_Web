@@ -198,8 +198,16 @@ function agregarCardClase(clase) {
         <div class="menu-container">
             <button class="menu-button">⋮</button>
             <div class="menu-options2">
-                <button onclick="eliminarClase('${clase.id}', ${clase.esGrupo})">🗑 Eliminar</button>
-            </div>
+    <button onclick="event.stopPropagation(); salirDeClase('${clase.id}', ${clase.esGrupo})" class="btn-salir">
+    Salir
+    <img src="/Iconos/x.svg" alt="Salir" class="icono-salir" />
+</button>
+
+
+
+
+</div>
+
         </div>
     
 `;
@@ -283,37 +291,36 @@ function verClase(nombre, esGrupo) {
     window.location.href = `/Alumno/Clase?tipo=${tipo}&nombre=${encodeURIComponent(nombre)}`;
 }
 
-async function eliminarClase(id, esGrupo) {
+async function salirDeClase(id, esGrupo) {
     const tipo = esGrupo ? "grupo" : "materia";
 
     const confirmacion = await Swal.fire({
-        title: `¿Eliminar ${tipo}?`,
-        text: `¿Estás seguro de que quieres eliminar este ${tipo}? Esta acción no se puede deshacer.`,
-        icon: "warning",
+        title: `¿Salir de este ${tipo}?`,
+        text: `¿Estás seguro de que deseas salir de este ${tipo}? El docente aún podrá ver tu participación.`,
+        icon: "question",
         showCancelButton: true,
-        confirmButtonText: "Sí, eliminar",
+        confirmButtonText: "Sí, salir",
         cancelButtonText: "Cancelar"
     });
- 
+
     if (confirmacion.isConfirmed) {
         try {
-            const response = await fetch(`/api/Alumno/EliminarClase/${id}`, {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" }
+            const response = await fetch(`/api/Alumno/SalirDe${tipo.charAt(0).toUpperCase() + tipo.slice(1)}/${id}/${alumnoIdGlobal}`, {
+                method: "DELETE"
             });
 
-            const data = await response.json();
-
             if (response.ok) {
-                Swal.fire("Eliminado", `${tipo} eliminado con éxito.`, "success");
-                cargarClases(); // Recargar la lista de clases
+                Swal.fire("Listo", `Has salido del ${tipo}.`, "success");
+                cargarClases();
             } else {
-                Swal.fire("Error", data.mensaje || "No se pudo eliminar.", "error");
+                const data = await response.json();
+                Swal.fire("Error", data.mensaje || "No se pudo salir.", "error");
             }
         } catch (error) {
-            console.error("Error al eliminar:", error);
-            Swal.fire("Error", "Ocurrió un problema al eliminar.", "error");
+            console.error("Error al salir:", error);
+            Swal.fire("Error", "Ocurrió un problema al salir.", "error");
         }
     }
 }
+
 

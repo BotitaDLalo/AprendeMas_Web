@@ -330,6 +330,37 @@ namespace AprendeMasWeb.Controllers.WEB
 
 
 
+		// Salir de una materia
+		[HttpDelete("api/Alumno/SalirDeMateria/{materiaId}/{alumnoId}")]
+		public async Task<IActionResult> SalirDeMateria(int materiaId, int alumnoId)
+		{
+			var registro = await _context.tbAlumnosMaterias
+				.FirstOrDefaultAsync(am => am.MateriaId == materiaId && am.AlumnoId == alumnoId);
+
+			if (registro == null)
+				return NotFound(new { mensaje = "No estás inscrito en esta materia." });
+
+			_context.tbAlumnosMaterias.Remove(registro);
+			await _context.SaveChangesAsync();
+
+			return Ok(new { mensaje = "Saliste de la materia." });
+		}
+
+		// Salir de un grupo
+		[HttpDelete("api/Alumno/SalirDeGrupo/{grupoId}/{alumnoId}")]
+		public async Task<IActionResult> SalirDeGrupo(int grupoId, int alumnoId)
+		{
+			var registro = await _context.tbAlumnosGrupos
+				.FirstOrDefaultAsync(ag => ag.GrupoId == grupoId && ag.AlumnoId == alumnoId);
+
+			if (registro == null)
+				return NotFound(new { mensaje = "No estás inscrito en este grupo." });
+
+			_context.tbAlumnosGrupos.Remove(registro);
+			await _context.SaveChangesAsync();
+
+			return Ok(new { mensaje = "Saliste del grupo." });
+		}
 
 
 
