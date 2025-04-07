@@ -45,7 +45,7 @@
 
             if (calificada) {
                 etiquetaResultado = `<span class="badge ${aprobado ? 'bg-success' : 'bg-danger'}">
-        ${aprobado ? 'Aprobado' : 'Reprobado'}
+        ${aprobado ? '✅ Aprobado' : '💡 Por mejorar'}
     </span>
     <span class="badge bg-secondary ms-2">Actividad calificada</span>`;
 
@@ -55,14 +55,14 @@
 
             const calificacionHTML = a.calificacion
                 ? `
-                <br><p class="card-text"><strong>Calificación:</strong> ${a.calificacion.calificacion}</p>
+                <br><p class="card-text"><strong>Calificación:</strong> ${a.calificacion.calificacion}/100</p>
            <p class="card-text"><strong>Comentarios:</strong> ${a.calificacion.comentarios || 'Sin comentarios'}</p>`
                 : '<p class="card-text"><strong>Calificación:</strong> No evaluada aún</p>';
 
             const entregada = !!a.respuesta;
 
             const estadoEntrega = estaFueraDeTiempo
-                ? '<span class="badge bg-danger">Tarea retrasada</span>'
+                ? '<span class="badge bg-danger">⚠︎ Tarea retrasada</span>'
                 : '';
 
             const card = `
@@ -73,10 +73,10 @@
             ${a.nombreActividad}</h5>
             <br>
             <p class="card-text">${a.descripcion}</p>
-            <p class="card-text"><strong>Fecha de entrega:</strong>
+            <p class="card-text"><strong>Fecha de entrega 📆:</strong>
                 ${fechaLimite.toLocaleDateString()} ${fechaLimite.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </p>
-            <p class="card-text"><strong>Puntaje:</strong> ${a.puntaje}</p>
+            <p class="card-text"><strong>Puntaje:</strong> ${a.puntaje}%</p>
             <p class="card-text"><strong>Tipo:</strong> ${a.tipoActividad}</p>
             ${estadoEntrega}
             <br>
