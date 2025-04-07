@@ -5,7 +5,7 @@
         return;
     }
 
-    function cargarAvisos(materiaId = null) {
+    window.cargarAvisos = function (materiaId = null) {
         let url = `/api/Alumno/Avisos/${alumnoIdGlobal}`;
         if (materiaId) {
             url += `/${materiaId}`;
@@ -17,16 +17,16 @@
                 if (data.length > 0) {
                     data.forEach(function (aviso) {
                         avisosHtml += `
-                        <br>
-                        <li class="list-group-item1 d-flex align-items-start">
-                            <img class="iconos-nav4" src="/Iconos/PERFIL-26.svg" alt="Icono de Grupo" />
-                            <div>
-                                <h5 class="mb-1">${aviso.docenteNombre}</h5>
-                                <small class="text-muted">Publicado el ${new Date(aviso.fechaCreacion).toLocaleString()}</small>
-                                <h5 class="mb-1">${aviso.titulo}</h5>
-                                <p class="mb-1">${aviso.descripcion}</p>
-                            </div>
-                        </li>`;
+                    <br>
+                    <li class="list-group-item1 d-flex align-items-start">
+                        <img class="iconos-nav4" src="/Iconos/PERFIL-26.svg" alt="Icono de Grupo" />
+                        <div>
+                            <h5 class="mb-1">${aviso.docenteNombre}</h5>
+                            <small class="text-muted">Publicado el ${new Date(aviso.fechaCreacion).toLocaleString()}</small>
+                            <h5 class="mb-1">${aviso.titulo}</h5>
+                            <p class="mb-1">${aviso.descripcion}</p>
+                        </div>
+                    </li>`;
                     });
                 } else {
                     avisosHtml = '<li class="list-group-item text-warning">No hay avisos disponibles.</li>';
@@ -40,7 +40,8 @@
                     : '<li class="list-group-item text-danger">Error al cargar los avisos.</li>';
                 $("#avisos-container").html(errorMessage);
             });
-    }
+    };
+
 
     cargarAvisos(); // Carga los avisos generales al iniciar
 

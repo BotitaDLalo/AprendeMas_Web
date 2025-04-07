@@ -17,7 +17,7 @@
 
 
     // Cargar Avisos por defecto
-    if (avisosTab) {
+    if (actividadesTab) {
         cargarContenido("actividades", "Actividades");
     }
 });
@@ -43,9 +43,19 @@ function cargarContenido(seccion, nombreVista) {
         .then(response => response.text())
         .then(html => {
             contenidoDiv.innerHTML = html;
+
+            // Llamar función si se cargaron avisos
+            if (nombreVista === "Avisos" && typeof cargarAvisos === "function") {
+                cargarAvisos();
+            }
         })
         .catch(error => console.error(`Error al cargar ${nombreVista}:`, error));
+
+
+
 }
+
+
 
 document.querySelectorAll(".nav-link").forEach(tab => {
     tab.addEventListener("click", function () {

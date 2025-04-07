@@ -92,7 +92,7 @@
 
     } catch (error) {
         console.error("Error al cargar actividades:", error);
-        document.getElementById("contenedorActividades").innerHTML = "<p>Error al cargar actividades.</p>";
+        document.getElementById("contenedorActividades").innerHTML = "<p>No hay actividades aun</p>";
     }
 });
 
