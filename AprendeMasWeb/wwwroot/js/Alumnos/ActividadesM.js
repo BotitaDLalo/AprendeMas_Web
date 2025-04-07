@@ -35,6 +35,23 @@
             const fechaLimite = new Date(a.fechaLimite);
             const hoy = new Date();
             const estaFueraDeTiempo = hoy > fechaLimite;
+            const calificada = !!a.calificacion;
+            const calificacionValor = a.calificacion?.calificacion ?? 0;
+            const aprobado = calificacionValor >= 70; // Cambia el mínimo si usas otra escala
+
+
+            let etiquetaResultado = "";
+            let bloqueoEntrega = "";
+
+            if (calificada) {
+                etiquetaResultado = `<span class="badge ${aprobado ? 'bg-success' : 'bg-danger'}">
+        ${aprobado ? 'Aprobado' : 'Reprobado'}
+    </span>
+    <span class="badge bg-secondary ms-2">Actividad calificada</span>`;
+
+                // Bloquear edición si ya está calificada
+                bloqueoEntrega = 'disabled';
+            }
 
             const calificacionHTML = a.calificacion
                 ? `<p class="card-text"><strong>Calificación:</strong> ${a.calificacion.calificacion}</p>
@@ -48,43 +65,42 @@
                 : '';
 
             const card = `
-        <div class="card mb-3 shadow ${entregada ? 'bg-success bg-opacity-25 border-success' : ''}">
-            <div class="card-body">
+    <div class="card mb-3 shadow ${entregada ? 'bg-success bg-opacity-25 border-success' : ''}">
+        <div class="card-body">
+            <h5 class="card-title">${a.nombreActividad}</h5>
+            <p class="card-text">${a.descripcion}</p>
+            <p class="card-text"><strong>Fecha de entrega:</strong>
+                ${fechaLimite.toLocaleDateString()} ${fechaLimite.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </p>
+            <p class="card-text"><strong>Puntaje:</strong> ${a.puntaje}</p>
+            <p class="card-text"><strong>Tipo:</strong> ${a.tipoActividad}</p>
+            ${estadoEntrega}
+            <br>
 
-                <h5 class="card-title">${a.nombreActividad}</h5>
-                <p class="card-text">${a.descripcion}</p>
-               <p class="card-text"><strong>Fecha de entrega:</strong>
-    ${fechaLimite.toLocaleDateString()} ${fechaLimite.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-</p>
+            <h4>Calificación</h4>
+            ${calificacionHTML}
+            ${etiquetaResultado}
 
-                <p class="card-text"><strong>Puntaje:</strong> ${a.puntaje}</p>
-                <p class="card-text"><strong>Tipo:</strong> ${a.tipoActividad}</p>
-                ${estadoEntrega}
-                <br>
-                <h4>Calificación</h4>
-                ${calificacionHTML}
+            <div class="respuesta-entrega mt-2">
+                <p id="res-entrega-${a.actividadId}" class="card-text">
+                    <strong>Respuesta:</strong>
+                    <a href="${a.respuesta || '#'}" target="_blank">
+                        ${a.respuesta || 'No has entregado aún esta actividad.'}
+                    </a>
+                </p>
 
-                <div class="respuesta-entrega">
-                    <p id="res-entrega-${a.actividadId}" class="card-text">
-                        <strong>Respuesta:</strong>
-                        <a href="${a.respuesta || '#'}" target="_blank">
-                            ${a.respuesta || 'No has entregado aún esta actividad.'}
-                        </a>
-                    </p>
+                <button class="btn btn-primary btn-editar" onclick="mostrarFormularioEntrega(${a.actividadId})"
+                    ${estaFueraDeTiempo || calificada ? 'disabled' : ''}>
+                    ${entregada ? 'Editar Entrega' : 'Entregar Actividad'}
+                </button>
+            </div>
 
-                    <button class="btn btn-primary btn-editar" onclick="mostrarFormularioEntrega(${a.actividadId})"
-                        ${estaFueraDeTiempo ? 'disabled' : ''}>
-                        ${entregada ? 'Editar Entrega' : 'Entregar Actividad'}
-                    </button>
-                </div>
-
-                <div id="formEntrega-${a.actividadId}" class="mt-3" style="display:none;">
-                    <textarea class="form-control mb-2" id="respuesta-${a.actividadId}" placeholder="Escribe tu respuesta...">${a.respuesta || ''}</textarea>
-                    <button class="btn btn-success btn-enviar" onclick="enviarEntrega(${a.actividadId})">Enviar</button>
-                </div>
+            <div id="formEntrega-${a.actividadId}" class="mt-3" style="display:none;">
+                <textarea class="form-control mb-2" id="respuesta-${a.actividadId}" placeholder="Escribe tu respuesta...">${a.respuesta || ''}</textarea>
+                <button class="btn btn-success btn-enviar" onclick="enviarEntrega(${a.actividadId})">Enviar</button>
             </div>
         </div>
-    `;
+    </div>`;
 
             contenedor.innerHTML += card;
         });
