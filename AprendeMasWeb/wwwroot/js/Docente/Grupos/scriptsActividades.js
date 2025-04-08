@@ -96,21 +96,27 @@ async function registrarActividad() {
 
 
 
-
-// Funcion que carga las actividades a la vista.
+// Función que carga las actividades a la vista.
 async function cargarActividadesDeMateria() {
     const listaActividades = document.getElementById("listaActividadesDeMateria");
-    listaActividades.innerHTML = "<p>Cargando actividades...</p>"; // Mostrar mensaje de carga
+    listaActividades.innerHTML = ""; // Limpiar contenido anterior
 
     try {
+        mostrarCargando("Cargando actividades...");
+
         const response = await fetch(`/api/DetallesMateriaApi/ObtenerActividadesPorMateria/${materiaIdGlobal}`);
         if (!response.ok) throw new Error("No se encontraron actividades.");
+
         const actividades = await response.json();
         renderizarActividades(actividades);
     } catch (error) {
         listaActividades.innerHTML = `<p class="mensaje-error">${error.message}</p>`;
+    } finally {
+        cerrarCargando();
     }
 }
+
+
 //Renderiza actividades despues de confirmar existencia
 function renderizarActividades(actividades) {
     const listaActividades = document.getElementById("listaActividadesDeMateria");
@@ -253,12 +259,18 @@ async function IrAActividad(actividadIdSeleccionada) {
 }
 
 
-//Funcion para eliminar una actividad
+//Función para eliminar una actividad
 async function eliminarActividad(id) {
-    // Confirmación con SweetAlert
     const result = await Swal.fire({
         title: '¿Estás seguro?',
-        text: "¡Esta acción no se puede deshacer!",
+         html: `
+                    <p>Esto eliminará <b>la actividad</b> incluyendo:</p>
+                    <ul style="text-align: left;">
+                        <li>Calificaciones registradas</li>
+                        <li>Respuestas del alumno a la actividad</li>
+                    </ul>
+                    <p>No podrás recuperar esta información después.</p>
+                `,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Sí, eliminar',
@@ -267,15 +279,10 @@ async function eliminarActividad(id) {
     });
 
     if (result.isConfirmed) {
-        // Alerta de confirmación antes de la eliminación
-        Swal.fire(
-            'Eliminado!',
-            `La actividad con ID: ${id} ha sido eliminada.`,
-            'success'
-        );
-
         try {
-            // Realizar la petición para eliminar la actividad
+            // Mostrar cargando mientras se realiza la petición
+            mostrarCargando("Eliminando actividad...");
+
             const response = await fetch(`/api/DetallesMateriaApi/EliminarActividad/${id}`, {
                 method: 'DELETE',
                 headers: {
@@ -283,17 +290,19 @@ async function eliminarActividad(id) {
                 }
             });
 
+            cerrarCargando(); // Cerrar el cargando al recibir respuesta
+
             const data = await response.json();
 
             if (data.message) {
-                Swal.fire({
-                    title: 'Éxito',
-                    text: data.message,
-                    icon: 'success',
-                    timer: 1500,  // Tiempo en milisegundos (1500ms = 1.5 segundos)
-                    showConfirmButton: false  // Esto es opcional, para que no aparezca el botón de "OK"
-                });
-                cargarActividadesDeMateria();// Recargar las actividades.
+                Swal.fire(
+                    'Eliminado!',
+                    `La actividad ha sido eliminada.`,
+                    'success'
+                );
+
+                cargarActividadesDeMateria(); //Actualiza la vista
+                cargarActividadesEnSelect(); //Actualiza el select
             } else {
                 Swal.fire(
                     'Error',
@@ -302,6 +311,7 @@ async function eliminarActividad(id) {
                 );
             }
         } catch (error) {
+            cerrarCargando();
             Swal.fire(
                 'Error',
                 'Hubo un error en la solicitud. Intenta nuevamente.',
@@ -314,9 +324,9 @@ async function eliminarActividad(id) {
             title: 'Cancelado',
             text: 'La actividad no fue eliminada.',
             icon: 'info',
-            timer: 1500,  // El tiempo que se mostrará la alerta (1500ms = 1.5 segundos)
-            showConfirmButton: false  // Esto es opcional, para que no aparezca el botón "OK"
+            timer: 1500,
+            showConfirmButton: false
         });
-
     }
 }
+

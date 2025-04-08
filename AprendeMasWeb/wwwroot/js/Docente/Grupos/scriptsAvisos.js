@@ -92,12 +92,15 @@ async function publicarAviso() {
 async function cargarAvisosDeMateria() {
     const listaAvisos = document.getElementById("listaDeAvisosDeMateria");
     try {
+        mostrarCargando("Cargando avisos...");
         const response = await fetch(`/api/DetallesMateriaApi/ObtenerAvisos?IdMateria=${materiaIdGlobal}`);
         if (!response.ok) throw new Error("No se encontraron avisos.");
         const avisos = await response.json();
         renderizarAvisos(avisos);
     } catch (error) {
         listaAvisos.innerHTML = `<p class="aviso-error">${error.message}</p>`;
+    } finally {
+        cerrarCargando();
     }
 }
 

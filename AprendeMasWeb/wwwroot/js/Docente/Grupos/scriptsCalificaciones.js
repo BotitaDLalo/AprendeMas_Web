@@ -79,7 +79,7 @@ async function consultarCalificaciones() {
             icon: "success",
             title: `Renderizado completado`,
             showConfirmButton: false,
-            timer: 1800,
+            timer: 1500,
             position: "top-end"
         });
 

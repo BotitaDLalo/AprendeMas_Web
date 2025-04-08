@@ -162,6 +162,8 @@
 //Carga los alumnos a la materia y los muestra en el div
 async function cargarAlumnosAsignados(materiaIdGlobal) {
     try {
+        mostrarCargando("Cargando alumnos...");
+
         // Hacer la petición al servidor
         const response = await fetch(`/api/DetallesMateriaApi/ObtenerAlumnosPorMateria/${materiaIdGlobal}`);
 
@@ -175,6 +177,7 @@ async function cargarAlumnosAsignados(materiaIdGlobal) {
         // Seleccionar el contenedor donde se mostrará la lista
         const contenedor = document.getElementById("listaAlumnosAsignados");
         contenedor.innerHTML = ""; // Limpiar contenido anterior
+
         // Verificar si hay alumnos
         if (alumnos.length === 0) {
             contenedor.innerHTML = `<p class="text-muted">No hay alumnos asignados a esta materia.</p>`;
@@ -183,21 +186,17 @@ async function cargarAlumnosAsignados(materiaIdGlobal) {
 
         // Crear la lista de alumnos
         alumnos.forEach(alumno => {
-            //  Crear el div del alumno
             const divAlumno = document.createElement("div");
             divAlumno.classList.add("d-flex", "justify-content-between", "align-items-center", "p-2", "mb-2");
-            divAlumno.style.background = "#f8f9fa"; // Color de fondo
-            divAlumno.style.borderRadius = "8px"; // Bordes redondeados
+            divAlumno.style.background = "#f8f9fa";
+            divAlumno.style.borderRadius = "8px";
 
-            //  Agregar el nombre del alumno
             const spanNombre = document.createElement("span");
             spanNombre.textContent = `${alumno.apellidoPaterno} ${alumno.apellidoMaterno} ${alumno.nombre}`;
             divAlumno.appendChild(spanNombre);
 
-            //  Contenedor de botón
             const divBotones = document.createElement("div");
 
-            //  Botón "Eliminar del grupo" dentro de un menú desplegable
             const dropdown = document.createElement("div");
             dropdown.classList.add("dropdown");
 
@@ -226,21 +225,30 @@ async function cargarAlumnosAsignados(materiaIdGlobal) {
             divBotones.appendChild(dropdown);
             divAlumno.appendChild(divBotones);
 
-            // Agregar alumno a la lista
             contenedor.appendChild(divAlumno);
         });
 
     } catch (error) {
         console.error("Error al cargar alumnos:", error);
+    } finally {
+        cerrarCargando();
     }
 }
+
 
 //Elimina Alumno del grupo
 async function eliminardelgrupo(alumnoMateriaId) {
     try {
         const confirmacion = await Swal.fire({
             title: "¿Estás seguro?",
-            text: "Esta acción eliminará al alumno del grupo.",
+            html: `
+                    <p>Esto eliminará al alumno de la materia incluyendo:</p>
+                    <ul style="text-align: left;">
+                        <li>Actividades que realizo.</li>
+                        <li>Calificaciones que se le registraron.</li>
+                    </ul>
+                    <p>No podrás recuperar esta información después.</p>
+                `,
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#d33",
