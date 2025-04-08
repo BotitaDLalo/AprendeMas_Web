@@ -36,7 +36,7 @@
             .fail(function (xhr) {
                 console.error("Error al cargar avisos:", xhr.status, xhr.statusText);
                 let errorMessage = xhr.status === 404
-                    ? '<li class="list-group-item text-warning">No hay avisos disponibles.</li>'
+                    ? '<li class="list-group-item ">No hay avisos disponibles.</li>'
                     : '<li class="list-group-item text-danger">Error al cargar los avisos.</li>';
                 $("#avisos-container").html(errorMessage);
             });

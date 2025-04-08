@@ -72,7 +72,7 @@
              <img class="iconos-nav6" src="/Iconos/TABLA-26.svg" alt="Icono de Grupo" />
             ${a.nombreActividad}</h5>
             <br>
-            <p class="card-text">${a.descripcion}</p>
+            <p class="card-text" style="text-align: justify;">${a.descripcion}</p>
             <p class="card-text"><strong>Fecha de entrega 📆:</strong>
                 ${fechaLimite.toLocaleDateString()} ${fechaLimite.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </p>
