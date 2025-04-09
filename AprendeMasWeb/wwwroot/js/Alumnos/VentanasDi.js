@@ -17,7 +17,7 @@
 
 
     // Cargar Avisos por defecto
-    if (actividadesTab) {
+    if (avisosTab) {
         cargarContenido("actividades", "Actividades");
         cargarContenido("avisos", "Avisos");
     }

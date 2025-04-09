@@ -142,8 +142,11 @@ namespace AprendeMasWeb.Controllers.WEB
                     a.Titulo,
                     a.Descripcion,
                     a.FechaCreacion,
-                    a.DocenteId // si es necesario mostrar quién lo publicó
-                })
+                    a.DocenteId, // si es necesario mostrar quién lo publicó
+					DocenteNombre = a.Docentes != null
+						? a.Docentes.Nombre + " " + a.Docentes.ApellidoPaterno + " " + a.Docentes.ApellidoMaterno
+						: "Desconocido"
+				})
                 .ToListAsync();
 
             if (!avisos.Any())

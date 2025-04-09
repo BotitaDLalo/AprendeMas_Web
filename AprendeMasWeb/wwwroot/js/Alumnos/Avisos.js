@@ -44,9 +44,18 @@ function mostrarAvisos(avisos) {
         avisoElemento.classList.add("aviso");
 
         avisoElemento.innerHTML = `
-            <h4>${aviso.titulo}</h4>
-            <p>${aviso.descripcion}</p>
-            <small>${new Date(aviso.fechaCreacion).toLocaleString()}</small>
+         <br>
+                    <li class="list-group-item1 d-flex align-items-start">
+                        <img class="iconos-nav4" src="/Iconos/PERFIL-26.svg" alt="Icono de Grupo" />
+                        <div>
+           <h5 class="mb-1">${aviso.docenteNombre}</h5>
+              <small class="text-muted">Publicado el ${new Date(aviso.fechaCreacion).toLocaleString()}</small>
+              <br><br>
+               <h4 class="mb-1">${aviso.titulo}</h4>
+            <p  class="mb-1"> ${aviso.descripcion}</p>
+          
+            </div>
+                    </li>
             <hr/>
         `;
         contenedor.appendChild(avisoElemento);
