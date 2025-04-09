@@ -19,6 +19,7 @@
     // Cargar Avisos por defecto
     if (actividadesTab) {
         cargarContenido("actividades", "Actividades");
+        cargarContenido("avisos", "Avisos");
     }
 });
 

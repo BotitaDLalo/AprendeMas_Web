@@ -1,52 +1,54 @@
-﻿$(document).ready(function () {
-    if (!alumnoIdGlobal || alumnoIdGlobal === "null") {
-        console.error("alumnoIdGlobal no está definido.");
-        $("#avisos-container").html('<li class="list-group-item text-danger">Error al obtener los avisos.</li>');
+﻿document.addEventListener("DOMContentLoaded", async function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tipo = urlParams.get("tipo");
+    const nombreMateria = urlParams.get("nombre");
+
+    if (tipo === "materia" && nombreMateria) {
+        await cargarAvisosMateria(nombreMateria);
+    }
+});
+
+// Función para cargar avisos de una materia
+async function cargarAvisosMateria(nombreMateria) {
+    try {
+        // Obtener ID de la materia con su nombre (ajústalo si ya tienes la ID directa)
+        const responseMateria = await fetch(`/api/Materias/ObtenerIdPorNombre?nombre=${encodeURIComponent(nombreMateria)}`);
+
+        if (!responseMateria.ok) throw new Error("No se encontró la materia.");
+        const materia = await responseMateria.json();
+
+        const materiaId = materia.materiaId;
+
+        const response = await fetch(`/api/Avisos/Materia/${materiaId}`);
+        if (!response.ok) throw new Error("Error al obtener los avisos");
+
+        const avisos = await response.json();
+        mostrarAvisos(avisos);
+    } catch (error) {
+        console.error("Error al cargar los avisos:", error);
+    }
+}
+
+// Función para mostrar los avisos en la vista
+function mostrarAvisos(avisos) {
+    const contenedor = document.getElementById("contenedorAvisos");
+    contenedor.innerHTML = "";
+
+    if (avisos.length === 0) {
+        contenedor.innerHTML = "<p>No hay avisos disponibles para esta materia.</p>";
         return;
     }
 
-    window.cargarAvisos = function (materiaId = null) {
-        let url = `/api/Alumno/Avisos/${alumnoIdGlobal}`;
-        if (materiaId) {
-            url += `/${materiaId}`;
-        }
+    avisos.forEach(aviso => {
+        const avisoElemento = document.createElement("div");
+        avisoElemento.classList.add("aviso");
 
-        $.get(url)
-            .done(function (data) {
-                let avisosHtml = "";
-                if (data.length > 0) {
-                    data.forEach(function (aviso) {
-                        avisosHtml += `
-                    <br>
-                    <li class="list-group-item1 d-flex align-items-start">
-                        <img class="iconos-nav4" src="/Iconos/PERFIL-26.svg" alt="Icono de Grupo" />
-                        <div>
-                            <h5 class="mb-1">${aviso.docenteNombre}</h5>
-                            <small class="text-muted">Publicado el ${new Date(aviso.fechaCreacion).toLocaleString()}</small>
-                            <h5 class="mb-1">${aviso.titulo}</h5>
-                            <p class="mb-1">${aviso.descripcion}</p>
-                        </div>
-                    </li>`;
-                    });
-                } else {
-                    avisosHtml = '<li class="list-group-item text-warning">No hay avisos disponibles.</li>';
-                }
-                $("#avisos-container").html(avisosHtml);
-            })
-            .fail(function (xhr) {
-                console.error("Error al cargar avisos:", xhr.status, xhr.statusText);
-                let errorMessage = xhr.status === 404
-                    ? '<li class="list-group-item ">No hay avisos disponibles.</li>'
-                    : '<li class="list-group-item text-danger">Error al cargar los avisos.</li>';
-                $("#avisos-container").html(errorMessage);
-            });
-    };
-
-
-    cargarAvisos(); // Carga los avisos generales al iniciar
-
-    $(".materia-item").on("click", function () {
-        let materiaId = $(this).data("materia-id");
-        cargarAvisos(materiaId);
+        avisoElemento.innerHTML = `
+            <h4>${aviso.titulo}</h4>
+            <p>${aviso.descripcion}</p>
+            <small>${new Date(aviso.fechaCreacion).toLocaleString()}</small>
+            <hr/>
+        `;
+        contenedor.appendChild(avisoElemento);
     });
-});
+}
