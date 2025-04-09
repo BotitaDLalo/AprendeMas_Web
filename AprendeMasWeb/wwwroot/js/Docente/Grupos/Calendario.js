@@ -90,8 +90,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     document.getElementById("guardar-evento").addEventListener("click", function () {
         const fechaInicio = document.getElementById("fecha-inicio").value.trim();
         const fechaFinal = document.getElementById("fecha-final").value.trim();
-        const titulo = document.getElementById("titulo").value.trim();
-        const descripcion = document.getElementById("descripcion").value.trim();
+        const titulo = document.getElementById("tituloEvento").value.trim();
+        const descripcion = document.getElementById("descripcionEvento").value.trim();
         const color = document.getElementById("color").value;
 
         // Validación de campos vacíos
@@ -137,8 +137,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 // Limpiar campos
                 document.getElementById("fecha-inicio").value = "";
                 document.getElementById("fecha-final").value = "";
-                document.getElementById("titulo").value = "";
-                document.getElementById("descripcion").value = "";
+                document.getElementById("tituloEvento").value = "";
+                document.getElementById("descripcionEvento").value = "";
                 document.getElementById("color").value = "#2196F3";
 
                 // Ocultar formulario y modal
