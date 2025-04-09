@@ -190,7 +190,7 @@ function agregarCardClase(clase) {
 
 
     card.innerHTML = `
-    
+    <br>
         <p class="card-etiqueta">
             <img class="iconos-nav2" src="/Iconos/TABLAB.svg" alt="Icono de Grupo" />
             ${etiqueta} - ${clase.nombre}

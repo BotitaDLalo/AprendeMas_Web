@@ -56,7 +56,8 @@ function mostrarAvisos(avisos) {
           
             </div>
                     </li>
-            <hr/>
+            <br>
+
         `;
         contenedor.appendChild(avisoElemento);
     });
