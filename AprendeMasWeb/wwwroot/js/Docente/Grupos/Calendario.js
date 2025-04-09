@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const descripcion = document.getElementById("descripcion").value.trim();
         const color = document.getElementById("color").value;
 
-        // Validación
+        // Validación de campos vacíos
         if (!titulo || !descripcion || !fechaInicio || !fechaFinal || !color) {
             Swal.fire({
                 icon: "warning",
@@ -102,7 +102,18 @@ document.addEventListener("DOMContentLoaded", async function () {
                 text: "Por favor, completa todos los campos antes de guardar.",
                 confirmButtonColor: "#dc3545"
             });
-            return; // Detener ejecución
+            return;
+        }
+
+        // Validación de fechas
+        if (new Date(fechaFinal) <= new Date(fechaInicio)) {
+            Swal.fire({
+                icon: "error",
+                title: "Fechas inválidas",
+                text: "La fecha final debe ser posterior a la fecha de inicio.",
+                confirmButtonColor: "#dc3545"
+            });
+            return;
         }
 
         let evento = {
@@ -123,18 +134,17 @@ document.addEventListener("DOMContentLoaded", async function () {
             .then(data => {
                 console.log("Evento guardado:", data);
 
-                // Limpiar los campos del formulario
+                // Limpiar campos
                 document.getElementById("fecha-inicio").value = "";
                 document.getElementById("fecha-final").value = "";
                 document.getElementById("titulo").value = "";
                 document.getElementById("descripcion").value = "";
-                document.getElementById("color").value = "#2196F3"; // o el color que quieras por defecto
+                document.getElementById("color").value = "#2196F3";
 
-                // Ocultar el formulario y el modal
+                // Ocultar formulario y modal
                 document.getElementById("formEventoContainer").style.display = "none";
                 document.getElementById("modalEvento").style.display = "none";
 
-                // Mostrar alerta de éxito
                 Swal.fire({
                     icon: "success",
                     title: "Evento guardado",
@@ -142,11 +152,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                     confirmButtonColor: "#007bff"
                 });
 
-                // Recargar el calendario
                 inicializarCalendario();
             })
             .catch(error => console.error("Error:", error));
     });
+
 
 
     // Función para cargar eventos en el modal
