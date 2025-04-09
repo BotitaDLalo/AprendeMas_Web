@@ -131,6 +131,71 @@
 		</main>
 	</div>
 
+	<!-- Modal Agregar Evento -->
+	<div id="modalEvento" class="modal-evento">
+		<div class="modal-content">
+			<span id="cerrar-modal" class="close-modal12">&times;</span>
+			<h2>Eventos del <span id="fechaSeleccionadaTexto"></span></h2>
+
+			<div id="listaEventos"></div>
+			<br><br>
+			<button id="btnAgregarEvento">Agregar Evento</button>
+			<br><br>
+			<div id="formEventoContainer" style="display: none;">
+				<label for="titulo">Título:</label>
+				<input type="text" id="titulo" required>
+
+				<label for="descripcion">Descripción:</label>
+				<textarea id="descripcion" required></textarea>
+
+				<label for="fecha-inicio">Fecha Inicio:</label>
+				<input type="datetime-local" id="fecha-inicio" required>
+
+				<label for="fecha-final">Fecha Final:</label>
+				<input type="datetime-local" id="fecha-final" required>
+
+				<label for="color">Color:</label>
+				<select id="color" required>
+					<option value="#2196F3">Azul</option>
+					<option value="#9E9E9E">Gris</option>
+				</select>
+
+				<br><br>
+				<button id="guardar-evento">Guardar</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Editar Evento -->
+	<div id="modal-editar-evento" class="modal">
+		<div class="modal-content">
+			<h2>Editar Evento</h2>
+			<input type="hidden" id="editar-evento-id">
+
+			<label>Título:</label>
+			<input type="text" id="editar-titulo" required>
+
+			<label>Descripción:</label>
+			<textarea id="editar-descripcion" required></textarea>
+
+			<label>Fecha de inicio:</label>
+			<input type="date" id="editar-fecha-inicio" required>
+
+			<label>Fecha de finalización:</label>
+			<input type="date" id="editar-fecha-final" required>
+
+			<label>Color:</label>
+			<input type="color" id="editar-color" required>
+
+			<br />
+			<button id="guardar-edicion-evento">Guardar Cambios</button>
+			<br />
+			<button onclick="document.getElementById('modal-editar-evento').style.display='none'">Cancelar</button>
+		</div>
+	</div>
+
+
+
 	<footer class="custom-footer">
 		<div class="footer-container">
 			<!-- Logo alineado a la izquierda -->
@@ -171,41 +236,6 @@
 		</div>
 	</div>
 
-	@*     Modal de Agenda *@
-	<div id="modalEvento" class="modal-evento">
-		<div class="modal-content">
-			<span class="close-modal12">&times;</span>
-			<h2>Eventos del <span id="fechaSeleccionadaTexto"></span></h2>
-
-			<div id="listaEventos"></div>
-			<br><br>
-			<button id="btnAgregarEvento">Agregar Evento</button>
-			<br><br>
-			<div id="formEventoContainer" style="display: none;">
-				<form id="formEvento">
-					<label for="titulo">Título:</label>
-					<input type="text" id="titulo" name="titulo" required>
-
-					<label for="descripcion">Descripción:</label>
-					<textarea id="descripcion" name="descripcion" required></textarea>
-
-					<label for="fechaInicio">Fecha Inicio:</label>
-					<input type="datetime-local" id="fechaInicio" name="fechaInicio" required>
-
-					<label for="fechaFinal">Fecha Final:</label>
-					<input type="datetime-local" id="fechaFinal" name="fechaFinal" required>
-
-					<label for="color">Color:</label>
-					<select id="color" name="color" required>
-						<option value="azul">Azul</option>
-						<option value="gris">Gris</option>
-					</select>
-
-					<button type="submit">Guardar</button>
-				</form>
-			</div>
-		</div>
-	</div>
 	<!--Alertas sweetAlert2-->
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	@* 	Modal de confirmacion *@

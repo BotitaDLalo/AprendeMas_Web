@@ -1,18 +1,16 @@
-
-
 document.addEventListener("DOMContentLoaded", function () {
- 
-        flatpickr("#calendario-input", {
-            enableTime: false,
-            dateFormat: "Y-m-d",  // Formato correcto YYYY-MM-DD
-            locale: "es", // Idioma espaÃ±ol
-            defaultDate: new Date(),
-            onChange: function (selectedDates, dateStr) {
-                if (selectedDates.length > 0) {
-                    cargarEventosPorFecha(dateStr);
-                }
+
+    flatpickr("#calendario-input", {
+        enableTime: false,
+        dateFormat: "Y-m-d",  // Formato correcto YYYY-MM-DD
+        locale: "es", // Idioma español
+        defaultDate: new Date(),
+        onChange: function (selectedDates, dateStr) {
+            if (selectedDates.length > 0) {
+                cargarEventosPorFecha(dateStr);
             }
-        });
+        }
+    });
 
     function cargarEventosPorFecha(fechaSeleccionada) {
         document.getElementById("fechaSeleccionadaTexto").textContent = fechaSeleccionada;
@@ -27,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return response.json();
             })
             .then(data => {
-                console.log("Respuesta de la API:", data); // ðŸ‘ˆ Agrega esta lÃ­nea
+                console.log("Respuesta de la API:", data); // Agrega esta línea
                 let listaEventosDiv = document.getElementById("listaEventos");
                 listaEventosDiv.innerHTML = "";
 
@@ -35,13 +33,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     listaEventosDiv.innerHTML = `<p>${data.mensaje}</p>`;
                 } else {
                     data.forEach(evento => {
-                        console.log("Evento recibido:", evento); // ðŸ‘ˆ TambiÃ©n imprime cada evento
+                        console.log("Evento recibido:", evento); // También imprime cada evento
                         let eventoDiv = document.createElement("div");
                         eventoDiv.classList.add("evento-item");
                         eventoDiv.innerHTML = `
                 <h3 class="evento-titulo" data-id="${evento.eventoId}">${evento.titulo}</h3>
                 <div class="evento-detalle" style="display: none;">
-                    <p><strong>DescripciÃ³n:</strong> ${evento.descripcion}</p>
+                    <p><strong>Descripción:</strong> ${evento.descripcion}</p>
                     <p><strong>Inicio:</strong> ${evento.fechaInicio}</p>
                     <p><strong>Fin:</strong> ${evento.fechaFinal}</p>
                     <p><strong>Color:</strong> ${evento.color}</p>
@@ -67,13 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.getElementById("modalEvento").style.display = "flex";
     }
-        document.getElementById("btnAgregarEvento").addEventListener("click", function () {
-            document.getElementById("formEventoContainer").style.display = "block";
-        });
 
-        document.querySelector(".close-modal12").addEventListener("click", function () {
-            document.getElementById("modalEvento").style.display = "none";
-        });
 
     // Cerrar modal al hacer clic fuera del contenido
     document.getElementById("modalEvento").addEventListener("click", function (event) {
@@ -81,31 +73,4 @@ document.addEventListener("DOMContentLoaded", function () {
             this.style.display = "none";
         }
     });
-
-        document.getElementById("formEvento").addEventListener("submit", function (e) {
-            e.preventDefault();
-
-            const evento = {
-                DocenteId: docenteIdGlobal,
-                Titulo: document.getElementById("titulo").value,
-                Descripcion: document.getElementById("descripcion").value,
-                FechaInicio: document.getElementById("fechaInicio").value,
-                FechaFinal: document.getElementById("fechaFinal").value,
-                Color: document.getElementById("color").value
-            };
-
-            fetch("/api/EventosAgenda", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(evento)
-            })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.mensaje);
-                    document.getElementById("modalEvento").style.display = "none";
-                })
-                .catch(error => console.error("Error:", error));
-        });
-    });
+});
