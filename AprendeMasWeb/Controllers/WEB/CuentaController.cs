@@ -242,7 +242,6 @@ namespace AprendeMasWeb.Controllers.WEB
             await _signInManager.SignOutAsync(); // Cierra la sesión del usuario
             return RedirectToAction("IniciarSesion", "Cuenta"); // Redirige a la vista de inicio de sesión
         }
-
 		[HttpGet]
 		public IActionResult IniciarSesionGoogle()
 		{
@@ -271,9 +270,9 @@ namespace AprendeMasWeb.Controllers.WEB
 
 			if (user == null)
 			{
-                
+
 				TempData["GoogleEmail"] = email;
-				return RedirectToAction("Registrar", "Usuarios"); // Redirigir a la vista de registro
+				return RedirectToAction("ValidarCorreo", "Usuarios"); // Redirigir a la vista de registro
 			}
 
 			// Si el usuario ya existe, redirigir al login con el correo llenado automáticamente
@@ -283,3 +282,4 @@ namespace AprendeMasWeb.Controllers.WEB
 
 	}
 }
+

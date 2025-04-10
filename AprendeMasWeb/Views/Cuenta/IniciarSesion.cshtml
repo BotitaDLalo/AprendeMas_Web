@@ -32,7 +32,7 @@
 		<form asp-action="IniciarSesion" asp-controller="Cuenta" method="post">
 			<div class="input-box">
 				<input type="text" class="input-field" id="email" name="email" required value="@Context.Request.Query["email"]" />
-				<label for="email"><i class="fa-solid fa-at" style="margin-right: 5px;"></i>Correo electrónico</label>
+				<label for="email">Correo electrónico</label>
 			</div>
 			<div class="input-box" style="position: relative;">
 				<input type="password" class="input-field" id="password" name="password" autocomplete="off" required>
@@ -72,14 +72,12 @@
 			<p class="or-text">O</p>
 		</div>
 		<center>
-		<div class="form-groups">
-			<a asp-controller="GoogleAuth" asp-action="SignInWithGoogle" class="btn btn-google">
-				<img src="https://img.icons8.com/ios11/512/7950F2/google-logo.png" alt="Google logo" class="google-icon" />
-				Iniciar sesión con Google
-			</a>
-				<br><br>
-				
-		</div>
+			<div class="form-groups">
+				<a asp-controller="Cuenta" asp-action="IniciarSesionGoogle" class="btn btn-google">
+					<img src="https://img.icons8.com/ios11/512/7950F2/google-logo.png" alt="Google logo" class="google-icon" />
+					Inicio de sesión con Google
+				</a>
+			</div>
 		</center>
 
 	</div>
